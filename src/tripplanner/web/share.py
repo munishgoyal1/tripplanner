@@ -142,6 +142,19 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
     return public
 
 
+def mint_booking_intent(plan: dict[str, Any]) -> str:
+    from tripplanner.web.booking_export import build_html, snapshot
+    packet = snapshot(plan)
+    packet.pop("exported_at", None)
+    token = _snapshot_token(get_user_id(), packet)
+    _save_snapshot(token, {
+        "token": token, "owner_user_id": get_user_id(),
+        "created_at": plan.get("updated_at") or "", "plan": {},
+        "html": build_html(plan),
+    })
+    return token
+
+
 # Anything that could be replayed against a provider, or billed to us, or that
 # only means something inside our own ranker.
 _PRIVATE_OPTION_KEYS = {"provider_ref", "day_cost"}

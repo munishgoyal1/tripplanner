@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 30;
+export const LAST_ASSIGNED_LAB_NUMBER = 31;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 31,
+    id: "itinerary-pane-polish",
+    title: "A sleeker itinerary pane",
+    category: "Itinerary pane look and feel",
+    description: "Seven ways to make the itinerary pane calmer, shorter and more professional without losing a single fact or control; four also retune the workspace finish so the pane blends in, including two refinements of the preferred option A.",
+    createdAt: "2026-09-14",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-09-14",
+    decision: "Open · Recommended starting point: F · Crisp flow rows",
+    href: "./lab-31-itinerary-pane-polish.html",
+    icon: ListChecks,
+  },
   {
     labNumber: 30,
     id: "planner-layout-directions",

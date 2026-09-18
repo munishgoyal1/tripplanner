@@ -14,6 +14,7 @@ from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner.hotel_research import normalize_hotel_locality
 from tripplanner.web import places_cache
 from tripplanner.web.gallery import (
     _FALLBACK_HOTELS,
@@ -166,35 +167,21 @@ def _trip_day_count(trip: dict[str, Any]) -> int:
 
 
 def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
-    transfer_indexes = [
+    return {
         index
-        for index, stop in enumerate(stops)
+        for index, stop in enumerate(stops, start=1)
         if isinstance(stop, dict)
-        and _resolved_transfer_mode(
+        and not _resolved_transfer_mode(
             str(stop.get("name") or ""), str(stop.get("kind") or "")
         )
-    ]
-    if not transfer_indexes:
-        return set(range(1, len(stops) + 1))
-
-    first_after_transfer = transfer_indexes[-1] + 1
-    after_transfer = set(range(first_after_transfer + 1, len(stops) + 1))
-    has_destination_stop = any(
-        isinstance(stop, dict)
-        and str(stop.get("kind") or "").strip().lower()
-        not in {"airport", "station", "bus_station", "flight", "transport"}
-        for stop in stops[first_after_transfer:]
-    )
-    if has_destination_stop:
-        return after_transfer
-    return set(range(1, transfer_indexes[0] + 1))
+    }
 
 
 def _provider_name_matches(source_name: str, provider_name: str) -> bool:
     def _tokens(value: str) -> set[str]:
         return {
             token
-            for token in re.findall(r"[a-z0-9]+", value.lower())
+            for token in re.findall(r"[a-z0-9]+", normalize_hotel_locality(value))
             if len(token) > 2
         }
 
@@ -270,7 +257,7 @@ def _day_place_context(entry: dict[str, Any], destination: str) -> str:
 def _location_tokens(value: Any) -> set[str]:
     return {
         token
-        for token in re.findall(r"[a-z0-9]+", str(value or "").casefold())
+        for token in re.findall(r"[a-z0-9]+", normalize_hotel_locality(value or ""))
         if len(token) > 2 and token not in _LOCATION_NOISE
     }
 
@@ -309,6 +296,14 @@ def _map_pins(
     }
     itinerary_names = _itinerary_names(trip)
     bindings = _confirmed_bindings(trip)
+    for entry in itinerary:
+        if not isinstance(entry, dict):
+            continue
+        for stop in entry.get("stops") or []:
+            if (isinstance(stop, dict) and stop.get("place_id")
+                    and isinstance(stop.get("lat"), (int, float))
+                    and isinstance(stop.get("lng"), (int, float))):
+                bindings.setdefault(str(stop.get("name") or "").lower(), stop)
     chosen_names = selected["hotel"] | selected["attraction"]
 
     # Structured itinerary stops are authoritative for what should appear on
@@ -345,6 +340,8 @@ def _map_pins(
 
     # 1) Structured itinerary stops first, preserving day/stop order so route
     #    lines follow the actual itinerary sequence.
+    from tripplanner.tools.trip_guard import _is_home_endpoint
+
     for idx, entry in enumerate(itinerary):
         if not isinstance(entry, dict):
             continue
@@ -354,7 +351,6 @@ def _map_pins(
         if not isinstance(stops, list):
             continue
         day_context = _day_place_context(entry, destination)
-        has_route_anchor = False
         for s in stops:
             if isinstance(s, dict):
                 name = str(s.get("name") or "").strip()
@@ -374,9 +370,13 @@ def _map_pins(
                 booked=stop_is_booked(s),
             )
             terminal_refs = _transport_terminal_refs(name, kind)
+            if kind not in {"flight", "transport"} and _is_home_endpoint(s, str(trip.get("origin") or "")):
+                terminal_refs = [("origin", str(trip["origin"]))]
             if terminal_refs:
-                if _resolved_transfer_mode(name, kind) == "Drive" and has_route_anchor:
-                    continue
+                if _resolved_transfer_mode(name, kind) == "Drive":
+                    endpoints = _transport_route_endpoints(name)
+                    if endpoints:
+                        terminal_refs = [("origin", endpoint) for endpoint in endpoints]
                 for terminal_kind, terminal_name in terminal_refs:
                     _add(terminal_kind, terminal_name, "")
                     explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
@@ -387,14 +387,13 @@ def _map_pins(
                 continue
             if kind not in {"hotel", "attraction", "meal", "restaurant"}:
                 kind = _infer_kind_from_name(name)
-            context = day_context
+            context = str(s.get("city") or day_context) if isinstance(s, dict) else day_context
             if kind == "hotel":
                 context = selected_hotel_context.get(name.lower()) or day_context
             _add(kind, name, context)
             explicit_day_by_name.setdefault(name.lower(), day_num)
             tier_by_name.setdefault(name.lower(), tier)
             from_itinerary.add(name.lower())
-            has_route_anchor = True
 
     # 2) User selected places (ensure presence even if stops list is absent).
     for h in trip.get("selected_hotels") or []:
@@ -718,6 +717,8 @@ def _resolve_road_circuit_pin_ids(
         if not nxt["name"]:
             continue
         pin = resolve_pin(nxt["name"], nxt["kind"])
+        if nxt["kind"] == "hotel" and not pin:
+            break
         if not pin:
             continue
         pin_id = str(pin["id"])

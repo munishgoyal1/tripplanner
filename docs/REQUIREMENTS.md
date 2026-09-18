@@ -76,6 +76,18 @@ model call. Creation is withheld for ordinary edits and ambiguous place mentions
 clear whole-trip and saved-trip switch requests require confirmation before leaving
 the selected trip, retained in JSON/SSE responses and chat history. The current trip remains saved.
 
+Hotel search now includes one bounded Places fallback on missing configuration,
+empty inventory and provider failure. A grounded property recommendation is distinct
+from verified room availability; city/date research reasons persist with saves and
+appear beside unresolved lodging anchors. Local route sections survive transfers
+without inventing connections across unresolved air or rail gaps.
+
+Transient model read/protocol failures receive one model-only retry. Completed tools
+are preserved and failed stream fragments are withheld from the chat response.
+Process-local operations metrics expose request completion and model recovery rates
+with independent sample counts; interrupted streams are unsuccessful requests.
+These are implemented recovery mechanisms, not a measured production error-rate claim.
+
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
 message context with full message-text counts, and distinguish unknown model
@@ -118,6 +130,7 @@ re-describing the whole product.
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Implemented for persisted provider evidence; exact products compare only with complete mandatory costs and published FX, consented public benefit terms apply without card numbers, and finalized unbooked expired flight/stay quotes can be explicitly rechecked without replacing selections |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
+| BOOK-02 | Booking intent research, review, lock, export and external-booking reconciliation | Implemented on responsive web; LiteAPI flight/hotel search and manual ticket/ground research; live account and exact redirect validation remain separate |
 
 ## 1. Planning intelligence
 
@@ -178,11 +191,22 @@ re-describing the whole product.
   bar. New-trip completion is announced only after every trip pane reloads; existing
   itinerary changes use the refreshed authoritative mutation summary, and proposal-only
   reviews explicitly say that the itinerary remains unchanged.
+- The complete answer is revealed after workspace refresh, with Send held busy
+  through that boundary. Tool-call preambles are excluded. Full-trip replies
+  present all saved days followed by gaps; missing date-range coverage is repaired
+  before enrichment, and stopped builds do not promise background completion.
 - The inline chip/control surface appears when interactive mode opts into a useful review. Explicit party details preserve autonomous
   planning without another confirmation gate.
   A new hosted deployment remains pending explicit approval.
 
 ### PLAN-01 - Preference-aware planning flow
+
+- Self-drive builds select one route, research all overnight cities, and require
+  a bounded real-property selection pass before accepting hotel placeholders.
+  Place metadata and both road endpoints are prepared during saves for read-only
+  map projection. Explicit long drives remain representable; an unresolved stay
+  cannot extend its driving circuit through destination sightseeing. Cross-city
+  automatic attraction relocation is blocked.
 
 - The agent loads known preferences and duration advice, then creates and persists
   the first itinerary without a review gate in either mode. Interactive mode may
@@ -240,8 +264,14 @@ re-describing the whole product.
   ordered fallback on timeout, throttling, unavailable credentials, provider
   errors, or no availability. Returned evidence includes provider, cache hit,
   checked time, expiry, and quote status.
-- LiteAPI is the preferred read-only active source for date/party-specific hotel
-  rates, flight rates, and selected-flight verification when configured.
+- The local, canary and production profiles explicitly select LiteAPI as the only
+  flight/hotel inventory source. Flight tools do not fall through to Duffel or
+  Amadeus after LiteAPI returns no offers or an error. Other selector modes retain
+  their existing fallback behavior; Places hotel metadata is not priced inventory.
+  Explicit LiteAPI tool-result keys isolate previous legacy/automatic results
+  without deleting retained research.
+  LiteAPI supplies date/party-specific hotel rates, flight rates and selected-flight
+  verification when the account supports them; selection does not confer access.
   Normalized hotel results retain the searched destination as query context, not
   physical locality proof; all results retain opaque provider references, quote
   time/expiry, total provider currency, and explicit evidence.
@@ -257,7 +287,12 @@ re-describing the whole product.
   they never establish room availability or a live rate.
 - Explicit inventory refresh bypasses shared cache. MVP cache TTLs are
   configurable by capability and intentionally favor low cost over exact
-  real-time behavior.
+  real-time behavior. All three profiles retain the existing stable/volatile
+  forever flags. Retention does not renew observation timestamps or offer expiry.
+  The responsive web workflow ships in [milestone 009](implemented/009-booking-intent-workflow.md)
+  and [issue #323](https://github.com/munishgoyal1/tripplanner/issues/323).
+  Provider expansion and remaining evidence stay under [brief 009](feature-briefs-backlog/009-booking-readiness.md)
+  and [parent #315](https://github.com/munishgoyal1/tripplanner/issues/315).
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours. Agent discovery seeds the durable
   structured Places cache so Map and Details reuse the same paid result. Routine
@@ -617,6 +652,43 @@ implemented capability baseline.
   format in the download dialog. RFC 5545 `.ics` export is unchanged.
 - Signed, sanitized, read-only public share links.
 
+### BOOK-02 - Booking intent workflow
+
+- Trip actions opens `/bookings`; the page reads the active authoritative trip.
+  Every adjustment/export carries its trip ID and revision. A changed active trip
+  or revision requires reload; previews do not persist, and application saves once.
+- Flight and hotel research invokes existing LiteAPI tools explicitly. Rendering,
+  saved alternatives and booking packets do not fetch providers. Single-offer
+  results remain usable; room/board/refund variants remain separate options.
+- Independent category caps apply during planning and adjustment. Known breaches
+  block selection/locking. Unknown occupancy, bags, fees, freshness or currency
+  prevent verified-fit claims. Different currencies are not added without FX;
+  an incomparable whole-trip total is retained as historical and flagged for review.
+- Saved recommendations survive refresh; accepting a changed quote is explicit,
+  including when the provider reuses its offer ID. Lock/unlock stores intent only.
+  Changes to travelers, dates or itinerary schedule conservatively require lock review.
+- Users can record researched ticket/transport variants and public HTTPS provider
+  links manually. Product-page links make no exact checkout-continuity claim;
+  absent links leave a copyable checklist usable with any provider or offline.
+- Export booking intent list provides HTML, PDF, JSON, email and immutable public
+  share snapshots. Each records trip revision, export time, selected/proposed items,
+  alternatives, freshness, terms, gaps and provider mapping. Private confirmation
+  references/notes and internal provider handles are excluded. Email reuses the
+  existing retry/idempotency and mail-client fallback behavior.
+- Reporting actuals updates the existing purchase/occurrence, retains the original
+  intention, and records provider, product, dates/time, amount/currency and optional
+  private reference. Repeated edits do not add another purchase or cost; a duplicate
+  confirmation across units is rejected. Tickets/flight anchors can move to an
+  existing trip day; missing days must be added first. Changed products lose stale
+  location/offer terms, and unresolved timing/cost conflicts remain explicit.
+  Hotel date shifts reconcile linked nights with explicit uncovered-stay anchors,
+  preserve other bookings, and prevent map returns to uncovered hotels. Checkout
+  is a morning occurrence, not overnight coverage. Booking defaults, occupancy
+  checks and price multipliers share party counts that exclude children's ages.
+- No provider purchase, hold, payment or confirmation verification is performed.
+  Live entitlement, Tiqets integration, document import, full dependency repair
+  and native Bookings UI parity remain tracked under #315.
+
 ## 5. Native mobile clients
 
 ### MOBILE-01 - iPhone and Android parity
@@ -735,17 +807,23 @@ implemented capability baseline.
   when known—the Place and city. Cache-served provider records stay out of the
   human log and are aggregated for the operations dashboard.
 - A private flight recorder is opt-in across local, canary and production. The
-  master `TRIPPLANNER_FLIGHT_RECORDER` flag defaults to `0` in all environment
-  profiles and also gates automatic local trip archives. Restart the backend after
+  master `TRIPPLANNER_FLIGHT_RECORDER` flag is enabled in the local profile for
+  debugging, with verbose body capture; hosted profiles remain off. It also gates
+  automatic local trip archives. Restart the backend after
   changing it. Disabled paths skip recorder callbacks, custom model transports,
   body capture and diagnostic writes while retaining normal logs and accounting.
-  When enabled, it captures exact model messages/tool schemas and returned messages,
-  model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
-  shared provider HTTP payloads/statuses, application events, planner API/SSE bodies,
-  graph/interaction lifecycle and saved trip revisions. Events carry UTC time,
+  Local `LOG_FULL_LLM_PROMPTS=1` records all model-facing messages and tool
+  configuration without the former 20,000-character truncation, while stripping
+  credentials. This opt-in field remains unavailable outside local. A turn counts
+  user messages; call counts model/tool rounds within that turn, not new requests.
+  When enabled, it captures model/tool lifecycle metadata, HTTP attempts (including
+  SDK retry counts), application events and saved trip revisions. Failure and
+  verbose HTTP bodies retain at most 64 KiB per capture with byte counts and
+  truncation metadata; use the complete local prompt log for larger model inputs.
+  Events carry UTC time,
   trace/run/attempt identifiers, user/trip attribution and durations. Credentials
   and document-processing content are excluded. Private files spool before asynchronous
-  Cosmos delivery; compressed chunks are verified on export and expire after seven days.
+  Cosmos delivery; compressed chunks are verified on export and expire after 180 days.
   Recorder failures preserve pending files and expose degraded status. This code-level
   capability still requires deployment and a live hosted recorder smoke check.
   Its background Cosmos delivery drains bounded batches and reports progress at most
@@ -1059,6 +1137,6 @@ silently invented.
 Recorder defaults preserve semantic metadata and bounded failure excerpts while
 omitting duplicate model/tool and successful API bodies. Recording is asynchronous,
 uses bounded memory and batched disk/Cosmos writes, reports diagnostic loss, and
-preserves the independent complete accounting path. Local recorder and interaction
-study stores have seven-day / 50 MiB retention; routine successful cache-only reads
+preserves the independent complete accounting path. The local recorder spool has
+180-day / 500 MiB retention and the interaction study store seven-day / 50 MiB; routine successful cache-only reads
 no longer generate local study files. Verbose HTTP capture remains opt-in and bounded.

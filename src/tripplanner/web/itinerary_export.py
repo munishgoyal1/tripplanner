@@ -5,9 +5,11 @@
 from __future__ import annotations
 
 import base64
+import contextvars
 import hashlib
 import json
 import math
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from html import escape
 from typing import Any
@@ -281,8 +283,8 @@ def export_stop_html(
             if buffer and time:
                 suffix = f" · {buffer} free before {time}"
             elif conflict:
-                suffix = f" · schedule is {conflict} too tight"
-            extra.append(f"Est. arrive {expected}{suffix}")
+                suffix = f" · {conflict} after planned {time}; schedule needs revision"
+            extra.append(f"Earliest arrival {expected}{suffix}")
         extra_html = "".join(f"<div class='travel-extra'>{_e(item)}</div>" for item in extra)
         travel_html = f"<div class='travel'>{_e(travel_line)}{extra_html}</div>"
 
@@ -650,6 +652,58 @@ def _stop_flagship_key(stop: dict[str, Any]) -> str:
     return str(stop.get("name") or "").strip().casefold()
 
 
+_PLACE_DETAIL_KINDS = {"hotel", "attraction", "meal", "restaurant"}
+
+
+def _warm_day_assets(
+    days: list[dict[str, Any]],
+    *,
+    destination: str,
+    include_photos: bool,
+    route_by_day: dict[int, dict[str, Any]],
+    pin_by_id: dict[str, dict[str, Any]],
+) -> None:
+    """Fetch the place facts, stop photos and day maps the day renderers read.
+
+    Those renderers walk every stop and day serially, so a cold cache made the
+    first export of a week-long trip ~40 round-trips in a row. Warming the same
+    set concurrently lets the serial render read the cache. Only what
+    ``export_stop_html`` and the circuit block would request is fetched, and
+    only inside a scope already authorized to pay for it.
+    """
+    from tripplanner.places_budget import paid_provider_authorized
+
+    if not paid_provider_authorized():
+        return
+    names = [
+        str(stop.get("name") or "")
+        for day in days
+        for stop in (day.get("stops") or [])
+        if isinstance(stop, dict)
+        and stop.get("name")
+        and str(stop.get("kind") or "") in _PLACE_DETAIL_KINDS
+    ]
+    map_routes = [
+        list(route.get("pin_ids") or [])
+        for route in (route_by_day.get(int(day.get("day") or 0)) for day in days)
+        if route and route.get("pin_ids")
+    ]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        # copy_context carries the paid-provider scope into each map fetch.
+        futures = [
+            pool.submit(contextvars.copy_context().run, _static_map_data_uri, pin_ids, pin_by_id)
+            for pin_ids in map_routes
+        ]
+        places_cache.prefetch(
+            list(dict.fromkeys(names)),
+            destination,
+            max_photos=1 if include_photos else 0,
+            with_reviews=False,
+        )
+        for future in futures:
+            future.result()
+
+
 def build_export_html(
     trip: dict[str, Any] | None,
     *,
@@ -661,6 +715,9 @@ def build_export_html(
     include_budgets: bool = False,
 ) -> str:
     """Render a self-contained, print-ready itinerary HTML document."""
+    if template == "booking_intent":
+        from tripplanner.web.booking_export import build_html
+        return build_html(trip, auto_print=auto_print)
     if not trip:
         return """<!doctype html><html><head><meta charset='utf-8'><title>Trip Export</title></head><body><p>No active trip to export.</p></body></html>"""
 
@@ -684,6 +741,15 @@ def build_export_html(
     travelers = str(trip.get("travelers") or "")
     symbol = trip_view.currency_symbol(trip)
     total_display = trip_view.fmt_money(trip.get("total_cost"), symbol)
+
+    if template_key != "trip_card":
+        _warm_day_assets(
+            itinerary.get("days") or [],
+            destination=destination,
+            include_photos=include_photos,
+            route_by_day=route_by_day,
+            pin_by_id=pin_by_id,
+        )
 
     if template_key == "trip_book":
         from tripplanner.web.itinerary_trip_book import render_layered_trip_book

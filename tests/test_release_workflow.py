@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 
@@ -76,7 +77,7 @@ def test_every_runtime_limit_in_a_profile_reaches_the_deployed_container() -> No
 def test_the_spend_ceiling_is_identical_in_every_environment() -> None:
     """One INR budget governs local, canary and production alike.
 
-    The owner sets three numbers; everything else is derived or is not a cost
+    The owner sets four numbers; everything else is derived or is not a cost
     control. Per-environment ceilings would reintroduce the situation where
     canary throttles differently from local and a trip that works in one fails
     in the other for reasons unrelated to the code.
@@ -96,6 +97,7 @@ def test_the_spend_ceiling_is_identical_in_every_environment() -> None:
 
     assert ceilings["local"] == ceilings["canary"] == ceilings["prod"]
     assert ceilings["local"] == {
+        "COST_CEILING_INR_HOURLY": "400",
         "COST_CEILING_INR_DAILY": "1000",
         "COST_CEILING_INR_WEEKLY": "5000",
         "COST_CEILING_INR_MONTHLY": "10000",
@@ -424,6 +426,27 @@ def test_hosted_deployments_surface_azure_cli_failures() -> None:
         assert "$deployExitCode = $LASTEXITCODE" in deploy_block
         assert "if ($deployExitCode -ne 0)" in deploy_block
 
+        # What-if is the only pre-deploy template validation, so its errors
+        # must be captured, never discarded.
+        what_if_block = script.split("$whatIfOutput = @(az deployment group what-if", 1)[1]
+        what_if_block = what_if_block.split("Assert-DeploymentHasNoDeletes", 1)[0]
+        assert "--output json 2>&1)" in what_if_block
+        assert "2>$null" not in what_if_block
+        assert "Azure CLI output:`n$whatIfErrors" in what_if_block
+
+
+def test_hosted_deployments_do_not_compile_bicep_for_a_redundant_validate() -> None:
+    root = Path(__file__).parents[1]
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
+
+    for name in ("deploy-canary.ps1", "deploy-prod.ps1"):
+        script = (root / "infra" / name).read_text(encoding="utf-8")
+        # what-if runs ARM preflight validation and `create` repeats it; a
+        # standalone validate only paid for another full Bicep compile.
+        assert "az deployment group validate" not in script
+        assert '$stageName = "Prerequisite checks"' in script
+    assert '$env:AZURE_BICEP_CHECK_VERSION = "false"' in common
+
 
 def test_production_cache_sync_defaults_to_approval_gated_two_way_merge() -> None:
     script = (
@@ -467,22 +490,103 @@ def test_production_repairs_missing_canary_gate_before_approval() -> None:
     assert "$uniqueCanaryImages = @($canaryImages | Select-Object -Unique)" in production
 
 
-def test_image_push_requires_fresh_publish_authentication_before_build() -> None:
-    script = (
-        Path(__file__).parents[1] / "infra" / "push-image.ps1"
-    ).read_text(encoding="utf-8")
+def test_canary_image_inspection_survives_a_transient_azure_cli_failure(tmp_path: Path) -> None:
+    # The post-canary read-back once hit a TLS reset (WinError 10054) and threw
+    # away a canary that had just deployed and passed smoke.
+    harness = tmp_path / "canary-images-harness.ps1"
+    harness.write_text(
+        r"""
+param([string]$SourcePath, [string]$Mode)
+$source = Get-Content -Raw -LiteralPath $SourcePath
+$definition = [regex]::Match($source, '(?ms)^function Get-CanaryImages \{.*?^\}').Value
+if (-not $definition) { throw "Get-CanaryImages was not found." }
+Invoke-Expression $definition
 
+$CanaryResourceGroup = "rg-test"
+$CanaryAppNamePrefix = "canary-app-"
+$script:calls = 0
+function Start-Sleep { param([int]$Seconds) }
+function az {
+    $script:calls++
+    if ($Mode -eq "always-fail" -or $script:calls -eq 1) {
+        $global:LASTEXITCODE = 1
+        Write-Error "ConnectionResetError(10054)" 2>&1
+        return
+    }
+    $global:LASTEXITCODE = 0
+    "ghcr.io/munishgoyal1/tripplanner:abc1234"
+}
+
+try {
+    $images = @(Get-CanaryImages)
+    @{ images = $images; calls = $script:calls; error = "" } | ConvertTo-Json -Compress
+} catch {
+    @{ images = @(); calls = $script:calls; error = "$_" } | ConvertTo-Json -Compress
+}
+""".strip(),
+        encoding="utf-8",
+    )
+    source = Path(__file__).parents[1] / "infra" / "deploy-prod.ps1"
+
+    def run(mode: str) -> dict:
+        result = subprocess.run(
+            ["pwsh", "-NoProfile", "-File", str(harness), "-SourcePath", str(source), "-Mode", mode],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        return json.loads(result.stdout.strip().splitlines()[-1])
+
+    recovered = run("fail-once")
+    assert recovered["images"] == ["ghcr.io/munishgoyal1/tripplanner:abc1234"]
+    assert recovered["calls"] == 2
+    assert recovered["error"] == ""
+
+    failed = run("always-fail")
+    assert failed["calls"] == 3
+    assert "after 3 attempts" in failed["error"]
+    assert "ConnectionResetError(10054)" in failed["error"]
+
+
+def test_image_push_requires_fresh_publish_authentication_before_build() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "infra" / "push-image.ps1").read_text(encoding="utf-8")
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
+
+    resolve = script.index("Resolve-GhcrPublishCredential")
     login = script.index("docker login $Registry")
     build = script.index('Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs')
 
-    assert login < build
+    assert resolve < login < build
     assert "assuming an existing session" not in script
-    assert "gh auth token --hostname github.com" in script
-    assert '$ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages"' in script
-    assert 'docker manifest inspect "$repo`:latest"' in script
-    assert "Docker credential store" in script
     assert '"build", "--platform", "linux/amd64"' in script
-    assert "gh auth refresh -h github.com -s write:packages" in script
+    # The package is public, so a readable manifest passes with no credential
+    # at all; it must never again stand in for push authorisation.
+    assert "docker manifest inspect" not in script
+    assert "docker manifest inspect" not in common
+    assert "https://api.github.com/user" in common
+    assert '$scopes -notcontains "write:packages"' in common
+    assert "gh auth token --hostname github.com" in common
+    assert "Docker credential store" in common
+    assert "gh auth refresh -h github.com -s write:packages" in common
+
+
+def test_image_is_built_from_the_pinned_commit_not_the_live_checkout() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "infra" / "push-image.ps1").read_text(encoding="utf-8")
+    canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+
+    assert "git archive --format=tar -o $contextArchive $commitSha" in script
+    assert "$buildArgs += $contextRoot" in script
+    assert '$buildArgs += "."' not in script
+    assert '"manual"' not in script
+
+    pin = canary.index("$buildCommit = (git rev-parse --verify --quiet HEAD")
+    preflight = canary.index("Resolve-GhcrPublishCredential")
+    validation = canary.index("az deployment group what-if")
+    push = canary.index('"$PSScriptRoot/push-image.ps1" -Tag $ImageTag -Commit $buildCommit')
+    assert pin < preflight < validation < push
 
 
 def test_container_app_job_name_stays_within_azure_limit() -> None:

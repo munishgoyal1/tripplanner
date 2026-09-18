@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import atexit
 import json
 import logging
 import os
+import queue
 import threading
 import uuid
 from collections import defaultdict
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
+from time import monotonic
 from typing import Any
 
 from tripplanner.usage_attribution import current_attribution, current_batch
@@ -27,6 +30,12 @@ _LAST_PRUNE_DAY = ""
 _MAX_BATCH_RECORDS = 100
 _MAX_BATCH_EVENTS = 500
 _HOSTED_ENVIRONMENTS = {"canary", "prod", "production"}
+# Background Cosmos writes; see ``_submit``. The bound only matters if Cosmos is
+# unreachable for a long stretch -- past it, writes go inline again.
+_MAX_QUEUED_DOCUMENTS = 1000
+_QUEUE: queue.Queue[dict[str, Any]] = queue.Queue(maxsize=_MAX_QUEUED_DOCUMENTS)
+_WRITER_LOCK = threading.Lock()
+_writer: threading.Thread | None = None
 
 
 def _now() -> datetime:
@@ -124,6 +133,76 @@ def _write(record: dict[str, Any]) -> None:
         handle.write(json.dumps(record, separators=(",", ":")) + "\n")
 
 
+def _cosmos_enabled() -> bool:
+    try:
+        from tripplanner import storage_cosmos
+
+        return storage_cosmos.is_enabled()
+    except Exception:  # noqa: BLE001 - an unreadable config writes inline, as before
+        return False
+
+
+def _submit(document: dict[str, Any]) -> None:
+    """Hand a usage document to the background writer when it goes to Cosmos.
+
+    A trip-building turn produces one document of ~150 KB, written as the turn's
+    usage scope closes. Written inline, a throttled write (429) held the request
+    for as long as the SDK's retries took. The writer thread takes that wait
+    instead. Local-file writes stay inline: they are cheap and never throttled.
+    A full queue writes inline rather than dropping, so accounting is never lost
+    to backpressure.
+    """
+    if not _cosmos_enabled():
+        _write(document)
+        return
+    _ensure_writer()
+    try:
+        _QUEUE.put_nowait(document)
+    except queue.Full:
+        _write(document)
+
+
+def _ensure_writer() -> None:
+    global _writer
+    with _WRITER_LOCK:
+        if _writer is not None and _writer.is_alive():
+            return
+        _writer = threading.Thread(
+            target=_writer_loop, name="provider-usage-writer", daemon=True
+        )
+        _writer.start()
+
+
+def _writer_loop() -> None:
+    while True:
+        document = _QUEUE.get()
+        try:
+            _write(document)
+        except Exception as exc:  # noqa: BLE001 - one bad document must not stop the writer
+            _LOGGER.warning("provider usage background write failed: %s", type(exc).__name__)
+        finally:
+            _QUEUE.task_done()
+
+
+def flush(timeout: float = 10.0) -> bool:
+    """Wait for queued usage documents to be written. False if ``timeout`` passed.
+
+    Called at application shutdown and interpreter exit, so a document queued by
+    the last turn before a scale-to-zero is not lost.
+    """
+    deadline = monotonic() + timeout
+    with _QUEUE.all_tasks_done:
+        while _QUEUE.unfinished_tasks:
+            remaining = deadline - monotonic()
+            if remaining <= 0:
+                return False
+            _QUEUE.all_tasks_done.wait(remaining)
+    return True
+
+
+atexit.register(flush)
+
+
 def persist_batch(
     records: list[dict[str, Any]], events: list[dict[str, Any]] | None = None
 ) -> None:
@@ -142,7 +221,7 @@ def persist_batch(
             ]
             first = (entries or event_entries)[0]
             occurred_at = str(first["occurred_at"])
-            _write(
+            _submit(
                 {
                     "id": uuid.uuid4().hex,
                     "occurred_at": occurred_at,
@@ -330,31 +409,61 @@ def _read_local(since: datetime) -> list[dict[str, Any]]:
     return rows
 
 
-def _read(since: datetime, until: datetime | None = None) -> list[dict[str, Any]]:
+def _read(
+    since: datetime, until: datetime | None = None, *, strict: bool = False,
+) -> list[dict[str, Any]]:
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
             container = storage_cosmos._container(_CONTAINER)  # noqa: SLF001
-            query = "SELECT * FROM c WHERE c.occurred_at >= @since"
-            parameters = [{"name": "@since", "value": since.isoformat()}]
-            if until is not None:
-                query += " AND c.occurred_at < @until"
+            # Read accounting entries, not the much larger diagnostic event arrays.
+            # The emulator materializes whole parent documents for filtered scans;
+            # its 4 MiB result buffer overflows even when the final projection is small.
+            emulator = storage_cosmos.get_settings().cosmos_emulator
+            condition = "" if emulator else " WHERE c.occurred_at >= @since"
+            parameters = [] if emulator else [{"name": "@since", "value": since.isoformat()}]
+            if until is not None and not emulator:
+                condition += " AND c.occurred_at < @until"
                 parameters.append({"name": "@until", "value": until.isoformat()})
-            documents = list(
-                container.query_items(
-                    query=query,
+            documents = list(container.query_items(
+                query="SELECT VALUE e FROM c JOIN e IN c.entries" + condition,
+                parameters=parameters,
+                enable_cross_partition_query=True,
+                max_item_count=1000,
+            ))
+            # Retain compatibility with the original one-call-per-document ledger.
+            legacy_condition = " WHERE NOT IS_DEFINED(c.entries)"
+            if condition:
+                legacy_condition += " AND " + condition.removeprefix(" WHERE ")
+            if emulator:
+                # An unfiltered metadata scan avoids decompressing every diagnostic
+                # document just to discover that there are no legacy rows.
+                metadata = container.query_items(
+                    query="SELECT c.id, c.user_id, c.record_count FROM c",
+                    enable_cross_partition_query=True,
+                    max_item_count=1000,
+                )
+                for item in metadata:
+                    if "record_count" not in item:
+                        document = container.read_item(item["id"], partition_key=item["user_id"])
+                        if not isinstance(document.get("entries"), list):
+                            documents.append(document)
+            else:
+                documents.extend(container.query_items(
+                    query="SELECT * FROM c" + legacy_condition,
                     parameters=parameters,
                     enable_cross_partition_query=True,
-                )
-            )
-            rows = _expand(documents)
+                    max_item_count=10,
+                ))
             return [
-                row
-                for row in rows
-                if until is None or datetime.fromisoformat(str(row["occurred_at"])) < until
+                row for row in _expand(documents)
+                if datetime.fromisoformat(str(row["occurred_at"])) >= since
+                and (until is None or datetime.fromisoformat(str(row["occurred_at"])) < until)
             ]
     except Exception as exc:  # noqa: BLE001
+        if strict:
+            raise
         _LOGGER.warning("provider usage Cosmos read failed: %s", type(exc).__name__)
     environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
     if environment in _HOSTED_ENVIRONMENTS:
@@ -538,6 +647,7 @@ def summary(
     start_date: date | None = None,
     end_date: date | None = None,
     trip_names: dict[str, str] | None = None,
+    strict: bool = False,
 ) -> dict[str, Any]:
     if start_date is not None or end_date is not None:
         last_day = min(end_date or _now().date(), _now().date())
@@ -547,12 +657,12 @@ def summary(
         since = datetime.combine(first_day, time.min, tzinfo=UTC)
         until = datetime.combine(last_day + timedelta(days=1), time.min, tzinfo=UTC)
         period_days = (last_day - first_day).days + 1
-        rows = _read(since, until)
+        rows = _read(since, until, strict=True) if strict else _read(since, until)
     else:
         period_days = max(1, min(90, int(days)))
         since = _now() - timedelta(days=period_days)
         until = None
-        rows = _read(since)
+        rows = _read(since, strict=True) if strict else _read(since)
     totals = _rollup(rows, ())
     total = (
         totals[0]

@@ -272,7 +272,24 @@
         "dailyBudget": 500,
         "budget": 5000
       }
-    ]
+    ],
+    "cosmos": {
+      "$comment": "DERIVED by scripts/derive_limits.py from cosmosSizing in config/cost-model.json plus COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. ruPerSecond is the shared database throughput infra/data.bicep provisions for canary and prod in the free-tier account: burst demand sizes it, but it never exceeds that database's freeTierCapRuPerSecond, and the caps together fit the account's free 1000 RU/s, so provisioned throughput is never billed. burstDemandRuPerSecond is what a peak burst would use; when it exceeds the cap, the excess is served as retried 429s. The local row is informational: no local database is provisioned from this file.",
+      "local": {
+        "ruPerSecond": 700,
+        "burstDemandRuPerSecond": 700
+      },
+      "canary": {
+        "ruPerSecond": 400,
+        "burstDemandRuPerSecond": 700,
+        "freeTierCapRuPerSecond": 400
+      },
+      "prod": {
+        "ruPerSecond": 600,
+        "burstDemandRuPerSecond": 700,
+        "freeTierCapRuPerSecond": 600
+      }
+    }
   },
   "gcpQuotaAlertPolicies": {
     "$comment": "INFRA/ERROR ALERT (not billing), GCP side. Fires a GCP Monitoring alert policy when any entry in gcp.quotas above rejects a call (serviceruntime.googleapis.com/quota/exceeded). Consumed by infra/gcp/apply-billing-guardrails.ps1, which previously hardcoded these same values inline -- moved here so they're visible without reading the script. Notifies the 'Owner email' channel (created from alertEmail above if absent); auto-closes if the condition stops recurring.",
@@ -331,11 +348,11 @@
       }
     ],
     "cosmosThrottlingAlert": {
-      "description": "Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.",
+      "description": "Alerts when Cosmos DB returns at least 42 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
       "severity": 3,
       "evaluationFrequency": "PT5M",
       "windowSize": "PT15M",
-      "threshold": 20
+      "threshold": 42
     }
   }
 }

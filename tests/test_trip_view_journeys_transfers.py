@@ -2034,6 +2034,17 @@ def test_local_route_keeps_short_walks_walkable() -> None:
     assert route["mode"] == "Walk"
 
 
+def test_a_longer_local_hop_never_takes_less_time() -> None:
+    # The validator and the rebalance share this estimate. When a 1.6 km taxi
+    # took 4 minutes against a 20 minute 1.5 km walk, the rebalance traded a
+    # tidy day's stops apart to "save" travel.
+    distances = [step / 10 for step in range(0, 400)]
+    durations = [trip_view._route_stats_for_distance(km)["duration_min"] for km in distances]
+
+    assert all(later >= earlier for earlier, later in zip(durations, durations[1:]))
+    assert trip_view._route_stats_for_distance(1.6)["mode"] == "Taxi"
+
+
 def test_flight_arrival_and_airport_buffers_use_configured_estimates(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -2264,7 +2275,7 @@ def test_road_transfer_estimates_duration_arrival_and_hotel_check_in(
     assert drive["duration_min"] > 0
     assert drive["duration_estimated"] is True
     assert drive["departure_time"]
-    assert hotel["time"] == drive["departure_time"]
+    assert hotel["time"] == drive["arrival_time"]
     assert hotel["time_estimated"] is True
 
 

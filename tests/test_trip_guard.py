@@ -447,6 +447,24 @@ def test_substantial_day_requires_specific_preference_matched_meal() -> None:
     ) == []
 
 
+def test_long_road_day_requires_a_named_meal_break() -> None:
+    itinerary = [{
+        "day": 1,
+        "stops": [{
+            "name": "Drive: Bangalore to Madurai",
+            "kind": "transport",
+            "duration_min": 540,
+            "time": "08:00",
+        }],
+    }]
+
+    warnings = trip_validation._restaurant_itinerary_warnings(itinerary)
+    assert len(warnings) == 1 and "adequately timed named restaurant" in warnings[0]
+
+    itinerary[0]["stops"].append({"name": "Sree Sabarees", "kind": "meal", "time": "12:00", "duration_min": 60})
+    assert trip_validation._restaurant_itinerary_warnings(itinerary) == []
+
+
 @pytest.mark.parametrize(
     ("day", "stop_name"),
     [
@@ -510,7 +528,7 @@ def test_core_completion_rejects_a_hotel_only_day() -> None:
     ]
 
 
-def test_core_completion_rejects_an_implausibly_long_ground_leg() -> None:
+def test_core_completion_accepts_explicit_long_drive_for_route_evaluation() -> None:
     plan = {
         "destination": "Gangtok and North Sikkim",
         "origin": "Kolkata",
@@ -533,8 +551,8 @@ def test_core_completion_rejects_an_implausibly_long_ground_leg() -> None:
     core_gaps = trip_validation.core_planning_completion_gaps(plan)
     persistence_errors = trip_validation.persistence_sanity_errors(plan)
 
-    assert any("Drive: Kolkata to Gangtok" in gap for gap in core_gaps)
-    assert any("ground-leg distance" in error for error in persistence_errors)
+    assert not any("ground-leg distance" in gap for gap in core_gaps)
+    assert not any("ground-leg distance" in error for error in persistence_errors)
 
 
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
@@ -702,7 +720,7 @@ def test_a_few_minutes_late_for_something_that_waits_is_not_a_violation(
         [
             [
                 stop("Rajwada Palace", "10:00", "attraction", 60),
-                stop("Sarafa Bazaar", "11:05", "meal", 60),
+                stop("Sarafa Bazaar", "11:00", "meal", 60),
             ]
         ]
     )
@@ -717,7 +735,7 @@ def test_the_same_few_minutes_late_for_a_booked_stop_is_a_violation(
         [
             [
                 stop("Rajwada Palace", "10:00", "attraction", 60),
-                {**stop("Sarafa Bazaar", "11:05", "meal", 60), "booked": True},
+                {**stop("Sarafa Bazaar", "11:00", "meal", 60), "booked": True},
             ]
         ]
     )
@@ -1240,7 +1258,7 @@ def test_a_day_dated_inside_the_booked_window_is_not_flagged() -> None:
         departure_date="2026-07-18",
         return_date="2026-07-24",
     )
-    in_range["day_wise_itinerary"][0]["date"] = "2026-07-24"
+    in_range["day_wise_itinerary"][0]["date"] = "2026-07-18"
 
     codes = {v.code for v in trip_guard.validate_plan(in_range)}
 

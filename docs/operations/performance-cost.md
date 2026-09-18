@@ -128,9 +128,96 @@ Investigate a repeated production regression in this order:
 5. Change code, cache policy, throughput, or hosting only when that evidence identifies
    the controlling cost or latency source.
 
-Cosmos request-charge (RU) capture is not implemented. Current application timings show
-client-observed duration and write payload bytes, while Azure Cosmos metrics remain the
-authoritative source for normalized RU consumption and throttling.
+Cosmos request-charge (RU) capture is implemented. Every point operation in
+`storage_cosmos.py` passes a `response_hook` that records the service's
+`x-ms-request-charge` onto that operation's `storage_operation` event as `ru`,
+alongside the client-observed duration and write payload bytes it already carried.
+Azure Cosmos metrics remain the authoritative source for account-level normalized RU
+consumption and throttling; the per-operation `ru` field is what makes an individual
+container or document shape attributable.
+
+That field is also how the provisioned throughput stays honest. `ruPerSecond` in
+`infra/billing-guardrails.json` is derived from the `cosmosSizing.tripOpProfile`
+estimate in [`config/cost-model.json`](../../config/cost-model.json), not measured.
+Compare observed `ru` per container against that profile when reviewing spend, and
+correct the profile rather than the derived output — editing the guardrails file by
+hand is what the derivation exists to prevent.
+
+**Free-tier ceiling (owner policy, 2026-09-13).** The data account has
+`enableFreeTier`, so the first 1000 RU/s provisioned across the whole account
+are free; anything above that is billed every hour, whether or not it is used.
+`infra/data.bicep` provisions two databases there. Their hard caps live in
+`cosmosSizing.freeTierAllocationRuPerSecond`: canary 400 (Azure's floor) and prod
+600, which sum to exactly 1000. Burst sizing (`burstDemandRuPerSecond` in the
+guardrails file, 700 today) may ask for more, but `ruPerSecond` never exceeds the
+cap, and `derive_limits.py` refuses caps that sum past the free tier. A burst
+above the cap does not fail: Cosmos answers 429 with a retry-after of
+milliseconds, the SDK retries, and the call is slower. The throttling alert
+reports when that stops being occasional. Only a deliberate decision to pay
+raises a cap. On 2026-09-13 both databases were deployed at 400 RU/s (800 total).
+
+`storage_operation` is a quiet success event, so a local `logs/diagnostics`
+file holds `ru` only for failed or slow operations; read successful charges from
+Log Analytics. As of 2026-09-13 no environment had produced any: capture merged
+that day, and its first version failed every call (see
+`docs/ENGINEERING_LEARNINGS.md`). The 2026-09-13 profile revision therefore
+measures document sizes by driving the code's own mutators rather than from
+observed charges; replace it with observed `ru` once traffic exists.
+
+### Partitioning
+
+**Decision (2026-09-13): no partitioning changes at this scale.** Every container
+is partitioned on `/user_id`, and global data uses one synthetic value
+(`places_cache/_shared`, `tool_cache/_global_`, `shared_trips/_shared`). That stays.
+
+Partition key values cost nothing: billing is provisioned RU/s plus storage, and
+a point read or write costs the same RU whatever its partition. A single hot
+value only becomes a limit once Cosmos splits a container across several
+physical partitions, which happens past roughly 10,000 RU/s or 50 GB, and a
+logical partition holds at most 20 GB. This account runs at 1000 RU/s with a few
+GB, so every container is one physical partition. Even 5x today's traffic stays
+far below either threshold. Bucketing `places_cache` by id was built and then
+reverted: it changed neither cost nor throughput here, and it needed a legacy
+fallback read, a migration script run against every database, and a sync guard.
+Revisit only if a container approaches 10,000 RU/s or a synthetic partition
+approaches 20 GB.
+
+Contention on the cost ledger's window document is not a partitioning problem,
+and that fix stays. The document remains one per environment, because sharding a
+ceiling counter would let a check on one shard miss a concurrent hold on another.
+`cost_ledger._mutate_windows` group-commits instead: every reserve, settle and
+release queued in the process is applied in order to one read and written once,
+with an ETag re-read and jittered retry across processes. Settled-interaction ids
+are stored as 16-hex digests, taking the document from 11.6 KB to 8.1 KB (ids
+already stored in full still count), and settle no longer reads the document back.
+
+### Write cost during trip-build bursts
+
+The largest single Cosmos write in a trip build is the turn's `provider_usage`
+document. A full build turn on 2026-09-12 wrote 151 KB: 55 call entries and 212
+telemetry events. Two changes (2026-09-13) keep it from causing 429s for the
+turn:
+
+- **Indexing.** No container had an indexing policy, so Cosmos indexed every
+  property of every document, and write RU grow with the number of indexed
+  values. `provider_usage` now indexes only `occurred_at` (the one field
+  `provider_usage._read` filters on), `environment` and `interaction_id`, and
+  excludes everything else. The policy is in `infra/modules/cosmos-data.bicep`
+  and `storage_cosmos._CONTAINER_INDEXING`, and a test keeps both in step with the
+  query. Cosmos applies a changed policy in place and online, with no data
+  migration. `storage_cosmos._apply_container_settings` also brings an
+  app-created container up to date, setting TTL and indexing in one replace,
+  because a replace that omits the indexing policy resets it to index everything.
+- **Off the request path.** `provider_usage.persist_batch` hands Cosmos-bound
+  documents to a single background writer, so a throttled write's SDK retries
+  no longer delay the response. A full queue (1000 documents) writes inline
+  rather than dropping. `provider_usage.flush` runs at application shutdown and
+  at interpreter exit. Local-file writes stay inline.
+
+Neither change has a measured before/after RU figure yet. Compare the `ru` on
+`provider_usage` writes in Log Analytics after deploy. If other containers show
+large writes, the same indexing approach applies to any container that is only
+point-read (`trips`, `places_cache`, `tool_cache`).
 
 ## Cost review
 

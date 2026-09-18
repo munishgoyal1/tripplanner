@@ -190,6 +190,13 @@ def _sync_replaced_hotel_anchors(
                     for location in lodging_locations
                     if re.search(rf"\b{re.escape(location)}\b", anchor_text)
                 }
+                named_city = re.search(
+                    r"\bhotel\s+(?:tbd|tbc)\s*[-,:]\s*(.+)$", stop_name, re.I
+                )
+                if named_city:
+                    anchor_locations.add(named_city.group(1).strip().lower())
+                if anchor_locations - {destination}:
+                    anchor_locations.discard(destination)
                 location_matches = [
                     hotel
                     for hotel in selected_values
@@ -205,8 +212,13 @@ def _sync_replaced_hotel_anchors(
                     replacement_locations = explicit_locations(placeholder_replacement)
                     if (
                         not anchor_locations
-                        or not replacement_locations
                         or anchor_locations & replacement_locations
+                        or (not replacement_locations and any(
+                            re.search(rf"\b{re.escape(anchor)}\b", str(
+                                placeholder_replacement.get("name", "")
+                            ) + " " + str(placeholder_replacement.get("address", "")), re.I)
+                            for anchor in anchor_locations
+                        ))
                     ):
                         replacement = placeholder_replacement
             if replacement is None:
@@ -253,7 +265,8 @@ def add_hotel_stay(
         return {
             "ok": True,
             "alerts": [
-                f"Added {hotel_name}. Once your day-by-day itinerary is structured, you can assign stay dates."
+                f"Added {hotel_name}. Once your day-by-day itinerary is structured, "
+                "you can assign stay dates."
             ],
             "trip": plan,
             "placement": None,
@@ -357,7 +370,10 @@ def add_hotel_stay(
             key = nm.lower()
             if key in seen:
                 continue
-            if key in replaced_old_names and key not in still_used_hotels and key != hotel_name.lower():
+            if (
+                key in replaced_old_names and key not in still_used_hotels
+                and key != hotel_name.lower()
+            ):
                 continue
             cleaned.append(item)
             seen.add(key)
@@ -771,6 +787,21 @@ def record_trip_decision(decision) -> bool:
     plan = _load_active_trip()
     if not plan:
         return False
+    from tripplanner.decisions.booking_intent import constrain_recommendation
+    decision = constrain_recommendation(plan, decision)
+    from tripplanner.decisions.store import find_decision
+    previous = find_decision(plan, decision.id)
+    if previous and previous.chosen:
+        selected = any(item.get("decision_id") == decision.id for bucket in (
+            "selected_flights", "selected_hotels",
+        ) for item in plan.get(bucket) or [] if isinstance(item, dict))
+        locked = bool(((plan.get("booking_intent") or {}).get("records") or {}).get(decision.id, {}).get("lock"))
+        if selected or locked or previous.override:
+            if not decision.option(previous.active_option_id):
+                decision.options.append(previous.chosen)
+            decision.chosen_option_id = previous.chosen_option_id
+            decision.override = previous.override
+            decision.state = previous.state
     upsert_decision(plan, decision)
     _save_active_trip(plan)
     return True
@@ -818,6 +849,9 @@ def apply_decision_override(
         else restore(plan, decision_id)
     )
     if result.ok:
+        from tripplanner.decisions.booking_intent import budget_summary
+        if any(v["status"] == "over_cap" for v in budget_summary(plan).values()):
+            return {"ok": False, "stale": False, "message": "This choice exceeds a category cap. Revise that cap explicitly first."}
         _save_active_trip(plan)
     return {"stale": False, **result.as_dict()}
 
@@ -869,6 +903,9 @@ def apply_decision_overrides(
                 "results": results,
             }
 
+    from tripplanner.decisions.booking_intent import budget_summary
+    if any(v["status"] == "over_cap" for v in budget_summary(candidate).values()):
+        return {"ok": False, "stale": False, "message": "These choices exceed a category cap. No changes were saved.", "results": results}
     _save_active_trip(candidate)
     total_delta = round(sum(float(result.get("delta") or 0) for result in results), 2)
     return {
@@ -1375,7 +1412,10 @@ def _ensure_selected_flight_legs(plan: dict[str, Any], previous_origin: str = ""
     origin = str(plan.get("origin") or "").strip()
     destination = str(plan.get("destination") or "").strip()
     itinerary = plan.get("day_wise_itinerary")
-    if not origin or not destination or origin.casefold() == destination.casefold() or not itinerary:
+    if (
+        not origin or not destination or origin.casefold() == destination.casefold()
+        or not itinerary
+    ):
         return []
     days = [day for day in itinerary if isinstance(day, dict)]
     if not days:
@@ -1429,6 +1469,8 @@ def update_trip_plan(updates_json: str) -> str:
     """Update the active trip plan with selected flights, hotels, activities, or itinerary.
 
     Pass a JSON string with any of these keys to update:
+    - category_caps: explicit user category limits, e.g. {"flights": {"amount": 100000, "currency": "INR"}, "hotels": {"amount": 80000, "currency": "INR"}}.
+      Whole-party/all-night limits; persist before researching and selecting.
     - selected_flights: list of flight selections
     - selected_hotels: list of hotel selections
     - selected_activities: list of activity selections
@@ -1471,13 +1513,41 @@ def update_trip_plan(updates_json: str) -> str:
     except json.JSONDecodeError:
         return "Error: invalid JSON."
 
+    flight_edit = updates.get("_edit_scope") == "flights"
+    if updates.pop("_require_full_itinerary", False):
+        from tripplanner.tools.trip_validation import _day_count_gap
+
+        if not has_structured_itinerary(updates) or _day_count_gap({**plan, **updates}):
+            return (
+                "Error: this full-trip repair requires day_wise_itinerary containing ALL "
+                "days together in updates_json, with corrected stops and actual city fields. "
+                "Notes, research metadata, selections alone, or a subset of days do not "
+                "save the requested repair. Resubmit the complete itinerary."
+            )
+    if flight_edit and set(updates) - {
+        "_edit_scope", "selected_flights", "origin", "travel_scope",
+        "cost_breakdown", "total_cost", "notes", "day_wise_itinerary",
+    }:
+        return "Error: a flight-only request may not change unrelated trip selections."
+
     if "day_wise_itinerary" in updates and not has_structured_itinerary(updates):
         return (
             "Error: day_wise_itinerary must contain the full structured itinerary "
             "with a stops list for every day. The saved itinerary was not changed."
         )
 
+    from tripplanner.tools.itinerary_edit import _unresolved_route_choice
+
     validation_plan = dict(plan)
+    for day in updates.get("day_wise_itinerary") or []:
+        for stop in day.get("stops") or []:
+            if _unresolved_route_choice(stop):
+                return (
+                    "Error: the saved itinerary must contain one chosen route, not alternatives. "
+                    "Decide which optional destinations fit the requested pace and dates, "
+                    "remove the rejected alternative, and resubmit all days with definite "
+                    "overnight cities and outbound/return endpoints."
+                )
     if isinstance(updates.get("day_wise_itinerary"), list):
         validation_plan["day_wise_itinerary"] = [
             *(plan.get("day_wise_itinerary") or []),
@@ -1499,12 +1569,25 @@ def update_trip_plan(updates_json: str) -> str:
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
-        "visa", "travel_scope",
+        "visa", "travel_scope", "lodging_research", "category_caps",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "category_caps":
+                from tripplanner.decisions.booking_intent import caps_for
+                try:
+                    val = caps_for({"category_caps": val})
+                except (ValueError, TypeError, AttributeError):
+                    return "Error: category_caps must map flights/hotels/tickets/transport to amount and ISO currency."
+            if key == "total_cost" and isinstance(val, (int, float)) and not isinstance(val, bool):
+                plan.pop("cost_total_needs_review", None)
+            if key == "lodging_research":
+                if not isinstance(val, dict):
+                    continue
+                val = {**(plan.get("lodging_research") or {}),
+                       **{city: row for city, row in val.items() if isinstance(row, dict)}}
             if key == "budget":
                 if isinstance(val, int | float) and not isinstance(val, bool):
                     val = {
@@ -1547,9 +1630,20 @@ def update_trip_plan(updates_json: str) -> str:
             plan[key] = val
 
     resettled_days: list[int] = []
+    if flight_edit:
+        old_days = before.get("day_wise_itinerary") or []
+        new_days = plan.get("day_wise_itinerary") or []
+        if len(old_days) != len(new_days) or old_days[1:-1] != new_days[1:-1]:
+            return (
+                "Error: a flight-only request must preserve all intermediate itinerary days. "
+                "Update only flight selections and the arrival/departure days."
+            )
     if "day_wise_itinerary" in updates:
         resettled_days = _fit_plan_to_departure(plan)
         time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
+        if flight_edit:
+            old_errors = set(_itinerary_time_errors(before.get("day_wise_itinerary")))
+            time_errors = [error for error in time_errors if error not in old_errors]
         if time_errors:
             return (
                 "Error: itinerary times must increase in circuit order. "
@@ -1591,10 +1685,49 @@ def update_trip_plan(updates_json: str) -> str:
         }
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
-    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
-    closed_day_repairs = _repair_known_closed_days(plan)
-    opening_hours_repairs = _repair_known_opening_hours(plan)
-    feasibility_repairs = _repair_temporal_infeasibility(plan)
+    repair_plan = plan
+    if "day_wise_itinerary" in updates:
+        from tripplanner.web.map_pins import _day_place_context
+        from tripplanner.web.place_confidence import LABEL, stop_place_tier
+        from tripplanner.web.transport import _resolved_transfer_mode, _transport_route_endpoints
+
+        road_cities = set()
+        for day in plan.get("day_wise_itinerary") or []:
+            context = _day_place_context(day, str(plan.get("destination") or ""))
+            names = []
+            for stop in day.get("stops") or []:
+                if _resolved_transfer_mode(_stop_name(stop), _stop_kind(stop)) == "Drive":
+                    road_cities.update(_transport_route_endpoints(_stop_name(stop)) or ())
+                elif _stop_kind(stop) in {"hotel", "attraction", "meal", "restaurant"}:
+                    name = _stop_name(stop)
+                    if (
+                        not re.search(r"\b(?:tbd|tbc)\b", name, re.I)
+                        and stop_place_tier(name, _stop_kind(stop)) != LABEL
+                    ):
+                        names.append(name)
+            if names:
+                places_cache.prefetch(names, context, max_photos=0, with_reviews=False)
+        if road_cities:
+            places_cache.prefetch(sorted(road_cities), "", max_photos=0, with_reviews=False)
+    if flight_edit:
+        days = plan.get("day_wise_itinerary") or []
+        repair_plan = {
+            **plan, "day_wise_itinerary": days[:1] + (days[-1:] if len(days) > 1 else []),
+        }
+    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(repair_plan)]))
+    closed_day_repairs = [] if flight_edit else _repair_known_closed_days(plan)
+    opening_hours_repairs = [] if flight_edit else _repair_known_opening_hours(plan)
+    feasibility_repairs = [] if flight_edit else _repair_temporal_infeasibility(plan)
+    if "day_wise_itinerary" in updates and any(
+        _unresolved_route_choice(stop)
+        for day in plan.get("day_wise_itinerary") or []
+        for stop in day.get("stops") or []
+    ):
+        return (
+            "Error: unresolved route alternatives remain after itinerary repair. "
+            "Resubmit the full itinerary with one chosen route and definite endpoints. "
+            "The saved itinerary was not changed."
+        )
     violations = validate_plan(plan)
     calendar_errors = [
         violation.message for violation in violations if violation.code == "I14"
@@ -1638,6 +1771,11 @@ def update_trip_plan(updates_json: str) -> str:
     # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
     # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)
+    from tripplanner.decisions.booking_intent import budget_summary
+    if {"selected_flights", "selected_hotels"}.intersection(updates):
+        breached = [key for key, value in budget_summary(plan).items() if value["status"] == "over_cap"]
+        if breached:
+            return "Error: selections exceed the " + ", ".join(breached) + " cap. Research alternatives or ask the user to revise that cap; nothing was saved."
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(
@@ -1816,8 +1954,8 @@ def finalize_trip() -> str:
             f"\n  TOTAL ESTIMATED COST: {money(plan.get('total_cost', 0) or 0, plan_currency)}"
         )
     lines.append(f"\n{'='*60}")
-    lines.append("  Status: FINALIZED — ready for booking")
-    lines.append("  Say 'execute' to proceed with bookings.")
+    lines.append("  Status: FINALIZED — review your booking intentions")
+    lines.append("  Open Bookings to compare, lock and export choices. Complete purchases externally.")
     lines.append(f"{'='*60}")
 
     # Self-correction critic — deterministic rules over the finalized plan.
@@ -1896,7 +2034,9 @@ def execute_bookings() -> str:
     _delete_active_trip()
 
     results.append("\n✅ All bookings executed! Trip saved to your history.")
-    results.append("After your trip, update the rating with record_past_trip to improve future suggestions.")
+    results.append(
+        "After your trip, update the rating with record_past_trip to improve future suggestions."
+    )
     return "\n".join(results)
 
 

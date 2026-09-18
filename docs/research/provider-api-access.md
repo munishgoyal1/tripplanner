@@ -1,11 +1,29 @@
 # Provider API Access — Booking Readiness
 
-Reviewed 2026-09-12 against first-party documentation and partner pages.
+Reviewed 2026-09-12; owner selection and flight/Tiqets access refreshed 2026-09-13.
 This replaces the 2026-08-10 access review. It is an evaluation catalog, not
 an assertion that accounts, production entitlements or integrations are ready.
 Implementation contract: [brief 009](../feature-briefs-backlog/009-booking-readiness.md).
 
 ## Recommended direction
+
+**Current owner decision (2026-09-13):** start search with LiteAPI alone for
+flights and hotels, retain research indefinitely, and defer commercial/policy
+negotiation as an implementation gate for this initial experiment. This is the
+owner's risk decision, not a claim of vendor permission or unlimited free usage.
+Existing account credentials/technical entitlements still determine what works;
+do not bypass denied access. No Whitelabel booking facility is needed for our
+research, intent export and optional external-link model. The broader candidates
+below remain future evaluation, not initial fan-out requirements.
+
+Tiqets Essential is suitable for attraction/experience discovery, pricing and
+availability with affiliate handoff. Its self-service access covers Content,
+Availability, Pricing and Reporting; the separate Full Booking API is unnecessary
+for this product. It does not replace general flight, rail or bus inventory.
+Sources: [Tiqets affiliate API access](https://partners.tiqets.com/en_us/api-token-for-affiliates-S1KmXnaWx)
+and [LiteAPI flight access](https://docs.liteapi.travel/docs/getting-access-to-flights).
+Flight sandbox data is limited and non-production; production requires explicit
+enablement. Actual account access and live quote quality have not been tested.
 
 Keep Google Places/Routes for itinerary context. Evaluate existing Nuitee/LiteAPI
 for exact hotel and flight choices, and Viator plus Tiqets for activities.
@@ -25,7 +43,9 @@ price checks. Preserve source, seller and upstream identity where available.
 - Public vendor documentation was researched. No authenticated inventory probes,
   checkout tests, applications, contracts, purchases or paid calls were made.
 - Account entitlement, permitted search-only use, geographic coverage, actual
-  quote completeness and link fidelity need separate evaluation before enablement.
+  quote completeness and link fidelity remain separate evidence gaps. The dated
+  owner decision above allows the initial LiteAPI experiment without waiting for
+  commercial review; live/readiness claims still require actual evidence.
 - Sandbox results prove integration handling, not real budget feasibility.
 - Public tariffs support estimates; exact dated party-specific offers support
   quotes. Catalog from-prices and fare indexes cannot become payable totals.

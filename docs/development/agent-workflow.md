@@ -63,6 +63,11 @@ Follow-ups to unfinished work stay on their existing branch.
 
 ## 2. Every feature or enhancement starts from a brief
 
+Every feature or material enhancement also needs a GitHub issue, including
+same-chat work. Cross-link issue and brief; use the issue for ownership/progress
+and the brief for implementation context. Follow [issue-workflow.md](issue-workflow.md).
+Close only the completed milestone issue, not an unfinished parent feature.
+
 Before writing code for a new capability or a material change to one, there must
 be a brief in [`../feature-briefs-backlog/`](../feature-briefs-backlog/) — either
 a new one from

@@ -33,7 +33,7 @@ export function rankedOptions(labId: string): { name: string; label: string; sco
     .sort((a, b) => b.score - a.score)
     .map((row, index) => ({
       name: optionName(row.option),
-      label: `${String.fromCharCode(65 + index)} · ${optionName(row.option)}`,
+      label: contrast.lockLetters ? row.option : `${String.fromCharCode(65 + index)} · ${optionName(row.option)}`,
       score: row.score,
     }));
 }
@@ -48,9 +48,28 @@ interface ContrastDefinition {
   same: string;
   /** Option label that was selected, for Labs that are already decided. */
   chosen?: string;
+  /** Keep the authored letters once the owner has referred to options by
+   * letter, so options added in a later round do not rename earlier ones.
+   * Rows still render best first. */
+  lockLetters?: boolean;
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "itinerary-pane-polish": {
+    axis: "Every option shows the same Rajasthan itinerary with every production fact and control. They disagree about the visual structure that makes it easy to read — rail, ledger, tiles, list or cards — and whether the workspace around the pane should shift a little to match it. F and G are a second round that refines A after the owner chose it.",
+    lockLetters: true,
+    rows: [
+      { option: "F · Crisp flow rows", score: 95, idea: "A's crisp list and workspace finish with slim responsive rows, a sticky day-tinted band at every day change, one-line travel legs and a density switch.", buys: "The owner's three asks in their purest form: slimmer rows, an unmistakable day boundary with a larger title, and rows that get shorter as the pane gets wider, with stronger text contrast throughout.", costs: "Still a continuous list, so a very long trip remains one long scroll; the density switch is one more control to explain.", choose: "The pane should read like one smooth, scannable list that adapts to whatever width the owner gives it." },
+      { option: "G · Crisp day sections", score: 93, idea: "A's finish with each day as a framed section, labelled stat tiles, a Jump to day strip, travel folded into the arriving stop, and a real table on a wide pane.", buys: "The strongest day separation and the fastest navigation across a long trip, and a tidy aligned table when the pane is widened.", costs: "Framed sections and stat tiles spend more height on day headers, and the ↳ travel line makes a narrow row a line taller.", choose: "Trips are long and the owner moves between days more than they read straight through." },
+      { option: "A · Crisp workspace harmony", score: 92, idea: "Flat hairline list rows with line icons and bordered fact tags, a tabbed trip snapshot, and a workspace retuned to the same crisp finish.", buys: "The most professional result, and the only one where the itinerary, map, details and day bar read as one tool.", costs: "Touches shared chrome and tokens outside the pane, and weather and budget move one tap away behind tabs.", choose: "The itinerary should feel like part of a precise workspace, not a styled document dropped into it." },
+      { option: "B · Quiet timeline", score: 90, idea: "A time gutter and a continuous day rail; each travel leg is the rail segment between two stops.", buys: "The biggest cut in visual noise and length inside the pane alone, and the clearest reading of how the day flows from stop to stop.", costs: "The rail and gutter take about 70 px of a narrow pane, and trip weather and budget fold behind one summary row.", choose: "The best itinerary with zero risk to the rest of the workspace." },
+      { option: "C · Warm editorial harmony", score: 85, idea: "Day covers tinted in the day's colour, serif titles, borderless tiles and pill signals, echoed softly in the pane headers and day bar.", buys: "The most inviting, travel-magazine feel, with every trip fact still visible at rest.", costs: "Tiles and pills add height, so it scrolls further than the rail or the list, and it changes shared chrome.", choose: "Delight and a premium travel feel matter more than density." },
+      { option: "D · Precise agenda", score: 82, idea: "Three-column ledger rows — time block, content, status — with metric tables in day headers and signed buffer badges on travel rows.", buys: "The fastest to scan for times, gaps and booking status, and very compact.", costs: "Reads like an operations table; it is less friendly for browsing and inspiration.", choose: "The pane is used mainly to check schedules and bookings rather than to explore." },
+      { option: "E · Clean stop cards", score: 78, idea: "Today's cards with labelled fact grids, a must-visit meter, travel connector pills and collapsible days.", buys: "The smallest conceptual change from today and the most explicit labelling of each fact.", costs: "Cards stay tall; length is managed by folding days rather than by making each stop calmer.", choose: "Familiarity matters most and day-at-a-time reading is the normal pattern." },
+    ],
+    same: "The same four-day Jaipur and Udaipur fixture typed against the production contracts, and every production fact: trip identity, cost and evidence, readiness, counts, weather and packing, family and constraints, budget, plan checks and Rearrange, day date, title, weather, summary, schedule, travel, stop counts, travel rhythm and Open route, and for every stop its time, timing label, kind, duration, leave time, map marker, booking toggle, rating and reviews, must-visit score, cost, hours, concern, notes, insight, Show on map, Remove, and the travel-from-previous leg with arrival, buffer or conflict. Focus, day and all-days map selection, filters, Add or Reduce a day, and the pane's hide and maximize controls behave identically.",
+    verdict: "The owner preferred A and asked for slimmer rows, a clearer day boundary with a larger title, rows that shorten as the pane widens, and more readable text; F and G are that brief taken two ways, so both now rank above A. F ranks first because it answers every ask without adding structure: rows reflow onto one line on a wider pane, the day band is unmistakable, and nothing new competes with the stops. G is a very close second and is the better choice for long trips, trading some header height for framed days, a jump strip and a proper table. Among the first round, Crisp workspace harmony ranks first because it is the only option that fixes both complaints at once: the pane gets calmer and shorter, and the itinerary stops looking like a different product from the map and details beside it. Quiet timeline is a very close second and is the best choice if the workspace must not change at all; its rail makes travel legs part of the day instead of extra lines. Warm editorial harmony is the most inviting but spends height on tiles and pills, which works against the length complaint. Precise agenda is excellent for checking times and bookings but reads like an operations table. Clean stop cards is last because it keeps the tall card as the unit of reading and relies on folding days to control length.",
+  },
   "planner-layout-directions": {
     axis: "Every option exposes the same Kyoto trip and the same planner capabilities. They disagree about the workspace's spatial model and how far sbx4 should move: two rebuild the planner around a new mental model, one evolves its current three-pane composition, and one changes only finish and micro-interactions.",
     rows: [

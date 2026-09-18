@@ -528,6 +528,9 @@ def test_chat_preserves_trip_departure_notice(monkeypatch, transport, user_text,
         yield {'event': 'on_chat_model_stream', 'data': {
             'chunk': AIMessageChunk(content='Model reply'),
         }}
+        yield {'event': 'on_chain_end', 'name': 'trip_agent', 'data': {
+            'output': {'messages': [AIMessage(content='Model reply')]},
+        }}
 
     monkeypatch.setattr(app_graph, 'astream_events', stream)
     monkeypatch.setattr(app_graph, 'invoke', lambda *_args, **_kwargs: {

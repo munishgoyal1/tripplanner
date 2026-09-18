@@ -95,6 +95,11 @@ async def _lifespan(_app: FastAPI):
     from tripplanner.flight_recorder import flush_pending
 
     await asyncio.to_thread(flush_pending)
+    # Usage documents are written to Cosmos off the request path; write the
+    # last turn's before the replica stops.
+    from tripplanner import provider_usage
+
+    await asyncio.to_thread(provider_usage.flush)
 
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0", lifespan=_lifespan)
@@ -193,18 +198,9 @@ def _best_effort_plan_reply() -> tuple[str, int]:
     except Exception:
         trip = {}
         gaps = []
-    destination = str(trip.get("destination") or "your trip").strip()
-    itinerary = trip.get("day_wise_itinerary")
-    if not isinstance(itinerary, list) or not itinerary:
-        return (
-            "Planning reached its safety limit before a usable itinerary was saved. "
-            "Please retry with a shorter trip scope.",
-            len(gaps),
-        )
-    reply = f"I saved the best available {destination} itinerary."
-    if gaps:
-        reply += " It is usable, but these details still need refinement: " + " ".join(gaps)
-    return reply, len(gaps)
+    from tripplanner.graph_policy import saved_itinerary_reply
+
+    return saved_itinerary_reply(trip, gaps), len(gaps)
 
 
 @app.middleware("http")
@@ -467,7 +463,7 @@ def _record_chat_operation(
     user_id: str,
     transport: Literal["json", "sse"],
     outcome: Literal[
-        "completed", "replayed", "cost_limited", "rate_limited", "error"
+        "completed", "replayed", "cost_limited", "rate_limited", "error", "interrupted"
     ],
     error: str | None = None,
     exception: BaseException | None = None,
@@ -945,19 +941,15 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 name = ev.get("name", "")
                 run_id = ev.get("run_id", "")
                 data = ev.get("data", {}) or {}
-                if kind == "on_chat_model_stream":
-                    chunk = data.get("chunk")
-                    text = getattr(chunk, "content", "") if chunk is not None else ""
-                    if text:
-                        reply_parts.append(text)
-                        yield _sse("token", {"text": text})
-                elif kind == "on_chain_end" and name == "trip_agent":
+                if kind == "on_chain_end" and name == "trip_agent":
+                    # Commit text only after the model call succeeds. A recovered
+                    # stream must not leak its discarded partial response.
                     output = data.get("output") or {}
                     for message in output.get("messages", []):
-                        if getattr(message, "additional_kwargs", {}).get(
-                            "trip_change_confirmation"
-                        ):
-                            text = str(message.content)
+                        if getattr(message, "tool_calls", None):
+                            continue
+                        text = getattr(message, "content", "")
+                        if text:
                             reply_parts.append(text)
                             yield _sse("token", {"text": text})
                 elif kind == "on_tool_start":
@@ -1117,8 +1109,18 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             route="POST /chat/stream",
             interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
         ):
-            async for event in gen():
-                yield event
+            terminal_emitted = False
+            try:
+                async for event in gen():
+                    terminal_emitted = terminal_emitted or event.startswith(
+                        ("event: done\n", "event: error\n")
+                    )
+                    yield event
+            except (asyncio.CancelledError, GeneratorExit) as exc:
+                if not terminal_emitted:
+                    _record_chat_operation(started, user_id=user_id, transport="sse",
+                                           outcome="interrupted", exception=exc)
+                raise
 
     return StreamingResponse(
         attributed_gen(),

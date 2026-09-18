@@ -12,15 +12,32 @@
     "first_seen is months old is the point of this file, not a bug in it.",
     "category: real | flaky-under-load | unreviewed"
   ],
-  "generated": "",
-  "ref": "master",
-  "commit": "",
+  "generated": "2026-09-15",
+  "ref": "claude/suite-health-deploy-fixes",
+  "commit": "620ff391",
   "pytest": {
     "command": "python -m pytest tests -q -n 2",
-    "failures": []
+    "failures": [],
+    "totals": {
+      "tests": 2460,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 3,
+      "duration_seconds": 289.02,
+      "failed": 0,
+      "passed": 2457
+    }
   },
   "vitest": {
     "command": "npx vitest run",
-    "failures": []
+    "failures": [],
+    "totals": {
+      "tests": 466,
+      "passed": 466,
+      "failed": 0,
+      "skipped": 0,
+      "files_ran": 61,
+      "files_expected": 61
+    }
   }
 }

@@ -10,9 +10,8 @@ import uuid
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from dataclasses import fields as dataclass_fields
-from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -246,6 +245,12 @@ class UsageBatch:
                 "error" if any(_is_failure(event) for event in events) else "complete",
             ),
             "error_count": sum(1 for event in events if _is_failure(event)),
+            "model_recovered": sum(1 for event in events
+                                   if event.get("kind") == "model_recovery"
+                                   and event.get("outcome") == "recovered"),
+            "model_recovery_exhausted": sum(1 for event in events
+                                            if event.get("kind") == "model_recovery"
+                                            and event.get("outcome") == "exhausted"),
             "llm_calls": sum(1 for event in events if event.get("kind") == "llm_call"),
             "tool_calls": sum(1 for event in events if event.get("kind") == "tool_call"),
             "provider_calls": sum(
@@ -445,9 +450,11 @@ def usage_scope(
 
             # Reconcile this interaction's INR reservation against what it
             # actually cost, and fold the same records into the trip's cost
-            # document. Runs after persist_batch so the ledger and the raw
-            # provider_usage rows can never disagree about what was recorded.
-            # The reservation is keyed by interaction_id, so nothing has to be
+            # document, from the same records persist_batch just handed to
+            # provider_usage, so the two describe the same calls. The
+            # provider_usage document itself may land a moment later: its Cosmos
+            # write runs on a background thread so a throttled write never
+            # holds this request. The reservation is keyed by interaction_id, so nothing has to be
             # threaded from the admission point down to here.
             from tripplanner import cost_ledger
 

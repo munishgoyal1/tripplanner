@@ -26,6 +26,15 @@ by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
 or changing the production Action Group still requires the normal
 `APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
 
+The query excludes Cosmos 429s. They are logged at `ERROR` like any other failed
+storage operation, so they used to match this catch-all rule and open a severity-1
+alert every five minutes — but a 429 is retried by the Cosmos SDK and never reaches
+the caller, so it is only meaningful in aggregate. Throttling is assessed by its own
+rule below, at severity 3 over a 15-minute window, which is how the in-app mirror in
+`alert_events.py` had always routed it. If Cosmos throttling is firing, the question
+is whether provisioned RU/s still matches the ceilings that admit the traffic; see
+`azure.cosmos` in [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json).
+
 This alert, the four operational alerts below (latency burn, model throttling,
 circuit breaker, cache degradation), and the Cosmos 429 alert are all **infra
 health / error signals, not billing/cost alerts** — their severity, evaluation
@@ -36,6 +45,14 @@ same file, under `gcp`/`azure`/`gcpQuotaAlertPolicies`). `infra/main.bicep`
 reads that JSON via `loadJsonContent()`; only the KQL query bodies stay as
 separate files under `infra/queries/`, since Bicep needs a literal path to
 load file content.
+
+Two of those values are **derived, not chosen**: the Cosmos 429 threshold and the
+`ruPerSecond` each Cosmos database is provisioned with. `scripts/derive_limits.py`
+computes both from `COST_CEILING_INR_HOURLY` and `CHAT_MAX_CONCURRENT_GLOBAL` in
+[`config/environments/*.env`](../../config/environments/) plus `cosmosSizing` in
+[`config/cost-model.json`](../../config/cost-model.json), and `derive_limits.py --check`
+fails if the checked-in values drift from it. Retune the ceiling or the sizing model
+and re-run the script; never hand-edit the derived rows.
 
 After the approved first deployment, send an Action Group test notification and
 confirm delivery. Then validate the query with a controlled PII-safe error event;
@@ -72,7 +89,7 @@ user's existing Azure CLI session and sends no email.
 Every terminal `POST /chat` and `POST /chat/stream` path emits one
 `chat_operation` event with:
 
-- `outcome`: `completed`, `replayed`, `capped`, or `error`.
+- `outcome`: `completed`, `replayed`, `cost_limited`, `rate_limited`, `interrupted`, or `error`.
 - `duration_ms`: elapsed time from request admission through terminal result.
 - `transport`: `json` or `sse`.
 - `error`: exception class for failures, never the exception message.
@@ -83,10 +100,11 @@ metadata: deployment, HTTP status, inferred token/request scope, retry delay,
 and remaining token/request headers when Azure returns them. Response bodies,
 prompts, credentials, and user text are never included.
 
-`completed` and `replayed` are successful service outcomes. `capped` is an
-intentional product-policy outcome and is excluded from the reliability
-numerator and denominator. `error` includes admission, persistence, usage-check,
-model, tool-graph, and final transcript-save failures.
+`completed` is a successful newly executed request. Replay and policy rejection
+(`cost_limited`, legacy `capped`, and `rate_limited`) are excluded from the request
+completion denominator. `error` includes admission/setup, persistence, usage-check,
+model, tool-graph, and final transcript-save failures. `interrupted` means the SSE
+response closed before a terminal event; it is unsuccessful even when user initiated.
 
 ## Initial objectives
 
@@ -105,6 +123,25 @@ hosted smoke suite before and after promotion. A true uptime SLO needs an
 external scheduled probe; Container App logs alone cannot detect requests that
 never reach the app.
 
+## Request completion and model recovery measurements
+
+The process-local operations snapshot adds `chat_turns.attempted` and
+`chat_turns.completion_rate` (0-1). The denominator includes `completed`, `error`
+and `interrupted` requests; replay and policy rejection are excluded. Empty
+samples return null. This measures finishing the request and saving its response,
+not itinerary quality or booking readiness. The window is the last 500 recorded
+chat outcomes in this process and resets on restart.
+
+`model_recovery` reports `calls`, `recovered`, `exhausted` and `recovery_rate`.
+Its independent sample is the last 500 model calls needing the additional retry,
+not all requests. Attributed `model_recovery` events retain `retrying`, `recovered`
+and `exhausted` outcomes for durable investigation; flow summaries also count
+recovered and exhausted model calls. Failed attempts may coexist with a completed
+request, so use terminal `chat_operation` for request success. Closing an unfinished
+SSE stream records `interrupted`; include this outcome alongside `error` in chat
+success-rate queries. Fault-injection tests prove behavior, not a production rate.
+Keep reporting insufficient data below the existing SLO sample threshold.
+
 ## Log Analytics queries
 
 Replace the app-name predicate only if resource naming changes. Container Apps
@@ -121,11 +158,11 @@ ContainerAppConsoleLogs_CL
 | extend event = parse_json(Log_s)
 | where tostring(event.event_kind) == "chat_operation"
 | extend outcome = tostring(event.outcome), duration_ms = todouble(event.duration_ms)
-| where outcome != "capped"
+| where outcome in ("completed", "error", "interrupted")
 | summarize
     accepted = count(),
-    succeeded = countif(outcome in ("completed", "replayed")),
-    errors = countif(outcome == "error"),
+    succeeded = countif(outcome == "completed"),
+    errors = countif(outcome in ("error", "interrupted")),
     p95_ms = percentile(duration_ms, 95)
 | extend
     success_rate_pct = round(100.0 * succeeded / accepted, 2),
@@ -243,9 +280,13 @@ sanitized operational stream.
 
 ## Private flight recorder
 
-Disabled by default (`TRIPPLANNER_FLIGHT_RECORDER=0`) in every environment. Set it
-to `1` in `config/environments/<environment>.env` and restart the backend to
-record a diagnostic session; set it back to `0` and restart when finished. Process
+On in the local profile (`TRIPPLANNER_FLIGHT_RECORDER=1`) and off in canary and
+prod; the code default with no value set is off. To record a hosted diagnostic
+session, set it to `1` in `config/environments/<environment>.env` and restart the
+backend; set it back to `0` and restart when finished.
+`TRIPPLANNER_FLIGHT_RECORDER_VERBOSE` is `0` in every profile: it adds successful
+model and provider request/response bodies (about 50 times the volume for large
+model calls), so enable it only while reproducing one issue. Process
 environment overrides retain precedence. This master flag also gates the local
 trip archive (`TRIPPLANNER_DEBUG_STORE` remains its local-only sub-control).
 Disabling preserves existing history and ordinary logs, alerts and usage ledgers,
@@ -261,8 +302,10 @@ environment database's `flight_recorder` container (`/user_id` partition). Succe
 uploads remove the spool file. JSON is gzip/base64 encoded into <=128,000-character
 chunks with an event checksum/count. An interrupted upload retries idempotently;
 export rejects missing or corrupt chunks. Runtime container creation and IaC both
-set a seven-day TTL. Without Cosmos, local files expire after seven days when the
-worker runs. Hosted missing/unavailable Cosmos is degraded, not a successful durable
+set a 180-day TTL; rows uploaded before that change keep the seven-day `ttl` they
+were written with. Without Cosmos, local files expire after 180 days, and the spool
+is capped at 500 MiB (oldest files removed first), checked at most once a minute
+when the worker runs. Cosmos rows have no size cap, only the TTL. Hosted missing/unavailable Cosmos is degraded, not a successful durable
 archive. A lost container disk can lose its unuploaded spool; use persistent storage
 when this residual window is unacceptable. No per-token Cosmos writes occur.
 

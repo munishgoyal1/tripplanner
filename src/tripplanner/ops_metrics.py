@@ -14,6 +14,7 @@ _LOCK = threading.Lock()
 _REQUESTS: deque[dict[str, Any]] = deque(maxlen=1000)
 _MODELS: deque[dict[str, Any]] = deque(maxlen=250)
 _CHAT_TURNS: deque[dict[str, Any]] = deque(maxlen=500)
+_MODEL_RECOVERIES: deque[str] = deque(maxlen=500)
 _OPERATIONS: deque[dict[str, Any]] = deque(maxlen=2000)
 _PRODUCT_EVENTS: deque[dict[str, Any]] = deque(maxlen=2000)
 
@@ -89,6 +90,11 @@ def record_chat_turn(
         )
 
 
+def record_model_recovery(outcome: str) -> None:
+    with _LOCK:
+        _MODEL_RECOVERIES.append(outcome)
+
+
 def record_operation(
     kind: str,
     operation: str,
@@ -153,6 +159,7 @@ def snapshot() -> dict[str, Any]:
         models = list(_MODELS)
         chat_turns = list(_CHAT_TURNS)
         operations = list(_OPERATIONS)
+        recoveries = list(_MODEL_RECOVERIES)
         product_events = list(_PRODUCT_EVENTS)
 
     by_route: dict[str, dict[str, Any]] = {}
@@ -219,6 +226,8 @@ def snapshot() -> dict[str, Any]:
             "p50_ms": _percentile(latencies, 50),
             "p95_ms": _percentile(latencies, 95),
         }
+    attempted_turns = sum(chat_outcomes.get(outcome, 0)
+                          for outcome in ("completed", "error", "interrupted"))
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "uptime_seconds": max(0, round(time.time() - _STARTED_AT)),
@@ -241,6 +250,10 @@ def snapshot() -> dict[str, Any]:
         "chat_turns": {
             "calls": len(chat_turns),
             "completed": chat_outcomes.get("completed", 0),
+            "attempted": attempted_turns,
+            "completion_rate": (
+                chat_outcomes.get("completed", 0) / attempted_turns if attempted_turns else None
+            ),
             "errors": chat_outcomes.get("error", 0),
             "distinct_users": len({item["user_bucket"] for item in chat_turns}),
             "p50_ms": _percentile(chat_latencies, 50),
@@ -250,6 +263,14 @@ def snapshot() -> dict[str, Any]:
                 round(total_tool_calls / len(chat_turns), 1) if chat_turns else 0.0
             ),
             "outcomes": dict(chat_outcomes.most_common()),
+        },
+        "model_recovery": {
+            "calls": len(recoveries),
+            "recovered": recoveries.count("recovered"),
+            "exhausted": recoveries.count("exhausted"),
+            "recovery_rate": (
+                recoveries.count("recovered") / len(recoveries) if recoveries else None
+            ),
         },
         "operations": {
             "calls": len(operations),
@@ -278,6 +299,7 @@ def reset() -> None:
     with _LOCK:
         _REQUESTS.clear()
         _MODELS.clear()
+        _MODEL_RECOVERIES.clear()
         _CHAT_TURNS.clear()
         _OPERATIONS.clear()
         _PRODUCT_EVENTS.clear()

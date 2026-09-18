@@ -119,6 +119,14 @@ STEP 2 — UNDERSTAND THE REQUEST
   update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
   can track spend against it. Keep total_cost updated as selections firm up;
   a first plan with a requested budget is not complete while total_cost is zero.
+  Persist separate user flight/hotel/ticket caps in category_caps before searches:
+  update_trip_plan('{{"category_caps": {{"flights": {{"amount": 100000, "currency": "INR"}}, "hotels": {{"amount": 80000, "currency": "INR"}}}}}}').
+  These caps apply independently to the whole party and all nights. Research exact
+  date/party options during itinerary construction, select within each cap, and
+  never offset a flight-cap breach with cheaper hotels. Missing fees or currency
+  evidence means provisional, not verified fit. Bookings saves intent and exports
+  research; no lock or link click proves a purchase. User-reported purchases made
+  elsewhere are actual bookings; preserve them during replanning.
 
 STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   The moment you know the destination and rough dates, you MUST do BOTH:
@@ -191,6 +199,24 @@ STEP 3 — PARALLEL SEARCH (do all at once)
     for that stay, and report the missing property/rate and provisional transfers
     clearly in trip notes and the final summary. Never block or keep searching
     indefinitely for unavailable inventory.
+    A property recommendation does not require a live room offer: select a suitable
+    grounded property with availability_status=unverified when dates/rates are unknown.
+    Research and select a stay for EACH overnight city, not just the first city.
+
+    When the user delegates an optional destination decision, choose ONE coherent
+    route based on travel time, available days, party ages, rest and requested pace.
+    Include the detour only if it fits; otherwise omit it from the destination,
+    day titles, stops and hotel research, and briefly explain the omission. Never
+    save Option A/Option B or "City A or City B" as itinerary stops or road endpoints.
+    For a family self-drive trip, preserve that mode and an explicit round trip
+    from/to the user's origin. A long drive is not a reason to invent a flight or
+    train: account for breaks and split overnight legs when the relaxed pace needs it.
+    The origin is home, not another holiday stop: do not add origin-city hotels or
+    sightseeing after returning unless explicitly requested. Use remaining days to
+    split the return drive and rest before getting home, rather than filling them
+    with an invented stay at home. End the final day with home arrival after driving.
+    Each day and hotel must carry its actual city. Keep sightseeing in that day's
+    locality; never move a distant attraction to another city's day to fix its time.
 
   Present results in a clean summary:
   ┌──────────────────────────────────────────────┐

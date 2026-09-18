@@ -378,6 +378,8 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
         "event_count": 3,
         "outcome": "complete",
         "error_count": 0,
+        "model_recovered": 0,
+        "model_recovery_exhausted": 0,
         "llm_calls": 0,
         "tool_calls": 0,
         "provider_calls": 1,
@@ -470,10 +472,69 @@ def test_persist_batch_chunks_records_and_events_at_their_limits(monkeypatch) ->
     records = [{**base, "provider": "google"} for _ in range(101)]
     events = [{**base, "kind": "tool_call"} for _ in range(501)]
 
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: False)
+
     provider_usage.persist_batch(records, events)
 
     assert [row["record_count"] for row in writes] == [100, 1]
     assert [row["telemetry_event_count"] for row in writes] == [500, 1]
+
+
+def _usage_rows(count: int) -> list[dict]:
+    base = {
+        "occurred_at": "2026-09-13T12:00:00+00:00",
+        "day": "2026-09-13",
+        "environment": "prod",
+        "interaction_id": "turn",
+    }
+    return [{**base, "provider": "google"} for _ in range(count)]
+
+
+def test_cosmos_usage_write_never_holds_the_request(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """A throttled Cosmos write used to run inline as the turn's usage scope closed."""
+    import threading
+
+    release = threading.Event()
+    written: list[tuple[str, int]] = []
+
+    def slow_cosmos_write(document: dict) -> None:
+        release.wait(5)  # stands in for the SDK retrying a 429
+        written.append((threading.current_thread().name, document["record_count"]))
+
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: True)
+    monkeypatch.setattr(provider_usage, "_write", slow_cosmos_write)
+
+    provider_usage.persist_batch(_usage_rows(150))  # two documents: 100 + 50
+
+    assert written == []  # the caller returned while the write is still blocked
+    release.set()
+    assert provider_usage.flush(timeout=5)
+    assert written == [("provider-usage-writer", 100), ("provider-usage-writer", 50)]
+
+
+def test_full_usage_queue_writes_inline_rather_than_dropping(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import queue
+
+    written: list[int] = []
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: True)
+    monkeypatch.setattr(provider_usage, "_ensure_writer", lambda: None)  # no drain
+    monkeypatch.setattr(provider_usage, "_QUEUE", queue.Queue(maxsize=1))
+    monkeypatch.setattr(provider_usage, "_write", lambda doc: written.append(doc["record_count"]))
+
+    provider_usage.persist_batch(_usage_rows(100))
+    provider_usage.persist_batch(_usage_rows(7))
+
+    assert written == [7]
+    assert provider_usage._QUEUE.qsize() == 1
+
+
+def test_flush_reports_a_writer_that_did_not_finish(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import queue
+
+    monkeypatch.setattr(provider_usage, "_QUEUE", queue.Queue())
+    provider_usage._QUEUE.put({"record_count": 1})  # queued, never drained
+
+    assert provider_usage.flush(timeout=0.05) is False
 
 
 def test_summary_calculates_trip_cost_averages_and_names(monkeypatch) -> None:  # type: ignore[no-untyped-def]
@@ -608,3 +669,60 @@ def test_attribution_fields_are_stable_and_independent() -> None:
         "environment": attribution.fields()["environment"],
         "interaction_kind": "other",
     }
+
+
+def test_cosmos_reporting_reads_entries_and_preserves_legacy_and_date_bounds(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner import storage_cosmos
+
+    calls = []
+
+    class Container:
+        def query_items(self, **kwargs):
+            calls.append(kwargs)
+            if "JOIN" in kwargs["query"]:
+                return [
+                    {"occurred_at": "2026-08-01T00:00:00+00:00", "provider": "old"},
+                    {"occurred_at": "2026-08-02T00:00:00+00:00", "provider": "batch"},
+                    {"occurred_at": "2026-08-03T00:00:00+00:00", "provider": "future"},
+                ]
+            if "c.record_count" in kwargs["query"]:
+                return [{"id": "legacy", "user_id": "local"}, {"id": "batch", "record_count": 3}]
+            return [self.read_item("legacy", "local")]
+
+        def read_item(self, item, partition_key):
+            assert (item, partition_key) == ("legacy", "local")
+            return {"occurred_at": "2026-08-02T12:00:00+00:00", "provider": "legacy"}
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "_container", lambda name: Container())
+    monkeypatch.setattr(
+        storage_cosmos, "get_settings", lambda: SimpleNamespace(cosmos_emulator=True)
+    )
+    rows = provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
+    assert [row["provider"] for row in rows] == ["batch", "legacy"]
+    assert calls[0]["query"] == "SELECT VALUE e FROM c JOIN e IN c.entries"
+    assert calls[0]["max_item_count"] == 1000
+    assert "c.record_count" in calls[1]["query"]
+    calls.clear()
+    monkeypatch.setattr(
+        storage_cosmos, "get_settings", lambda: SimpleNamespace(cosmos_emulator=False)
+    )
+    provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
+    assert all("c.occurred_at >= @since AND c.occurred_at < @until" in c["query"] for c in calls)
+
+
+def test_strict_report_read_does_not_replace_database_failure_with_local_data(monkeypatch):
+    import pytest
+
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+
+    def broken(name):
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr(storage_cosmos, "_container", broken)
+    with pytest.raises(RuntimeError, match="database unavailable"):
+        provider_usage.summary(strict=True)

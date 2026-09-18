@@ -74,7 +74,6 @@ export default function TripSwitcher({
     if (switching.current) return;
     switching.current = true;
     const label = trips.find((trip) => trip.trip_id === tripId)?.destination ?? "trip";
-    dismissNotice("meal-gap");
     notify({ id: SWITCH_NOTICE, tone: "progress", message: `Switching to ${label}\u2026` });
     try {
       let workspace: TripWorkspaceView | null;
@@ -188,7 +187,7 @@ export default function TripSwitcher({
           }
           setOpen((current) => !current);
         }}
-        className="pill h-7 min-w-0 shrink rounded-full bg-sand text-ink ring-1 ring-border transition hover:bg-paper"
+        className="inline-flex h-7 min-w-0 shrink items-center gap-1 rounded-md bg-sand px-3 py-1 text-xs font-medium text-ink ring-1 ring-border transition hover:bg-paper"
         title="Switch between your saved trips"
         aria-expanded={open}
       >

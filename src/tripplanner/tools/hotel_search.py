@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+import re
+from datetime import UTC, datetime
 
 from langchain_core.tools import tool
+
+from tripplanner.hotel_research import normalize_hotel_locality
 
 from tripplanner.config import get_settings
 from tripplanner.decisions.lodging import build_lodging_decision
@@ -14,10 +18,16 @@ from tripplanner.providers.models import HotelSearchQuery
 from tripplanner.providers.registry import get_hotel_providers
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
-from tripplanner.tools.flight_search import resolve_iata
+from tripplanner.tools.flight_search import _IATA_CODES, resolve_iata
 from tripplanner.tools.google_places import search_places_with_reviews
 
 _HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("hotel-search")
+
+
+def _city_in_address(city, address):
+    locality = normalize_hotel_locality(city)
+    return bool(locality and re.search(rf"\b{re.escape(locality)}\b",
+                                      normalize_hotel_locality(address)))
 
 
 def _format_hotels(data: dict) -> str:
@@ -71,6 +81,58 @@ def _format_hotels(data: dict) -> str:
 
     lines.append(f"\n{len(offers)} hotel(s) found.")
     return "\n".join(lines)
+
+
+def _places_fallback(city, checkin, checkout, max_results, reason):
+    if city.strip().casefold() not in _IATA_CODES:
+        city = next((name.title() for name, code in _IATA_CODES.items()
+                     if code == city.strip().upper()), city)
+    try:
+        raw = search_places_with_reviews.invoke(
+            {"query": "well-rated hotel", "city": city, "max_results": max_results}
+        )
+        try:
+            places = json.loads(raw)
+        except (ValueError, TypeError):
+            places = []
+        if not isinstance(places, list):
+            places = []
+        candidates = [place for place in places if isinstance(place, dict)
+                      and place.get("name") and place.get("place_id")
+                      and place.get("address")
+                      and any(kind in {"lodging", "hotel", "resort_hotel"}
+                              for kind in place.get("types", []))
+                      and _city_in_address(city, place["address"])]
+        fallback_reason = ("no_suitable_property" if places else
+                           "no_results" if (str(raw).startswith("No places found")
+                                            or raw.strip() == "[]") else
+                           "provider_unavailable")
+    except Exception:
+        candidates = []
+        fallback_reason = "provider_unavailable"
+    research = {
+        "city": city, "checkin": checkin, "checkout": checkout,
+        "checked_at": datetime.now(UTC).isoformat(),
+        "status": "candidates_available" if candidates else "unresolved",
+        "reason": "rate_and_availability_unverified" if candidates else fallback_reason,
+        "inventory_reason": reason, "fallback_attempted": True,
+        "candidate_count": len(candidates),
+    }
+    return json.dumps({
+        "quote_status": "unverified", "provider": "google_places",
+        "hotel_research": research, "candidates": candidates,
+        "guidance": (
+            "Choose one suitable property using location and traveler preferences; one is enough. "
+            "Save its real name, place_id, address and city, with availability_status=unverified. "
+            "Property metadata does not verify price, room occupancy, refundability or dates. "
+            "Keep those facts unresolved; do not replace a suitable named recommendation with TBD "
+            "only because live room offers are unavailable. If hard constraints cannot be met, "
+            "explain them in the hotel stop concern."
+            if candidates else
+            "Hotel and Places research is complete for this city. Keep a city-specific Hotel TBD "
+            "anchor and explain the reason; do not repeat the same fallback or invent a hotel."
+        ),
+    }, ensure_ascii=False)
 
 
 @tool
@@ -161,6 +223,12 @@ def search_hotels(
                     "expires_at": result.expires_at,
                     "decision_id": decision.id if decision else None,
                     "recommended_option_id": decision.chosen_option_id if decision else None,
+                    "hotel_research": {
+                        "city": city, "checkin": checkin, "checkout": checkout,
+                        "checked_at": result.checked_at, "status": "candidates_available",
+                        "reason": "offers_returned", "candidate_count": len(offers),
+                        "fallback_attempted": False,
+                    },
                     "offers": [
                         {**offer.model_dump(mode="json"), "search_context": search_context}
                         for offer in offers
@@ -169,21 +237,13 @@ def search_hotels(
                 ensure_ascii=False,
                 default=str,
             )
-        if result.errors:
-            details = "; ".join(result.errors)
-            if all(error.endswith(": no availability") for error in result.errors):
-                return f"No hotels found for {city}. Provider details: {details}"
-            return f"Hotel search error: {details}"
+        reason = ("no_availability" if result.errors and all(
+            error.endswith(": no availability") for error in result.errors
+        ) else "provider_unavailable" if result.errors else "no_availability")
+        return _places_fallback(city, checkin, checkout, max_results, reason)
 
     if not amadeus_client.is_configured():
-        places = search_places_with_reviews.invoke(
-            {"query": "well-rated hotel", "city": city, "max_results": max_results}
-        )
-        return (
-            "quote_status=estimated; provider=google_places; "
-            "property metadata only, no live room rate or availability\n"
-            f"{places}"
-        )
+        return _places_fallback(city, checkin, checkout, max_results, "not_configured")
 
     city_code = resolve_iata(city)
 
@@ -200,9 +260,9 @@ def search_hotels(
             h["hotelId"] for h in hotel_list.get("data", [])[:20]
         ]
         if not hotel_ids:
-            return f"No hotels found in {city} ({city_code})."
-    except Exception as e:
-        return f"Hotel list error: {e}"
+            return _places_fallback(city, checkin, checkout, max_results, "no_availability")
+    except Exception:
+        return _places_fallback(city, checkin, checkout, max_results, "provider_unavailable")
 
     # Step 2: Get offers for those hotels
     try:
@@ -223,6 +283,8 @@ def search_hotels(
             # Trim to requested count
             data["data"] = data["data"][:max_results]
             result = _format_hotels(data)
+        if not data.get("data") or not any(hotel.get("offers") for hotel in data["data"]):
+            return _places_fallback(city, checkin, checkout, max_results, "no_availability")
         return result
-    except Exception as e:
-        return f"Hotel search error: {e}"
+    except Exception:
+        return _places_fallback(city, checkin, checkout, max_results, "provider_unavailable")

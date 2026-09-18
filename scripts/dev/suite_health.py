@@ -66,6 +66,9 @@ class SuiteResult:
     failures: tuple[Failure, ...] = ()
     totals: dict[str, Any] = field(default_factory=dict)
     error: str = ""
+    # Test files the suite collected but never executed -- a worker that failed
+    # to start, say. The run happened, but it is incomplete.
+    unrun: tuple[str, ...] = ()
 
 
 @dataclass
@@ -80,6 +83,7 @@ class Classification:
     totals: dict[str, Any]
     ran: bool
     error: str = ""
+    unrun: tuple[str, ...] = ()
 
 
 # ---------------------------------------------------------------------------
@@ -87,17 +91,34 @@ class Classification:
 # ---------------------------------------------------------------------------
 
 
-def parse_pytest_junit(path: Path) -> tuple[set[tuple[str, str]], dict[str, Any]]:
-    """Return ``{(file, testname)}`` for failures plus run totals.
+@dataclass(frozen=True)
+class JunitFailure:
+    """One failing ``<testcase>`` as junit recorded it.
+
+    pytest's default ``xunit2`` family writes no ``file`` attribute, only a
+    dotted ``classname`` (``tests.test_a`` or ``tests.test_a.TestThing``), so
+    ``source`` is usually empty. ``name`` keeps any ``[param]`` suffix: two
+    failing parametrizations of one test are two failures, not one.
+    """
+
+    source: str
+    classname: str
+    name: str
+
+
+def parse_pytest_junit(path: Path) -> tuple[set[JunitFailure], dict[str, Any]]:
+    """Return the failing test cases plus run totals.
 
     junit is pytest core -- no plugin -- and is the arithmetic authority here.
     It is deliberately *not* used to rebuild node ids: 13 test files in this repo
-    use ``class Test*``, so the classname-to-nodeid mapping is lossy.
+    use ``class Test*``, so the classname-to-nodeid mapping is lossy. The
+    reverse direction -- node id to expected classname -- is exact, and that is
+    how :func:`reconcile_pytest` matches the two records.
     """
     root = ElementTree.parse(path).getroot()
     suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
 
-    failed: set[tuple[str, str]] = set()
+    failed: set[JunitFailure] = set()
     totals = {"tests": 0, "failures": 0, "errors": 0, "skipped": 0, "duration_seconds": 0.0}
     for suite in suites:
         totals["tests"] += int(suite.get("tests", 0))
@@ -108,9 +129,13 @@ def parse_pytest_junit(path: Path) -> tuple[set[tuple[str, str]], dict[str, Any]
         for case in suite.iter("testcase"):
             if case.find("failure") is None and case.find("error") is None:
                 continue
-            source = (case.get("file") or "").replace("\\", "/")
-            name = (case.get("name") or "").split("[", 1)[0]
-            failed.add((source, name))
+            failed.add(
+                JunitFailure(
+                    source=(case.get("file") or "").replace("\\", "/"),
+                    classname=case.get("classname") or "",
+                    name=case.get("name") or "",
+                )
+            )
 
     totals["failed"] = totals["failures"] + totals["errors"]
     totals["passed"] = totals["tests"] - totals["failed"] - totals["skipped"]
@@ -166,14 +191,26 @@ def parse_pytest_summary(text: str) -> tuple[Failure, ...]:
     return tuple(failures)
 
 
+def _junit_matches(node_id: str, case: JunitFailure) -> bool:
+    """Whether a verbatim ``-rfE`` node id names this junit test case."""
+    source, _, remainder = node_id.partition("::")
+    *classes, name = remainder.split("::")
+    if case.name != name:
+        return False
+    if case.source:
+        return case.source == source
+    module = source.removesuffix(".py").replace("/", ".")
+    return case.classname == ".".join([module, *classes])
+
+
 def reconcile_pytest(
-    summary_failures: tuple[Failure, ...], junit_failures: set[tuple[str, str]]
+    summary_failures: tuple[Failure, ...], junit_failures: set[JunitFailure]
 ) -> tuple[Failure, ...]:
     """Cross-check the two pytest sources and return the reconciled failures.
 
-    junit says how many failed and in which file; ``-rfE`` says exactly which
-    node. If they disagree the run is not trustworthy enough to rewrite a
-    baseline from, so this raises rather than guessing.
+    junit says how many failed and where; ``-rfE`` says exactly which node. If
+    they disagree the run is not trustworthy enough to rewrite a baseline from,
+    so this raises rather than guessing.
     """
     if len(summary_failures) != len(junit_failures):
         raise TruncatedOutputError(
@@ -182,15 +219,8 @@ def reconcile_pytest(
             "run whose two records disagree."
         )
 
-    expected: dict[str, set[str]] = {}
-    for source, name in junit_failures:
-        expected.setdefault(source, set()).add(name)
-
     for failure in summary_failures:
-        source, _, remainder = failure.id.partition("::")
-        base = remainder.split("::")[-1].split("[", 1)[0]
-        names = expected.get(source)
-        if names is None or base not in names:
+        if not any(_junit_matches(failure.id, case) for case in junit_failures):
             raise TruncatedOutputError(
                 f"{failure.id!r} does not match any failure junit recorded. The node "
                 "id is probably truncated; re-run with COLUMNS=400."
@@ -203,24 +233,43 @@ def reconcile_pytest(
 # ---------------------------------------------------------------------------
 
 
-def parse_vitest_json(path: Path, repo_root: Path) -> tuple[tuple[Failure, ...], dict[str, Any]]:
+def _repo_relative(raw_name: str, repo_root: Path) -> str:
+    try:
+        return Path(raw_name).resolve().relative_to(repo_root.resolve()).as_posix()
+    except (ValueError, OSError):
+        return raw_name.replace("\\", "/")
+
+
+def parse_vitest_file_list(path: Path, repo_root: Path) -> set[str]:
+    """Read ``vitest list --filesOnly --json`` output: every file vitest would run."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return {_repo_relative(entry["file"], repo_root) for entry in payload if entry.get("file")}
+
+
+def parse_vitest_json(
+    path: Path, repo_root: Path
+) -> tuple[tuple[Failure, ...], dict[str, Any], set[str]]:
     """Read vitest's built-in json reporter output.
 
     Failures are keyed ``<repo-relative file>::<full test name>`` so the id is
-    stable across machines; the reporter records absolute paths.
+    stable across machines; the reporter records absolute paths. Also returns
+    the files that actually executed: a file whose worker never started is
+    simply absent from this report, with no failure and no skip to show for it.
     """
     payload = json.loads(path.read_text(encoding="utf-8"))
     failures: list[Failure] = []
+    observed: set[str] = set()
+    ran_files: set[str] = set()
     passed = failed = skipped = 0
 
     for file_result in payload.get("testResults", []) or []:
-        raw_name = file_result.get("name") or ""
-        try:
-            relative = Path(raw_name).resolve().relative_to(repo_root).as_posix()
-        except (ValueError, OSError):
-            relative = raw_name.replace("\\", "/")
+        relative = _repo_relative(file_result.get("name") or "", repo_root)
+        ran_files.add(relative)
         for assertion in file_result.get("assertionResults", []) or []:
+            full = assertion.get("fullName") or assertion.get("title") or "<unnamed>"
             status = assertion.get("status")
+            if status not in {"skipped", "pending", "todo"}:
+                observed.add(f"{relative}::{full}")
             if status == "passed":
                 passed += 1
                 continue
@@ -228,7 +277,6 @@ def parse_vitest_json(path: Path, repo_root: Path) -> tuple[tuple[Failure, ...],
                 skipped += 1
                 continue
             failed += 1
-            full = assertion.get("fullName") or assertion.get("title") or "<unnamed>"
             messages = assertion.get("failureMessages") or []
             first = messages[0].strip().splitlines()[0] if messages else ""
             failures.append(Failure(id=f"{relative}::{full}", message=first))
@@ -238,10 +286,11 @@ def parse_vitest_json(path: Path, repo_root: Path) -> tuple[tuple[Failure, ...],
         "passed": passed,
         "failed": failed,
         "skipped": skipped,
+        "observed_ids": observed,
     }
     if isinstance(payload.get("startTime"), (int, float)) and payload.get("duration"):
         totals["duration_seconds"] = round(float(payload["duration"]) / 1000.0, 2)
-    return tuple(failures), totals
+    return tuple(failures), totals, ran_files
 
 
 # ---------------------------------------------------------------------------
@@ -301,6 +350,7 @@ def classify(result: SuiteResult, baseline: dict[str, Any]) -> Classification:
         missing=tuple(sorted(missing)),
         totals=result.totals,
         ran=True,
+        unrun=result.unrun,
     )
 
 
@@ -321,15 +371,16 @@ def merge_baseline(
     ``first_seen``, ``owner``, ``note`` and ``category`` survive; that is what
     makes the debt measurable over time rather than a rolling snapshot.
     """
-    merged: dict[str, Any] = {"version": BASELINE_VERSION, "generated": today}
+    merged: dict[str, Any] = {**baseline, "version": BASELINE_VERSION, "generated": today}
     for key in ("ref", "commit"):
         if baseline.get(key):
             merged[key] = baseline[key]
 
     for classification in classifications:
-        if not classification.ran:
+        if not classification.ran or classification.unrun:
             # Keep the previous section untouched rather than erasing debt with a
-            # run that never happened.
+            # run that never happened -- or only partly happened: entries in the
+            # files that never executed would otherwise be silently dropped.
             merged[classification.suite] = baseline.get(classification.suite, {})
             continue
 
@@ -349,6 +400,7 @@ def merge_baseline(
                     "note": prior.get("note", ""),
                 }
             )
+        entries.extend(dict(previous[node]) for node in classification.missing)
         section = dict(baseline.get(classification.suite) or {})
         section["failures"] = entries
         section["totals"] = {
@@ -382,7 +434,17 @@ def render_markdown(
 
     total_new = sum(len(c.new) for c in classifications)
     verdict = "NO NEW FAILURES" if total_new == 0 else f"{total_new} NEW FAILURE(S)"
+    total_unrun = sum(len(c.unrun) for c in classifications)
+    if total_unrun:
+        verdict += f" — INCOMPLETE: {total_unrun} TEST FILE(S) DID NOT RUN"
     lines += ["", f"**{verdict}**", ""]
+    if context.get("contended_by"):
+        lines += [
+            f"> **CONTENDED RUN** — ran alongside {', '.join(context['contended_by'])}. "
+            "Timing failures here may be that load, not a regression: reproduce each "
+            "serially before treating it as real. The baseline is not updated from this run.",
+            "",
+        ]
 
     for classification in classifications:
         lines.append(f"## {classification.suite}")
@@ -400,6 +462,16 @@ def render_markdown(
             )
         )
         entries = baseline_entries(baseline, classification.suite)
+
+        if classification.unrun:
+            lines += [
+                "",
+                f"### DID NOT RUN ({len(classification.unrun)})",
+                "Collected but never executed, so none of their tests passed, failed, "
+                "or skipped. The totals above do not include them, and the baseline "
+                "is not updated from this run.",
+            ]
+            lines += [f"- `{path}`" for path in classification.unrun]
 
         lines += ["", f"### NEW ({len(classification.new)})"]
         if not classification.new:
@@ -455,8 +527,10 @@ def to_json(classifications: list[Classification], *, today: str, context: dict)
             "known": [f.id for f in sorted(classification.known, key=lambda i: i.id)],
             "fixed": list(classification.fixed),
             "missing": list(classification.missing),
+            "unrun": list(classification.unrun),
         }
     payload["new_failure_count"] = sum(len(c.new) for c in classifications)
+    payload["unrun_file_count"] = sum(len(c.unrun) for c in classifications)
     return payload
 
 
@@ -473,15 +547,43 @@ def build_results(args: argparse.Namespace, repo_root: Path) -> list[SuiteResult
             junit_failures, totals = parse_pytest_junit(Path(args.pytest_junit))
             summary = parse_pytest_summary(Path(args.pytest_log).read_text(encoding="utf-8"))
             failures = reconcile_pytest(summary, junit_failures)
+            exit_code = getattr(args, "pytest_exit_code", None)
+            if exit_code not in (None, 0, 1) or (exit_code == 1 and not failures):
+                raise ValueError(f"pytest exited {exit_code}; the run did not complete normally")
+            if not totals["tests"]:
+                raise ValueError("pytest executed no tests")
+            cases = [
+                JunitFailure((case.get("file") or "").replace("\\", "/"),
+                             case.get("classname") or "", case.get("name") or "")
+                for case in ElementTree.parse(args.pytest_junit).getroot().iter("testcase")
+                if case.find("skipped") is None
+            ]
+            known = baseline_entries(load_baseline(Path(args.baseline)), "pytest")
+            totals["observed_ids"] = {
+                node for node in known if any(_junit_matches(node, case) for case in cases)
+            } | {failure.id for failure in failures}
             results.append(SuiteResult("pytest", True, failures, totals))
-        except (TruncatedOutputError, OSError, ElementTree.ParseError) as error:
+        except (TruncatedOutputError, OSError, ElementTree.ParseError, ValueError) as error:
             results.append(SuiteResult("pytest", False, error=str(error)))
 
     if args.vitest_json:
         try:
-            failures, totals = parse_vitest_json(Path(args.vitest_json), repo_root)
-            results.append(SuiteResult("vitest", True, failures, totals))
-        except (OSError, json.JSONDecodeError) as error:
+            failures, totals, ran_files = parse_vitest_json(Path(args.vitest_json), repo_root)
+            exit_code = getattr(args, "vitest_exit_code", None)
+            if exit_code not in (None, 0) and not failures:
+                raise ValueError(f"vitest exited {exit_code} without assertion failures; check vitest.log")
+            if not totals["tests"]:
+                raise ValueError("vitest executed no tests")
+            unrun: tuple[str, ...] = ()
+            totals["files_ran"] = len(ran_files)
+            if args.vitest_files:
+                expected = parse_vitest_file_list(Path(args.vitest_files), repo_root)
+                totals["files_expected"] = len(expected)
+                unrun = tuple(sorted(expected - ran_files))
+            else:
+                totals["files_expected"] = "unknown (no file list; completeness not verified)"
+            results.append(SuiteResult("vitest", True, failures, totals, unrun=unrun))
+        except (OSError, ValueError, KeyError, TypeError) as error:
             results.append(SuiteResult("vitest", False, error=str(error)))
 
     return results
@@ -491,23 +593,39 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pytest-junit")
     parser.add_argument("--pytest-log")
+    parser.add_argument("--pytest-exit-code", type=int)
     parser.add_argument("--vitest-json")
+    parser.add_argument("--vitest-exit-code", type=int)
+    parser.add_argument(
+        "--vitest-files",
+        help="`vitest list --filesOnly --json` output, to detect files that never ran",
+    )
     parser.add_argument("--baseline", required=True)
     parser.add_argument("--out", required=True, help="directory for report.md and report.json")
     parser.add_argument("--update-baseline", action="store_true")
     parser.add_argument("--ref", default="")
     parser.add_argument("--commit", default="")
+    parser.add_argument("--repo-root", type=Path)
     parser.add_argument("--today", default=date.today().isoformat())
+    parser.add_argument(
+        "--contended-by",
+        action="append",
+        default=[],
+        help="another live run (deploy, sync, sandbox) that shared the machine; repeatable",
+    )
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = args.repo_root or Path(__file__).resolve().parents[2]
     baseline_path = Path(args.baseline)
     baseline = load_baseline(baseline_path)
 
     results = build_results(args, repo_root)
     classifications = [classify(result, baseline) for result in results]
 
-    context = {"ref": args.ref, "commit": args.commit}
+    context: dict[str, Any] = {"ref": args.ref, "commit": args.commit}
+    contended_by = sorted({name for name in args.contended_by if name})
+    if contended_by:
+        context["contended_by"] = contended_by
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "report.md").write_text(
@@ -517,6 +635,16 @@ def main(argv: list[str] | None = None) -> int:
     payload = to_json(classifications, today=args.today, context=context)
     (out / "report.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
+    # A run that shared the machine with a deploy's image build once filed six
+    # load-only timeouts as NEW. Accepting them as known debt would hide them.
+    if args.update_baseline and contended_by:
+        print((out / "report.md").read_text(encoding="utf-8"))
+        print(
+            "Baseline NOT updated: this run was contended by "
+            f"{', '.join(contended_by)}. Re-run -UpdateBaseline on a quiet machine.",
+            file=sys.stderr,
+        )
+        return 2
     if args.update_baseline:
         merged = merge_baseline(baseline, classifications, today=args.today)
         merged["ref"] = args.ref or merged.get("ref", "")
@@ -525,7 +653,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print((out / "report.md").read_text(encoding="utf-8"))
 
-    if any(not c.ran for c in classifications):
+    if not classifications or any(not c.ran or c.unrun for c in classifications):
         return 2
     return 1 if payload["new_failure_count"] else 0
 

@@ -5,11 +5,13 @@
 | Field | Value |
 | --- | --- |
 | Brief ID | `009` |
-| Status | Planned; provider feasibility and implementation validation pending |
+| Status | Web intent workflow shipped in child #323; provider/dependency/native follow-ups remain |
 | Owner | Munish Goyal |
-| Created / Updated | 2026-09-12 |
+| Created / Updated | 2026-09-12 / 2026-09-13 |
 | Baseline | `origin/master` at `f07f96dd` |
-| Current milestone | Provider research and reviewable implementation contract |
+| Shipped milestone | [009 web workflow](../implemented/009-booking-intent-workflow.md), child [#323](https://github.com/munishgoyal1/tripplanner/issues/323) |
+| Feature issue | [#315](https://github.com/munishgoyal1/tripplanner/issues/315) — keep open until all feature criteria pass |
+| Foundation issue | [#316](https://github.com/munishgoyal1/tripplanner/issues/316) — configuration, fallback boundary and workflow |
 | Related capabilities | `PLAN-01`, `PLAN-02`, `DEAL-01`, `LIFE-01`, `ITIN-01`, `MUT-01`, `EXPORT-01` |
 | Advances | [004 comparison foundation](004-item-comparison-budget-what-if.md) |
 | Provider evidence | [Provider API Access](../research/provider-api-access.md) |
@@ -44,12 +46,32 @@ comparison, dependency-aware overrides and a dedicated booking review surface.
 
 ## Scope and milestones
 
-### Current milestone — research and design
+The shipped portion is split into the linked implemented brief. This backlog
+retains the broader design contract and the remaining work under #315, not a
+second queue entry for the completed web implementation. Current behavior is
+authoritative in BOOK-02 and EB-BOOKING-001.
 
-- Refresh the existing provider research owner with first-party sources.
-- Separate context, indicative prices, exact offers and handoff capabilities.
-- Identify existing adapters, practical candidates and access-gated alternatives.
-- Define acceptance criteria and evaluation without assuming partner access.
+Implementation lane: `gpt/booking-intent-flow`, claimed under #315. Deliver the
+responsive Bookings surface, exact saved alternatives, preview/apply, category
+caps, lock/unlock, explicit research, PDF/HTML/JSON/email/share intent exports,
+and manual external/offline booking reconciliation in one coherent feature.
+Reuse existing LiteAPI adapters and export delivery. Ticket/ground items support
+manual intent, reported actuals and sourced links; Tiqets live integration remains
+conditional on selected, verified account access and is not invented here.
+
+### Current milestone — LiteAPI-only search foundation
+
+- Explicitly select LiteAPI for flight/hotel inventory in all environment profiles.
+- Prevent either flight tool from falling through to legacy inventory after an
+  empty/error LiteAPI result. Keep metadata-only hotel context available.
+- Isolate explicit LiteAPI tool-result keys from retained legacy/automatic
+  results without deleting earlier research.
+- Preserve existing indefinite stable/volatile retention. Retained observations
+  keep their original timestamps and expiry; refresh remains explicit.
+- Start with available account access. Per the owner, defer commercial/policy
+  review rather than blocking implementation on negotiation. Technical access
+  denials remain visible; no access bypass or fabricated booking conversions.
+- Track every feature with a GitHub issue and keep cross-linked repository briefs.
 
 ### First implementation milestone — flight-and-stay readiness
 
@@ -57,12 +79,15 @@ comparison, dependency-aware overrides and a dedicated booking review surface.
 - Project exact saved flight/stay decisions into a trip-scoped Bookings page.
 - Compare alternatives; show multiple sellers only with equivalent actual offers.
 - Preview/apply overrides through existing authoritative mutations.
-- Explicitly recheck, lock choices and produce a versioned external handoff list.
+- Explicitly recheck where supported, lock choices and export a versioned
+  booking-intent list through the existing itinerary export patterns.
+- Record bookings made with any provider or offline and reconcile the actual
+  details back into the authoritative itinerary through a previewed mutation.
 - Show unsupported required bookings and unpriced costs as gaps; do not claim
   whole-trip readiness simply because supported flights/stays are ready.
 
-One verified seller is acceptable when coverage is disclosed. Enabling another
-provider requires documented access and successful authenticated evaluation.
+The first version uses one inventory source for flights/hotels. Compare its
+saved alternatives and disclose coverage; do not imply multi-source price checks.
 
 ### Following milestones
 
@@ -98,7 +123,7 @@ enter the existing exact-price ranking tier as quotes.
 
 ### Bookings page
 
-Proposed route: `/trips/:tripId/bookings`, scoped to the selected trip.
+Implemented route: `/bookings`, optionally `?trip_id=...`, bound to the active trip and revision.
 Read persisted state. Page GET/render causes no provider calls; research/recheck
 is an explicit action or part of the authorized itinerary-building turn.
 
@@ -123,7 +148,7 @@ Desktop may compare beside an item; mobile stacks with a clear return path.
 Use keyboard controls, visible focus, announced errors and focus restoration.
 No essential facts depend on hover. Preserve semantics across shared clients.
 
-### Lock and handoff
+### Lock, export and handoff
 
 Selection state (recommended/user-selected/locked) is independent of evidence
 state (checked/stale/unverified/unavailable). Lock saves reversible user intent,
@@ -132,6 +157,10 @@ not inventory. Relevant trip changes invalidate affected readiness.
 Before handoff, recheck where supported, disclose movement, revalidate constraints
 and trip revision, and obtain acceptance of material changes. Never auto-switch
 a selected product/seller because its quote changed.
+
+Research may be locked/exported with stale or unavailable evidence if clearly
+labeled; that export makes no current-price or booking-readiness guarantee.
+Do not make a checkout account or an exact-offer redirect a prerequisite to export.
 
 Save a versioned mapping of purchase unit to product/rate, operator, seller,
 payable-price evidence and destination. Return-flight bundles and multi-night
@@ -147,6 +176,29 @@ Handoff levels must be literal:
 Do not manufacture URLs from opaque IDs or attach one seller's price to another
 seller's link. Preserve required attribution. A link click records handoff only;
 booked externally requires explicit user reporting or future supported evidence.
+
+Reuse itinerary-export delivery patterns for a dedicated **Export booking intent
+list** action: downloadable document, email and share. Snapshot the trip revision,
+export time, grouped items, selected product/variant, dates/local times, travelers
+and occupancy, operator/source/suggested seller, quoted currency/amount, included
+and unknown fees, terms, checked time/expiry, handoff level and verified URL.
+Include unresolved items and copyable details for offline or other-provider use.
+Private references and traveler details follow the export's audience/privacy rules.
+
+### Report externally booked items
+
+Let users mark one or several items booked with the suggested provider, another
+provider or offline. Capture actual product, dates/times, party, paid amount and
+currency, optional booking reference and confirmation document. Preserve the
+selected-intent snapshot separately from reported actuals. A link click or lock
+never supplies booking evidence; manual reports are labeled user-reported.
+
+Match to the existing purchase unit/itinerary occurrence, handle partial and
+duplicate reports, and preview date, budget and dependent-stop conflicts before
+applying actuals. Do not create a second stay/flight for an existing purchase.
+Accepted changes update Itinerary, Map, Details, Assistant and Bookings together
+under the current revision; stale writes preserve the saved state. Keep private
+references out of shared exports unless the user explicitly includes them.
 
 ## Business, data and architecture rules
 
@@ -183,8 +235,9 @@ it cannot manufacture amounts or provider facts.
   planning/recheck action, not unconditional background fan-out.
 - Preserve pooled HTTP, attribution, kill switches and measured spend ceilings.
   Account for newly billable provider operations before enablement.
-- Provider retention/attribution terms override broad cache defaults. Reading
-  or copying a cached observation cannot advance its checked timestamp.
+- The owner explicitly chose indefinite LiteAPI research retention for the initial
+  experiment and deferred provider-policy review. Preserve attribution, original
+  checked timestamps and expiry; retention is not freshness or availability.
 - Opaque handles, raw checkout tokens and traveler-sensitive data remain out of
   public shares, analytics and logs. Credentials remain server-side secrets.
 - Endpoint support, account entitlement and successful live evaluation are
@@ -220,32 +273,44 @@ it cannot manufacture amounts or provider facts.
   and telemetry exclude secrets and private provider references.
 - **AC-14:** Disabled, unentitled or unvalidated capabilities fail closed;
   sandbox data cannot satisfy live budget/readiness evidence.
+- **AC-15:** Explicit LiteAPI flight selection never calls Duffel/Amadeus after
+  empty/error results. Profiles select LiteAPI for both flight and hotel inventory.
+- **AC-16:** Repeated cache reads retain the original observation/expiry, forever
+  settings retain saved research, and explicit refresh bypasses lookup.
+- **AC-17:** Download/email/share export the same versioned intent snapshot,
+  including gaps, freshness and copyable details. Export requires no purchase,
+  provider account, exact-offer URL or claim of current availability.
+- **AC-18:** Reporting partial or complete external/offline bookings preserves
+  planned vs actual values, deduplicates matched items and previews conflicts;
+  accepted actuals update every trip surface under revision/ownership checks.
 
 ## Validation matrix
 
 | Layer | Smallest proving check | Status |
 | --- | --- | --- |
-| Research | First-party sources and accurate access/claim labels | Reviewed 2026-09-12; live access untested |
-| Domain | Caps, party totals, unknown fees/FX, equivalence, grouping | Pending implementation |
-| Provider | Dated synthetic queries, expiry, no coverage, throttling, malformed data | Pending permitted account access |
-| API/state | Revision conflict, atomic rollback, ownership, zero fetch on GET | Pending implementation |
-| Web | Compare, preview, apply, restore/recheck, lock, degraded handoff | Pending implementation |
-| Accessibility | Keyboard/focus/errors; 320px and desktop | Pending implementation |
+| Research | First-party sources and accurate access/claim labels | Refreshed 2026-09-13; live access untested |
+| Domain | Caps, party totals, unknown fees/FX, equivalence, grouping | Web milestone focused checks pass; richer FX/dependency optimization remains |
+| Provider | LiteAPI-only empty/error boundary; dated live coverage probes | Focused fallback checks in milestone #316; live access untested |
+| API/state | Revision conflict, atomic rollback, ownership, zero fetch on GET | Web milestone focused checks pass; existing authenticated request context reused |
+| Web | Compare, preview, apply, restore/recheck, lock, degraded handoff | Implemented; component and Chromium checks pass |
+| Accessibility | Keyboard/focus/errors; 320px and desktop | Chromium keyboard and overflow checks pass; screenshots inspected |
 | Shared/mobile | Contract compatibility and changed device surfaces | Pending; no parity claim |
 | Handoff | Browser continuity check through redirect; stop before purchase | Pending permitted provider access |
-| Local/CI | Ruff and focused behavior tests; existing CI typecheck/build | Research milestone changes docs only |
+| Export/reconcile | Snapshot formats, privacy, partial/duplicate/conflicting actuals | HTML/PDF/JSON/email/share and manual actuals tested; document extraction remains |
+| Local/CI | Ruff, focused fallback/cache tests; existing CI typecheck/build | Recorded in milestone #316 |
 
 ## Next work and unresolved evidence
 
-1. Engineering/account owner: verify existing LiteAPI/Viator tiers and permitted
-   usage; use synthetic read-only probes under cost controls.
-2. Engineering: evaluate Tiqets Essential and LiteAPI's documented hotel-offer
-   handoff, including identity, total fees and URL continuity.
-3. Owner/account access: establish Booking.com eligibility and Omio referral
-   terms as needed. No messages/commitments are sent by this brief.
-4. Engineering: implement the flight/stay milestone against these criteria,
-   retaining honest source gaps instead of speculative adapters.
-5. Expand only when category-specific coverage/handoff checks pass.
+1. Engineering/account owner: exercise search with available credentials and exact
+   trip context. Flight production enablement is separate from hotel access;
+   surface actual access failures without inventing live evidence.
+2. Engineering: extend dependency-aware repair, sourced multi-currency category
+   feasibility and exact seller/redirect continuity beyond the shipped web flow.
+3. Engineering: evaluate Tiqets Essential for attraction/experience variants,
+   exact totals and affiliate URL continuity; no Full Booking API is needed.
+4. Later: confirmation-document ingestion, native Bookings UI, second-source
+   comparisons and ground coverage. Booking.com admission
+   and broader commercial negotiations are not prerequisites for this milestone.
 
 Provider names and current access evidence belong in the linked research
 catalog, not duplicated as enabled configuration here. Material unknowns are

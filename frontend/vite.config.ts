@@ -10,7 +10,7 @@ export default defineConfig({
     port: Number(process.env.VITE_PORT || 5173),
     strictPort: true,
     warmup: {
-      clientFiles: ["./src/main.tsx", "./src/App.tsx"],
+      clientFiles: ["./src/main.tsx", "./src/App.tsx", "./src/ops/OpsDashboard.tsx"],
     },
     // Hot Module Replacement is OFF by default — code changes are picked up on a
     // manual browser refresh (Ctrl+R), not pushed live. Set VITE_HMR=1 to enable.

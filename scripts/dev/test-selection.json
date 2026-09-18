@@ -7,6 +7,11 @@
   ],
   "rules": [
     {
+      "patterns": ["src/tripplanner/model_recovery.py", "src/tripplanner/hotel_research.py"],
+      "backend": ["tests/test_trip_reliability.py"],
+      "reason": "model recovery and persisted hotel research"
+    },
+    {
       "patterns": ["src/tripplanner/flight_*.py", "src/tripplanner/http_client.py"],
       "backend": [
         "tests/test_flight_recorder.py",

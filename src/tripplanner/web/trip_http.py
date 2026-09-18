@@ -30,6 +30,10 @@ from tripplanner.web.http_context import set_request_user as _set_request_user
 
 router = APIRouter()
 
+from tripplanner.web.booking_http import router as booking_router
+
+router.include_router(booking_router)
+
 @router.get("/trip/view")
 async def trip_view_endpoint(
     request: Request,
@@ -703,6 +707,8 @@ async def trip_export_print(
     template: str = "standard",
     auto_print: str = "0",
     include_budgets: str = "0",
+    trip_id: str = "",
+    updated_at: str = "",
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
     from tripplanner.tools import trip_planner
@@ -710,6 +716,9 @@ async def trip_export_print(
 
     _set_request_user(request, user_id)
     plan = trip_planner.load_active_trip_dict()
+    if trip_id or updated_at or template == "booking_intent":
+        from tripplanner.web.booking_http import checked_plan
+        plan = checked_plan(trip_id, updated_at, require_revision=template == "booking_intent")
     html = build_export_html(
         plan,
         include_photos=parse_export_bool(include_photos, default=False),
@@ -729,12 +738,39 @@ async def trip_export_pdf(
     include_photos: str = "0",
     include_map_circuit: str = "1",
     include_budgets: str = "0",
+    trip_id: str = "",
+    updated_at: str = "",
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
+    _set_request_user(request, user_id)
+    # Photo fetches and a browser print take seconds; on the event loop they
+    # froze every other request for the whole export.
+    return await asyncio.to_thread(
+        _export_pdf_response,
+        template=template,
+        include_photos=include_photos,
+        include_map_circuit=include_map_circuit,
+        include_budgets=include_budgets,
+        trip_id=trip_id,
+        updated_at=updated_at,
+    )
+
+
+def _export_pdf_response(
+    *,
+    template: str,
+    include_photos: str,
+    include_map_circuit: str,
+    include_budgets: str,
+    trip_id: str,
+    updated_at: str,
+) -> Response:
     from tripplanner.tools import trip_planner
 
-    _set_request_user(request, user_id)
     plan = trip_planner.load_active_trip_dict()
+    if trip_id or updated_at or template == "booking_intent":
+        from tripplanner.web.booking_http import checked_plan
+        plan = checked_plan(trip_id, updated_at, require_revision=template == "booking_intent")
     if not plan:
         return JSONResponse({"error": "no active trip"}, status_code=404)
 
@@ -763,7 +799,7 @@ async def trip_export_pdf(
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{safe}-itinerary.pdf"'},
+        headers={"Content-Disposition": f'attachment; filename="{safe}-{"booking-intent" if template == "booking_intent" else "itinerary"}.pdf"'},
     )
 
 
@@ -777,7 +813,7 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     from tripplanner.web.itinerary_email import send_itinerary_email
 
     _set_request_user(request, req.user_id)
-    return send_itinerary_email(req, base_url=str(request.base_url))
+    return await asyncio.to_thread(send_itinerary_email, req, base_url=str(request.base_url))
 
 
 @router.post("/trip/share")

@@ -146,7 +146,18 @@ They are paid for instead in one deliberate pass:
 ```powershell
 pwsh scripts/dev/suite-health.ps1                 # measure master, report
 pwsh scripts/dev/suite-health.ps1 -UpdateBaseline # accept the current failures
+pwsh scripts/dev/suite-health.ps1 -CurrentWorktree # verify fixes in this checkout
 ```
+
+The owner launchers `scripts/win/user/testing/Suite-Health.cmd` and
+`scripts/mac/user/testing/Suite-Health.command` forward every argument to the
+same script; pass `help` for usage.
+
+The health run starts vitest with `node node_modules/vitest/vitest.mjs`, not
+`npx` — on Windows `npx vitest --version` alone measured 28.3s against 0.5s
+direct — and passes `--maxWorkers=4`, overriding `vitest.config.ts`'s cap of 2
+for this deliberate pass only. The cap stays for lane gates, where several
+worktrees validate at once.
 
 This fast-forwards the primary checkout to `origin/master`, runs both complete
 suites — neither one aborting the other — and classifies every failure against
@@ -162,6 +173,17 @@ suites — neither one aborting the other — and classifies every failure again
 `MISSING` is never folded into `FIXED`. Deleting a failing test is the cheapest
 way to make a system like this lie, and that bucket is what catches it.
 
+A whole test file can also fail to run without failing: when a vitest worker
+never starts, the file is simply absent from `vitest.json`, with no failure and
+no skip. The script lists every file vitest would run (`vitest list --filesOnly`)
+and reports any that did not execute under **DID NOT RUN**, with the verdict
+marked `INCOMPLETE` and exit code 2. Baseline entries in those files are
+`MISSING`, and `-UpdateBaseline` leaves that suite's section untouched.
+
+pytest failures are matched between the `-rfE` summary (exact node ids) and
+junit (the counts). pytest's default junit carries a dotted `classname`, not a
+file path, so matching derives the expected classname from each node id.
+
 `first_seen`, `owner`, `note`, and `category` survive every update, so the debt
 ages visibly instead of resetting. An entry whose `first_seen` is months old is
 the point of the file, not a bug in it.
@@ -171,6 +193,17 @@ Reports land in `logs/suite-health/<timestamp>/` with `report.md` and
 JSON for numbers; this document deliberately records none, because a transcribed
 failure list goes stale within a week.
 
+Use `-CurrentWorktree` in an existing agent worktree to validate local fixes
+without fetching or creating another temporary checkout. Commit first when the
+report must identify an immutable revision. Reports still land in the primary
+checkout's logs. Backend output is unbuffered, and tests that spend 120 seconds
+in one phase dump thread stacks for diagnosis without changing pass/fail budgets.
+Runs include the 15 slowest test phases so follow-up work starts from measured
+costs. Runner exit codes are checked alongside the
+artifacts: an interrupted pytest run or a vitest worker error cannot become green
+merely because the tests recorded before it passed. A missing vitest inventory
+is incomplete, and incomplete runs cannot retire baseline debt.
+
 To work the backlog, hand the report to a dedicated session with the
 `/fix-suite-health` command. It reads the report rather than re-running the
 suites, and it prohibits the cheap fake fixes — deleting tests, `skip`/`xfail`,
@@ -179,6 +212,22 @@ widening timing budgets, weakening assertions.
 `category` distinguishes `real` from `flaky-under-load`. Several known failures
 pass serially and fail only under concurrent load; their fix is isolation or a
 budget that reflects real contention, never a logic change.
+
+A health run is only a measurement of the code when it has the machine to itself.
+Before each suite, the script lists other live runs by the `logs/last-run`
+transcript each holds open (a deploy, sync, or sandbox; the idle local app
+launchers `run-latest-master` and `dev-spa` are not counted). A contended run still
+reports, marked **CONTENDED RUN** in `report.md` and `contended_by` in
+`report.json`, but it never writes the baseline, and `-UpdateBaseline` refuses to
+start while another run is live. The 2026-09-15 run was started together with
+`deploy-prod.ps1`; its vitest half overlapped the canary image's `tsc` + `vite`
+build and filed six load-only timeouts as NEW (one 1s test took 21s).
+
+Frontend `findBy*`/`waitFor` calls wait up to 5s (`asyncUtilTimeout` in
+`frontend/src/test/setup.ts`), not Testing Library's 1s default. That default is
+not a product latency: an idle machine measured 1.4-2.4s from `render(<App />)` to
+the first day heading and 0.7-2.7s for the first accessible-name query of a file.
+A missing element still fails; `testTimeout` (20s) remains the per-test ceiling.
 
 ### Which gates run, and turning them back on
 

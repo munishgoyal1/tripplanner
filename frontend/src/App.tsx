@@ -12,7 +12,7 @@ import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
 import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
-import WorkspaceDayBar from "./components/WorkspaceDayBar";
+import WorkspaceDayBar, { type WorkspaceDayFacts } from "./components/WorkspaceDayBar";
 import { trackEvent } from "./analytics";
 import { fetchDocumentReadiness, fetchPreferences, fetchTripView, fetchWorkspace, getDisplayName, importSharedTrip, isAnonymousUser, type DeselectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
@@ -20,7 +20,7 @@ import { useWorkspaceTripMutations, type NavRef } from "./hooks/useWorkspaceTrip
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
 import { completionStatus } from "./lib/turnStatus";
-import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
+import type { Itinerary, PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 import { ensureInitialDisplayPreferences, normalizeDisplayLanguage, normalizeDisplayRegion, writeDisplayPreferences } from "./lib/displayPreferences";
@@ -136,6 +136,8 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   const [mapOpen, setMapOpen] = useState(() => storedBoolean("tripplanner_map_open", true));
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
   const [itineraryHeaderTarget, setItineraryHeaderTarget] = useState<HTMLDivElement | null>(null);
+  // The itinerary pane owns booking toggles, so the day bar reads its latest copy.
+  const [liveItinerary, setLiveItinerary] = useState<Itinerary | null>(null);
   const [itineraryFilters, setItineraryFilters] = useState<ItineraryFilter[]>([]);
   const [itineraryOpen, setItineraryOpen] = useState(() => (
     storedBoolean("tripplanner_itinerary_open", true)
@@ -698,7 +700,6 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     const dateAndStayChanges = direction === "add"
       ? "Extend the return date by one day and extend the relevant hotel stay by one night."
       : "Move the return date one day earlier and shorten the relevant hotel stay by one night.";
-    dismissNotice("meal-gap");
     setChatOpen(true);
     setAssistantView("bar");
     setAssistantRequest({
@@ -746,6 +747,13 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       pin_ids: day.stops.map((_, index) => `${day.day}-${index}`),
       route: day.route ?? { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
     }));
+  const dayFactsSource = liveItinerary ?? panelSeed?.itinerary ?? null;
+  const workspaceDayFacts = dayFactsSource?.has_itinerary
+    ? Object.fromEntries(dayFactsSource.days.map((day): [number, WorkspaceDayFacts] => {
+      const planned = day.stops.filter((stop) => !["hotel", "airport", "origin"].includes(stop.kind));
+      return [day.day, { date: day.date, planned: planned.length, booked: planned.filter((stop) => stop.booked).length }];
+    }))
+    : undefined;
   const displayedWorkspaceDays = workspaceDays.length > 0
     ? workspaceDays
     : Array.from({ length: view?.overview?.counts.days ?? 0 }, (_, index) => ({
@@ -820,6 +828,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
             await refresh(null, { silent: true });
           }}
           onAdjustDays={handleAdjustTripDays}
+          onItineraryChange={setLiveItinerary}
         />
       );
     }
@@ -968,27 +977,11 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     });
   }, [assistantTurnStatus]);
 
-  const mealGapDay = panelSeed?.itinerary?.days?.find((day) => (
-    !day.stops.some((stop) => stop.kind === "meal" || stop.kind === "restaurant")
-  ));
-  useEffect(() => {
-    if (!mealGapDay) {
-      dismissNotice("meal-gap");
-      return;
-    }
-    notify({
-      id: "meal-gap",
-      tone: "decision",
-      message: `${mealGapDay.title || `Day ${mealGapDay.day}`} has no meal stop.`,
-      detail: "Use the Assistant to add a meal that fits the route and schedule.",
-    });
-  }, [mealGapDay?.day, mealGapDay?.title]);
-
   return <>
     {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
-      <div className="fixed inset-0 flex min-h-0 flex-col overflow-hidden bg-sand">
+      <div className="workspace-crisp fixed inset-0 flex min-h-0 flex-col overflow-hidden bg-sand">
         <DesktopToolbar
           tripVersion={tripVersion}
           onTripSwitched={handleSwitched}
@@ -1028,6 +1021,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
             onAllDays={handleMapAllDaysFocus}
             onDay={handleDayFocus}
             onToggleSequence={() => setSequenceOpen((open) => !open)}
+            dayFacts={workspaceDayFacts}
           />
         )}
 

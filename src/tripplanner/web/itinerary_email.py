@@ -24,10 +24,14 @@ def send_itinerary_email(
     base_url: str,
 ) -> dict | JSONResponse:
     plan = trip_planner.load_active_trip_dict()
+    if req.trip_id or req.updated_at or req.template == "booking_intent":
+        from tripplanner.web.booking_http import checked_plan
+        plan = checked_plan(req.trip_id, req.updated_at, require_revision=req.template == "booking_intent")
     if not plan:
         return {"ok": False, "error": "no_active_trip", "message": "No active trip to export."}
 
-    token = share.mint_for_active_trip()
+    token = (share.mint_booking_intent(plan) if req.template == "booking_intent"
+             else share.mint_for_active_trip())
     share_url = f"{base_url.rstrip('/')}/trip/shared/{token}" if token else ""
     html = itinerary_export.build_export_html(
         plan,
@@ -51,7 +55,8 @@ def send_itinerary_email(
     except Exception:
         pdf_bytes = None
     destination = str(plan.get("destination") or "Trip")
-    subject = f"{destination} itinerary export"
+    subject = f"{destination} {'booking intent list' if req.template == 'booking_intent' else 'itinerary export'}"
+    attachment_name = "booking-intent" if req.template == "booking_intent" else "trip-itinerary"
     fingerprint = external_operations.payload_fingerprint(
         {
             "trip_id": trip_planner.active_trip_id(),
@@ -60,6 +65,7 @@ def send_itinerary_email(
             "include_map_circuit": req.include_map_circuit,
             "include_budgets": req.include_budgets,
             "template": req.template,
+            **({"updated_at": plan.get("updated_at")} if req.template == "booking_intent" else {}),
         }
     )
     try:
@@ -73,7 +79,7 @@ def send_itinerary_email(
         return {**dict(existing.get("result") or {}), "replayed": True}
 
     plain = (
-        f"Your trip itinerary for {destination} is attached as a PDF.\n"
+        f"Your {'booking intent list' if req.template == 'booking_intent' else 'trip itinerary'} for {destination} is attached as a PDF.\n"
         + (f"\nOpen this trip in the planner:\n{share_url}\n" if share_url else "")
     )
 
@@ -103,7 +109,7 @@ def send_itinerary_email(
             if pdf_bytes:
                 message["attachments"] = [
                     {
-                        "name": "trip-itinerary.pdf",
+                        "name": f"{attachment_name}.pdf",
                         "contentType": "application/pdf",
                         "contentInBase64": base64.b64encode(pdf_bytes).decode("ascii"),
                     }
@@ -202,14 +208,14 @@ def send_itinerary_email(
             pdf_bytes,
             maintype="application",
             subtype="pdf",
-            filename="trip-itinerary.pdf",
+            filename=f"{attachment_name}.pdf",
         )
     else:
         message.add_attachment(
             html.encode("utf-8"),
             maintype="text",
             subtype="html",
-            filename="trip-itinerary.html",
+            filename=f"{attachment_name}.html",
         )
 
     email_started = time.monotonic()

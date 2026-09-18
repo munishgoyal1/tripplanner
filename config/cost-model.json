@@ -24,9 +24,17 @@
     "googleShareOfDailyCeiling": 0.5,
     "dailyHeadroom": 1.5,
     "burstPerMinuteFloor": {
-      "places.googleapis.com/SearchTextRequestPerMinutePerProject": { "local": 90, "canary": 60, "prod": 60 },
+      "places.googleapis.com/SearchTextRequestPerMinutePerProject": {
+        "local": 90,
+        "canary": 60,
+        "prod": 60
+      },
       "places.googleapis.com/GetPlaceRequestPerMinutePerProject": 40,
-      "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject": { "local": 120, "canary": 60, "prod": 60 },
+      "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject": {
+        "local": 120,
+        "canary": 60,
+        "prod": 60
+      },
       "places.googleapis.com/SearchNearbyRequestPerMinutePerProject": 10,
       "places.googleapis.com/AutocompletePlacesRequestPerMinutePerProject": 20,
       "places-backend.googleapis.com/BillableDefaultPerMinutePerProject": 60,
@@ -47,7 +55,79 @@
     "reservePercentile": 75,
     "unknownCostPercentile": 95,
     "minSamples": 5,
-    "seedReserveInr": { "new_trip": 60.0, "trip_update": 20.0 },
-    "seedUnknownInr": { "new_trip": 120.0, "trip_update": 40.0 }
+    "seedReserveInr": {
+      "new_trip": 60.0,
+      "trip_update": 20.0
+    },
+    "seedUnknownInr": {
+      "new_trip": 120.0,
+      "trip_update": 40.0
+    }
+  },
+  "cosmosSizing": {
+    "$comment": "Cosmos DB sizing, derived from COST_CEILING_INR_HOURLY (the burst-shaped spend ceiling) and CHAT_MAX_CONCURRENT_GLOBAL (the concurrency abuse control) rather than hand-set. Provisioned RU/s is a RATE, so it can only be derived from a rate: the daily ceiling divided by 86400 describes a smoothness real traffic never has. The chain is: hourly INR ceiling -> trips affordable in that hour -> the worst case where all of them are in flight at once (capped by the concurrency control) -> RU each trip costs -> RU/s. Consumed by scripts/derive_limits.py, asserted by tests/test_limits_derivation.py.",
+    "ruPerReadKb": 1.0,
+    "ruPerWriteKb": 5.0,
+    "$ruComment": "Azure's published point-operation costs: a 1 KB point read is 1 RU and a 1 KB point write about 5 RU with default (index-everything) policy, scaling with document size. These are a planning catalog exactly like GOOGLE_PLACES_USD_PER_REQUEST, not measured values -- storage_cosmos.py now captures the real x-ms-request-charge per operation, so these get replaced by observed RU once enough production traffic has accumulated.",
+    "p95TripCostInr": 120.0,
+    "$p95Comment": "Matches reservation.seedUnknownInr.new_trip -- the same worst-case INR a new trip reserves when the ledger has no percentile history. Dividing the hourly ceiling by this is what makes 'how many trips may be in flight' a derived number.",
+    "tripBuildSeconds": 120,
+    "$tripBuildComment": "The chat latency SLO's p95 ceiling (azureInfraHealthAlerts chat-latency-burn alerts above 120s), so a trip build is assumed to spread its Cosmos work across at most this long. A shorter real build concentrates the same RU into less time, which is what burstFactor below covers.",
+    "burstFactor": 8,
+    "$burstFactorComment": "A trip build is not a smooth stream of Cosmos operations. places_cache.prefetch fans one request across places_cache._MAX_WORKERS (8) worker threads, so instantaneous RU demand runs about eight times the build-window average. Sizing RU/s on the average is what let a 400 RU/s database return 429s while its mean utilisation looked modest.",
+    "provisionHeadroom": 1.5,
+    "minimumRuPerSecond": 400,
+    "roundRuToMultipleOf": 100,
+    "$minimumComment": "400 RU/s is Azure's floor for a shared-throughput database; the derivation may raise it but never proposes a value Cosmos would reject.",
+    "freeTierRuPerSecond": 1000,
+    "$freeTierComment": "enableFreeTier on the account discounts the first 1000 RU/s of provisioned throughput ACCOUNT-WIDE (plus 25 GB storage), not per database. Anything provisioned above it is billed every hour, used or not. infra/data.bicep provisions exactly two databases there, tripplanner-canary and tripplanner-prod; local development uses a different account and is not in this budget.",
+    "freeTierAllocationRuPerSecond": {
+      "$comment": "OWNER POLICY (2026-09-13): no Cosmos throughput billing while usage fits the free tier. These are hard ceilings: burst sizing may ask for more, but a database is never provisioned above its cap, and scripts/derive_limits.py refuses caps that sum past freeTierRuPerSecond or fall below minimumRuPerSecond. A burst above the cap costs retried 429s (added latency), never money. Canary sits at Azure's 400 RU/s floor because it carries almost no traffic; prod gets the rest. Raise prod only by deciding to pay for the overflow.",
+      "canary": 400,
+      "prod": 600
+    },
+    "tripOpProfile": {
+      "$comment": "Cosmos operations one new_trip build issues, per container, with the document size used to price them. Document sizes for 'trips' are measured from corpus/trips (median 6.4 KB, p95 15.4 KB -- p95 is used, since sizing on the median is what under-provisions). The remaining rows are the call sites in each module: places_cache and tool_cache read-then-write once per resolved place or tool call for a ~5-day, ~20-place trip; provider_usage writes once per outbound provider call. trip_costs is the cost ledger over the build's four turns, in two rows because its two documents differ in size by an order of magnitude: the window document takes a read and a conditional write at reserve and again at settle (8 + 8), priced at its size measured by driving cost_ledger's own mutators to steady state (200 settled-interaction markers, 200 cost samples per category, 12 turns in flight: 8.1 KB); each settle then reads and upserts the trip's own cost document (0.7 KB, so the 1 KB floor). The previous single row priced the window document at 2 KB when it measured 11.6 KB, and omitted the trip-document operations and a per-settle read-back of the window document that no longer happens.",
+      "trips": {
+        "reads": 6,
+        "writes": 8,
+        "docKb": 16
+      },
+      "places_cache": {
+        "reads": 40,
+        "writes": 20,
+        "docKb": 2
+      },
+      "tool_cache": {
+        "reads": 30,
+        "writes": 15,
+        "docKb": 4
+      },
+      "provider_usage": {
+        "reads": 0,
+        "writes": 40,
+        "docKb": 1
+      },
+      "trip_costs": {
+        "reads": 8,
+        "writes": 8,
+        "docKb": 8.1
+      },
+      "trip_costs:trip_documents": {
+        "reads": 4,
+        "writes": 4,
+        "docKb": 1
+      },
+      "audit_events": {
+        "reads": 0,
+        "writes": 6,
+        "docKb": 1
+      }
+    },
+    "throttleAlert": {
+      "$comment": "The Cosmos 429 alert threshold, derived instead of the flat 20 it used to carry. A 429 is not by itself an incident -- the SDK retries it transparently -- so the threshold is the number of throttles a legitimately paced peak burst may produce across the alert window before the provisioned RU/s is genuinely wrong. Below that it is noise; above it, the derivation that produced ruPerSecond is not holding.",
+      "toleratedThrottleRate": 0.01,
+      "minimumThreshold": 20
+    }
   }
 }

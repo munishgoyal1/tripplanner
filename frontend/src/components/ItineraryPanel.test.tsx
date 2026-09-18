@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Itinerary, TripOverview } from "../types";
@@ -160,6 +161,22 @@ describe("ItineraryPanel", () => {
     expect(fetchItineraryMock).toHaveBeenCalledTimes(2);
   });
 
+  it("ends a stalled initial load with a recoverable error", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    fetchItineraryMock.mockReturnValue(new Promise(() => undefined));
+    try {
+      render(<ItineraryPanel />);
+
+      expect(await screen.findByText("Loading itinerary…")).toBeInTheDocument();
+      await vi.advanceTimersByTimeAsync(30_000);
+
+      expect(screen.getByText("The itinerary took too long to load.")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("shows the compact brief and agenda metadata", async () => {
     render(<ItineraryPanel />);
 
@@ -179,7 +196,7 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
     expect(screen.getByText("Walk from Louvre Museum to Seine cruise.")).toBeInTheDocument();
-    expect(screen.getByText("Est. arrive 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
+    expect(screen.getByText("Earliest arrival 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
     expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
     expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
     expect(screen.getAllByText("Arrive")).toHaveLength(2);
@@ -258,6 +275,66 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("D1");
     expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");
     expect(snapshot).not.toHaveTextContent("Estimate · 50% live price coverage");
+  });
+
+  it("keeps weather and budget one tap away in snapshot tabs", async () => {
+    const onAllDaysMap = vi.fn();
+    render(
+      <ItineraryPanel
+        onAllDaysMap={onAllDaysMap}
+        overview={{
+          ...overview,
+          budget: {
+            currency: "USD", spent: 45000, spent_display: "$45,000", travelers: 2, per_traveler: 22500,
+            per_traveler_display: "$22,500", breakdown: {}, target: 60000, target_display: "$60,000",
+            remaining: 15000, remaining_display: "$15,000", pct_used: 75, over_budget: false, estimated: false,
+            evidence_coverage_pct: 100, verified_spent: 45000,
+          },
+        }}
+      />,
+    );
+
+    await screen.findByText("Museums and river");
+    const snapshot = screen.getByRole("region", { name: "Trip snapshot" });
+    const [overviewPanel, weatherPanel, budgetPanel] = Array.from(snapshot.querySelectorAll<HTMLElement>("[role=tabpanel]"));
+    expect(overviewPanel).not.toHaveAttribute("hidden");
+    expect(weatherPanel).toHaveAttribute("hidden");
+    expect(weatherPanel).toHaveTextContent("Compact umbrella and light rain jacket");
+    expect(budgetPanel).toHaveAttribute("hidden");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Weather" }));
+    expect(screen.getByRole("tab", { name: "Weather" })).toHaveAttribute("aria-selected", "true");
+    expect(weatherPanel).not.toHaveAttribute("hidden");
+    expect(overviewPanel).toHaveAttribute("hidden");
+
+    fireEvent.click(screen.getByRole("tab", { name: /Budget/ }));
+    expect(budgetPanel).not.toHaveAttribute("hidden");
+    expect(budgetPanel).toHaveTextContent("75% used");
+    expect(onAllDaysMap).not.toHaveBeenCalled();
+  });
+
+  it("puts readiness in the pane header and reports the itinerary it shows", async () => {
+    const header = document.createElement("div");
+    document.body.appendChild(header);
+    const onItineraryChange = vi.fn();
+    render(<ItineraryPanel headerTarget={header} onFilterToggle={vi.fn()} onItineraryChange={onItineraryChange} />);
+
+    await screen.findByText("Museums and river");
+    expect(header).toHaveTextContent("0/2 ready");
+    expect(onItineraryChange).toHaveBeenLastCalledWith(itinerary);
+    header.remove();
+  });
+
+  it("tightens row spacing in compact density without hiding facts", async () => {
+    render(<ItineraryPanel />);
+
+    const louvre = await screen.findByText("Louvre Museum");
+    const row = louvre.closest("article");
+    expect(row).toHaveClass("py-2.5");
+    fireEvent.click(screen.getByRole("button", { name: "compact" }));
+    expect(row).toHaveClass("py-1.5");
+    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "compact" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("keeps summary and weather visible when an older trip has no forecast", async () => {
@@ -622,7 +699,7 @@ describe("ItineraryPanel", () => {
     const returnLabel = await screen.findByText("Return to Hotel Lutetia");
     const returnRow = returnLabel.closest("li");
     expect(returnRow).toHaveAttribute("data-stop-indexes", "3");
-    expect(returnRow?.querySelector("article")).toHaveClass("bg-paper", "ring-clay/15");
+    expect(returnRow?.querySelector("article")).toHaveClass("bg-sand", "ring-clay/15");
     expect(scrollIntoViewMock.mock.instances[0]).toBe(returnRow);
   });
 
@@ -930,7 +1007,7 @@ describe("ItineraryPanel", () => {
     expect(bookingAction).toHaveTextContent("Confirmed");
 
     await waitFor(() => expect(bookingAction).toHaveAttribute("aria-pressed", "false"));
-    expect(bookingAction).toHaveTextContent("Needs booking");
+    expect(bookingAction).toHaveTextContent("To book");
     expect(screen.getByRole("status")).toHaveTextContent("Could not update the booking status.");
   });
 
@@ -982,6 +1059,25 @@ describe("ItineraryPanel", () => {
 
     expect(await screen.findByText("Museums and river")).toBeTruthy();
     expect(fetchItineraryMock).not.toHaveBeenCalled();
+  });
+
+  it("renders a returned workspace seed under the application's StrictMode", async () => {
+    const { rerender } = render(<StrictMode><ItineraryPanel seedPending /></StrictMode>);
+    rerender(<StrictMode><ItineraryPanel seedPending={false} seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    expect(screen.queryByText("Loading itinerary…")).not.toBeInTheDocument();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+  });
+
+  it("reuses a seed on StrictMode remount but refreshes it after an explicit revision", async () => {
+    const first = render(<StrictMode><ItineraryPanel seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    first.unmount();
+    const { rerender } = render(<StrictMode><ItineraryPanel seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+    rerender(<StrictMode><ItineraryPanel seed={itinerary} reloadToken={1} /></StrictMode>);
+    await waitFor(() => expect(fetchItineraryMock).toHaveBeenCalledTimes(1));
   });
 
   it("fetches for itself when the workspace payload never arrives", async () => {

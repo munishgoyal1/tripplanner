@@ -217,12 +217,13 @@ def _day_route_summary(
     pin_by_id: dict[str, dict[str, Any]],
     intercity_modes: dict[tuple[str, str], str] | None,
     legs: list[dict[str, Any]],
+    disconnected: bool = False,
 ) -> dict[str, Any]:
-    if not intercity_modes:
+    if not intercity_modes and not disconnected:
         return _route_stats_for_day(route_ids, pin_by_id)
     distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
     duration = sum(int(leg["duration_min"]) for leg in legs)
-    modes = list(dict.fromkeys(intercity_modes.values()))
+    modes = list(dict.fromkeys((intercity_modes or {}).values()))
     if any(not leg.get("intercity") for leg in legs):
         modes.append("local")
     return {
@@ -265,22 +266,37 @@ def _build_days(
                     kind_of=_pin_kind,
                     extra_stay_ids=resolved_stay_ids[1:],
                 )
-            route_ids = journey.route_ids
+            segments = [*journey.completed_segments, journey.route_ids]
+            route_ids = [pid for segment in segments for pid in segment]
             ids = journey.map_pin_ids if journey.detached_pin_ids else route_ids
         else:
             stay_ids = _active_stay_ids(
                 trip, itinerary_days, pin_for_stop, d, selected_stay_ids
             )
-            ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
+            uncovered = any(
+                stop.get("uncovered_booking_item_id") and stop.get("name") == "Hotel TBD"
+                for index, entry in enumerate(trip.get("day_wise_itinerary") or [])
+                if isinstance(entry, dict) and _day_number(entry, index) == d
+                for stop in entry.get("stops") or [] if isinstance(stop, dict)
+            )
+            if uncovered:
+                ids = [
+                    pid for pid in ids
+                    if pin_by_id[pid]["kind"] != "hotel" or pid in resolved_stay_ids
+                ]
+            else:
+                ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
             route_ids = [pid for pid in ids if pin_by_id[pid]["kind"] not in TERMINAL_KINDS]
+        if not journey.is_transfer:
+            segments = [route_ids]
         intercity_modes = journey.intercity_edges or None
-        legs = _route_legs_for_day(
-            route_ids,
+        legs = [leg for segment in segments for leg in _route_legs_for_day(
+            segment,
             pin_by_id,
             intercity_modes,
             journey.circuit_edges or None,
             transfer_metrics,
-        )
+        )]
         days.append(
             {
                 "day": d,
@@ -291,7 +307,9 @@ def _build_days(
                 "circuit_pin_ids": frame_pin_ids(
                     route_ids, journey.intercity_edges, kind_of=_pin_kind
                 ),
-                "route": _day_route_summary(route_ids, pin_by_id, intercity_modes, legs),
+                "route": _day_route_summary(
+                    route_ids, pin_by_id, intercity_modes, legs, journey.route_disconnected
+                ),
                 "legs": legs,
             }
         )
@@ -347,7 +365,7 @@ def _build_road_circuits(
             origin_fallbacks.append(carried_stay)
         if day and day["pin_ids"]:
             first_pin = pin_by_id.get(day["pin_ids"][0])
-            if first_pin and first_pin["kind"] in {"hotel", "origin"}:
+            if first_pin and first_pin["kind"] == "hotel":
                 origin_fallbacks.append(str(first_pin["id"]))
         for stop_index, stop in enumerate(normalized, start=1):
             mode = str(stop["mode"] or "")

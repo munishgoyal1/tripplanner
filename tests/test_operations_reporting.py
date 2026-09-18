@@ -145,3 +145,33 @@ def test_snapshot_joins_cross_user_trip_interactions_and_safe_infra(monkeypatch)
     assert "secret-key" not in serialized_config
     assert "secret-connection" not in serialized_config
     assert "Managed identity" in serialized_config
+
+
+def test_missing_product_events_collection_is_empty(monkeypatch):
+    from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+    monkeypatch.setattr(operations_reporting.storage_cosmos, "is_enabled", lambda: True)
+
+    def missing(*args, **kwargs):
+        raise CosmosResourceNotFoundError(status_code=404, message="Collection not found")
+
+    monkeypatch.setattr(operations_reporting.storage_cosmos, "operations_query", missing)
+    assert operations_reporting._read_product_events(
+        datetime(2026, 8, 1, tzinfo=UTC), datetime(2026, 9, 1, tzinfo=UTC)
+    ) == []
+
+
+def test_product_events_database_failure_is_not_reported_as_zero(monkeypatch):
+    import pytest
+    from azure.cosmos.exceptions import CosmosHttpResponseError
+
+    monkeypatch.setattr(operations_reporting.storage_cosmos, "is_enabled", lambda: True)
+
+    def failed(*args, **kwargs):
+        raise CosmosHttpResponseError(status_code=503, message="Unavailable")
+
+    monkeypatch.setattr(operations_reporting.storage_cosmos, "operations_query", failed)
+    with pytest.raises(CosmosHttpResponseError):
+        operations_reporting._read_product_events(
+            datetime(2026, 8, 1, tzinfo=UTC), datetime(2026, 9, 1, tzinfo=UTC)
+        )

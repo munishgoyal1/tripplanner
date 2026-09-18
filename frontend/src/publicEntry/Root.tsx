@@ -9,9 +9,11 @@ import { trackPageView } from "../analytics";
 const PublicEntry = lazy(() => import("./PublicEntry"));
 const App = lazy(() => import("../App"));
 const OpsDashboard = lazy(() => import("../ops/OpsDashboard"));
+const BookingPage = lazy(() => import("../components/BookingPage"));
 
 /** `/` owns the public entry, `/planner` owns the workspace, and `/welcome` redirects home. */
 function Routes() {
+  if (window.location.pathname === "/bookings") return <BookingPage />;
   if (window.location.pathname === "/operations") {
     return <OpsDashboard />;
   }

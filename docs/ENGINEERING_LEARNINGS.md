@@ -2040,3 +2040,399 @@ the outcome.
   and process restart separately from the configuration change.
 - Backend request durations do not measure browser cold startup. Report the
   observed timing layer and avoid claiming an unmeasured end-to-end speedup.
+
+## 2026-09-12 - Keep Flight Edits Out Of Whole-Trip Repair
+
+- Kashmir's flight-only request ran 53 model rounds and 49 saves because generic
+  completion gates forced hotel/meal research and then repeatedly repaired old
+  gaps. Scope completion checks and tool availability to the requested component;
+  enforce preservation at persistence, not only in prompt wording.
+- A successful tool return can say "no material changes". Treat consecutive no-op
+  saves and identical rejected saves as lack of progress and end tool work. A
+  second completion rule must not bypass the first rule's bounded save attempts.
+- A setting named full prompt logging still truncated after 20,000 characters.
+  Verify the retained tail and tool configuration, not merely that a log field
+  exists. Turn ordinals count user requests; many model rounds can share one turn.
+
+
+## 2026-09-12 - Recover model calls without replaying trip writes
+
+- Retry an incomplete model invocation rather than its surrounding graph. A real
+  streamed-model fault test proves that an already executed save happens once,
+  failed fragments never reach the response, and a persistent disconnect terminates.
+- A new human-readable hotel gap can accidentally become a hard completion gate.
+  Classify research explanations as lodging gaps and test bounded completion as
+  well as persistence. Keep property identity separate from room inventory.
+- Resetting a route at an unresolved transfer must preserve prior local segments.
+  Measure and render segments independently; flattening them before calculating
+  legs invents a connection across the unresolved gap.
+
+## 2026-09-13 - Test Parsers Against the Tool's Real Output
+
+- `suite_health` refused every real pytest run that had a failure: it matched on
+  junit's `file` attribute, which pytest's default `xunit2` never writes. Its
+  test fixture invented `file=`, so the parser passed its tests and failed its
+  only job. When code parses another tool's output, generate the fixture by
+  running that tool, not by writing the shape you expect.
+- A vitest file whose worker never starts is absent from the json report, not
+  failed or skipped, so the totals still read as a clean run. Compare the
+  executed files against `vitest list --filesOnly` to catch it.
+- `restoreMocks: true` does not clear call history on a hoisted `vi.fn()` in
+  Vitest 4. A `not.toHaveBeenCalled()` passed alone and failed after earlier
+  tests in the same file; clear hoisted mocks in `beforeEach`.
+## 2026-09-13 - Prove push rights and pin the commit before a deploy builds
+
+- A canary deploy failed at `docker push` eleven minutes in, after Bicep
+  validation, what-if and a full build, although its credential preflight had
+  passed. The preflight read the image manifest; the package is public, so the
+  read succeeded anonymously while Docker's credential store held nothing for
+  `ghcr.io`. A read against a public resource proves no identity. Verify the
+  credential that the failing step will use, with the authority that grants it
+  (GitHub's `/user` owner and `write:packages` scope), and do it before slow work.
+- The same run named its image after the commit it started on, but the primary
+  checkout was fast-forwarded mid-run and the build read the live tree, so the
+  tag and the contents could disagree. Resolve the commit once, then build from
+  a `git archive` export of it. BuildKit caches by content, so a fresh export
+  directory still reuses every layer.
+
+## 2026-09-13 - Tests Inherit the Checked-In Profile
+
+- Importing `tripplanner.config` loads `local.env` into the test process. When
+  the owner set `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1` there, three recorder
+  tests failed: they pinned the recorder on but not verbosity. Pin every flag a
+  test's assertion depends on in the shared autouse fixture, not only the master
+  switch.
+- Do not order recorder evidence by spool file name. Files are named
+  `<time_ns>-<uuid>`, one per (user, trace) group per flush, and on Windows two
+  files often share a `time_ns`, so a request that changes user mid-flight made
+  "last event" a coin flip. Sort by `(unix_time, sequence)` as export does.
+- A size cap is also a scan cost. Raising the spool cap to 500 MiB meant walking
+  tens of thousands of files after every batch and every 2-second drain, so
+  `prune_spool` now runs at most once a minute per directory.
+
+## 2026-09-13 - Find the slow layer before blaming the remote service
+
+- "Bicep validation" measured 60s and 255s on the same template. A timestamped
+  `az --debug` trace put about 5s in ARM and the rest locally, before any request:
+  `az` launches `bicep.exe` for the template and again for the `.bicepparam`, and
+  each launch ranged from ~4s warm to tens of seconds under memory pressure or
+  just after Modern Standby. The slow deploy had started 72s after resume.
+- The fix was to stop paying for a redundant compile, not to tune Azure: what-if
+  already runs ARM template validation and `create` repeats it, so a standalone
+  `validate` bought nothing. When removing a step that produced diagnostics,
+  make the surviving step report them; what-if had been discarding stderr.
+- A timing loop that crosses standby reports sleep as work. Check Kernel-Power
+  506/507 events before believing an outlier.
+
+## 2026-09-13 - Keep suite evidence aligned with successful completion
+
+- The API now publishes assistant text on a successful `trip_agent` completion;
+  a benchmark fake emitting only raw model chunks no longer exercises that
+  contract. Update the producer fixture when its event protocol changes, while
+  retaining exact JSON/SSE reply parity assertions.
+- Hotel fallback and disconnected map segments changed intentionally. Stub both
+  hotel inventory and Places research, assert unresolved inventory explicitly,
+  and prove absent ground legs while retaining pins on both sides of the gap.
+- A passing report artifact is insufficient evidence when its runner exited
+  abnormally. Preserve runner status and expected file inventory through report
+  generation; require execution evidence before retiring a baseline entry and
+  preserve the other suite when updating only one.
+## 2026-09-13 - Fakes Cannot Check a Callback Contract; More RU/s Cannot Fix One Partition Key
+
+- `storage_cosmos._ru_recorder` returned a one-argument `response_hook`.
+  azure-cosmos calls it as `hook(headers, result)` after a request succeeds, so
+  every Cosmos read and write raised `TypeError`, even though Cosmos had completed
+  the operation. Every test faked the container object, so the SDK never got to
+  call the hook. When code hands a callback to a library, the test has to let the
+  library make the call: drive the real client over a fake HTTP transport, as
+  `test_request_charge_hook_matches_how_the_sdk_calls_it` now does.
+- A synthetic partition value (`_shared`, `_global_`) that every request names
+  confines that workload to one physical partition's slice of throughput and to
+  20 GB of storage, however much RU/s is provisioned. Derive the value from the
+  item id instead (`place_cache_layout.partition`), which keeps point reads intact.
+  Changing the value is a data migration, not a config change. Rows that never
+  expire (`CACHE_STABLE_FOREVER`) will not age out, so readers need a legacy
+  fallback plus a migration script.
+- Do not shard a counter that enforces a ceiling: a check against one shard
+  cannot see a concurrent hold on another. Keep the single document and remove
+  the contention instead. `cost_ledger` group-commits every mutation in the
+  process into one read and one write, and shrinks the document, since every
+  commit rewrites all of it.
+- A sizing profile entry nobody measured can be wrong by 6x. `trip_costs` was
+  priced at 2 KB; the real window document was 11.6 KB. When real traffic RU is
+  unavailable, measure document size by running the code's own mutators to
+  steady state, not by reading the code.
+
+## 2026-09-13 - A Derived Capacity Needs a Billing Ceiling, and the Real Deployment Checked
+
+- Burst sizing raised provisioned Cosmos throughput first to 600 and then to 700
+  RU/s per database, 1400 RU/s in an account whose free tier covers 1000. The
+  next infra deploy would have billed 400 RU/s around the clock, against the
+  owner's explicit no-billing policy. The derivation had one input nobody
+  enforced: what the owner is willing to pay. Put that policy in the model as a
+  hard cap (`freeTierAllocationRuPerSecond`) that the derivation cannot exceed
+  and refuses to break. Over-provisioning is billed hourly whether used or not;
+  an under-provisioned burst costs only a retried 429.
+- Before telling the owner what their account costs, query it. `az cosmosdb`
+  showed two databases at 400 RU/s, 800 total and free, while the guardrails file
+  implied three databases and an overflow that did not exist.
+- Partition key cardinality is not a cost lever. RU are charged per operation and
+  per provisioned RU/s, never per logical partition. A hot partition only binds
+  once a container spans several physical partitions (past about 10,000 RU/s or
+  50 GB), so say plainly when a partitioning change is future-proofing rather than
+  a fix.
+
+## 2026-09-13 - Check a Fix Against Today's Scale Before Paying for Its Migration
+
+- The `places_cache` bucketing from #319 was reverted the same day. At 1000 RU/s
+  and a few GB, even 5x growth never reaches the thresholds where a hot logical
+  partition binds. It added a fallback read, a migration script to run on every
+  database, and a sync guard, for no present or near-term return. Before
+  building an infrastructure-shaped fix, state the scale at which the problem
+  begins, compare it with measured and projected load, and only proceed if they
+  are close. The ledger group commit stayed: contention on one document happens
+  at any throughput.
+## 2026-09-14 - Booking intent must outlive a provider quote
+
+- A provider may reuse an offer ID while changing its price. An override path
+  that treats the active ID as an unconditional no-op cannot accept that refreshed
+  price. Keep the selected intention separate from refreshed evidence, then apply
+  the explicitly accepted facts and calculate the delta from the saved selection.
+- Changing a reported product must clear old room/fare terms and coordinates;
+  retaining its original intention in a separate snapshot preserves history
+  without presenting the previous product's evidence as the actual booking.
+- Prove these boundaries with exact-ID refresh and product-replacement tests,
+  plus redacted packet and fake-email checks. A UI that looks correct alone does
+  not establish price continuity, privacy or idempotent external delivery.
+
+
+## 2026-09-14 - Large diagnostic rows can freeze an otherwise small local workspace
+
+- Local had only six trips, but 6,563 usage documents and 67,917 recorder rows.
+  Emulator PostgreSQL logs identified the actual failure: query results exceeded
+  its 4,096 KiB buffer. Inventory queries were fast; selecting full usage batches
+  included large telemetry arrays and retried HTTP 500s. Read nested accounting
+  entries directly. On this emulator, filtered parent scans also materialize
+  whole documents; use unfiltered entry/metadata scans and filter dates in Python,
+  while hosted Cosmos retains server-side date predicates and legacy-row reads.
+- A synchronous SDK call inside an async HTTP route blocks unrelated requests.
+  Use FastAPI's worker-pool route for synchronous reporting and prove a health
+  request completes while a reporting read is deliberately held open.
+- A missing lazily created analytics collection is an empty dataset, not a
+  dashboard failure. Catch only that absence. Surface other errors, prevent
+  overlapping refreshes, and discard stale range responses so failures cannot
+  masquerade as endless Loading.
+
+
+## 2026-09-14 - A fast cache hit is not a page-load performance fix
+
+- The first local Operations fix removed emulator errors and event-loop stalls,
+  but a 60-second blocking cache still imposed a 24-second scan after expiry or
+  process restart. Persist the last successful snapshot and refresh it outside
+  navigation. Keep freshness visible and preserve old data on a failed rebuild;
+  an unavailable report must never masquerade as zero measured cost.
+- Measure browser content readiness as well as API duration. The original
+  dashboard transferred roughly 3 MB of drilldown data, mostly background
+  interactions that its UI never rendered. Filter those detail groups at the
+  dashboard boundary while retaining all aggregate totals and the source ledger.
+- Validate cold process memory, expired snapshots, blocked rebuilds, absent
+  snapshots, and identity/range isolation. A single warm request or an early
+  loading label is not evidence that the useful page meets its latency target.
+
+## 2026-09-14 - Finish planning before inviting itinerary review
+
+- The local Rameshwaram turn made five chronology-rejected saves, persisted eight
+  draft days, then hit no_progress after hotel and restaurant research separated
+  two no-op saves. Compare consecutive saves against the same evidence; a new
+  research batch is progress, while repeated unchanged saves still need a guard.
+- Chronology diagnostics used the rejected start time to validate the next stop,
+  forcing repeated small repairs. Propagate the minimum corrected start through
+  the circuit so one rejection describes all downstream corrections together.
+- A completed model call can still contain tool calls, and an SSE done event can
+  precede pane loading. Publish terminal prose only, await the workspace refresh,
+  then reveal the reply and release Send together. Test this with a deferred
+  refresh promise and a real graph containing a tool-call preamble.
+- A successful workspace HTTP response does not prove what the browser rendered.
+  Keep the confirmed backend stop distinct from an unverified persistent empty-pane
+  report; guide/photo warming after a turn is not background itinerary generation.
+
+## 2026-09-14 - A complete road trip needs identities and decisions
+
+- The eight-day Rameshwaram draft contained two Day 7 alternatives as real stops,
+  no selected hotels, and a Kanyakumari attraction on its Rameshwaram day. A day
+  count is not coherence: reject unselected route branches at persistence, track
+  hotel research by city, and require selection when grounded candidates exist.
+- A map GET cannot resolve uncached Bangalore coordinates under the read-only
+  provider policy. Prepare endpoint and day-locality metadata during the authorized
+  save, without requiring a later background task to complete the circuit.
+- Drive pin extraction registered only the departure city and skipped that when
+  another anchor existed. Register both ends; an unresolved hotel closes the
+  transfer at its named city, rather than absorbing subsequent sightseeing.
+  Preserve a concrete carried stay ahead of the city-center fallback.
+- The 300 km cutoff for inferred local hops was also used to reject explicit
+  drives. Keep inference limits distinct from declared intercity transport, and
+  prevent timing repair from moving an attraction into a different overnight city.
+
+## 2026-09-14 - Verify the save, not the assistant's repair claim
+
+- Live replay exposed hotel locality false negatives for Rameshwaram/Rameswaram.
+  Canonicalize known aliases with whole-place boundaries; arbitrary substring or
+  fuzzy address matches can select the wrong city.
+- A hotel-selection nudge overrode the previous chronology rejection, and notes-only
+  saves retired the repair loop. Preserve rejection details and enforce all-day
+  coverage at the tool boundary whenever the graph requires a full repair.
+- Even a final prompt containing saved JSON did not prevent the model from narrating
+  rejected changes as saved. Render stopped-run replies directly from persisted
+  days and gaps, and test both the graph and API safety-limit exits.
+- Apply locality normalization to research coverage as well as provider filtering.
+  Otherwise a successful Rameswaram search leaves Rameshwaram pending forever.
+  An end-to-end policy test must show that alias evidence advances to selection.
+
+## 2026-09-14 - Repair must preserve which side of a drive a stop belongs to
+
+- Live saved-state validation found that settlement assumed a 90-minute hotel
+  stop while chronology allowed 45. Valid checkout anchors moved after drives,
+  creating false intercity jumps. Reuse the validator duration rather than a
+  second default; test the saved circuit order, not just increasing clock times.
+- A flight-style departure rule placed all stops before a return drive, including
+  home arrival. Road journeys need chronological endpoint handling. Obsolete
+  Option A/B legs also must not be restored as if they were booked commitments.
+- A forced write cannot read get_trip_plan first. Supply its actual persisted
+  stops with the repair instruction rather than asking the model to preserve
+  details it cannot access in that phase.
+- Inspect unmapped candidates as well as missing coordinates. Bangalore was fully
+  geocoded to Bengaluru but rejected as a name mismatch; the Rameswaram and
+  Kanniyakumari hotel addresses also failed locality checks. Reuse known aliases
+  at map identity boundaries, retaining rejection of genuinely different cities.
+
+## 2026-09-14 - Validate the endpoint semantics as well as stop order
+
+- The road circuit was finally correct but the presence guard still rejected
+  arrival home after the return drive. Reuse the existing home-endpoint identity
+  in both presence validation and map anchors rather than treating it as a sight
+  or searching for a business named Bangalore home.
+- Checkout fitting, chronology and feasibility disagreed about the 10-minute
+  road departure buffer. Share the departure-buffer calculation and distinguish
+  an actual journey from its terminal-arrival marker; preserve airport buffers.
+- Verify persisted coordinates, not only visible map anchors. Cache annotation
+  used the broad trip destination and stamped a Kanyakumari business onto Bangalore
+  home. Use the day locality for regular stops and known origin identity for a
+  generic home-arrival row, while preserving explicit confirmed bindings.
+
+
+### 2026-09-14 — Reproduce projection and validation, not only repaired state
+
+The Rameshwaram replay exposed correct saved coordinates being replaced by a
+multi-city cache lookup in the itinerary projection, while the guard ignored saved
+coordinates. Independently, transfer travel was counted twice and hotel wrapping
+moved an afternoon rest after dinner. A repaired trip with all days present did not
+prove a fresh plan would have coherent geography or clocks. Regressions now cover
+saved identity versus stale lookup results, cold-cache physical feasibility,
+transfer allocation, cumulative lateness/midnight, and preserved hotel ordering.
+Keep planned clock values distinct from feasible arrivals and share route arithmetic
+between the validator and renderer; unknown geography is not zero travel.
+
+## 2026-09-15 - Every fallback request needs its own completion bound
+
+- A workspace bootstrap timeout allowed individual panes to recover, but the
+  itinerary fallback request itself had no deadline. A pending fetch therefore
+  preserved `Loading itinerary` forever after home-to-planner navigation. Bound
+  each fallback independently and replace indefinite loading with an actionable
+  retry state.
+- Prompt prose and a toolbar warning did not make long-drive meal coverage part of
+  completion. Put traveller-sensitive requirements in deterministic validation so
+  the planning loop researches and persists the missing stop before presenting the
+  itinerary. UI notices should report state, not hand routine planning work back to
+  the traveller.
+
+## 2026-09-15 - Reproduce the application render lifecycle
+
+- The itinerary spinner persisted even after a fetch deadline was added because
+  the actual failure did not involve a pending request. A render mutated the
+  consumed-seed ref before the state update committed. Strict Mode replay kept
+  that ref, discarded the state update, and skipped both seed application and
+  fetching. Move consumption into the effect with the state update, and test with
+  the same Strict Mode wrapper as the application. Cover arrival, remount, and
+  explicit revision so avoiding duplicate reads does not suppress future refreshes.
+
+## 2026-09-15 - Validate coverage in time and preserve search context
+
+- Presence is weaker than coverage: dinner after a nine-hour drive did not feed
+  travellers during the journey, and splitting the drive bypassed a per-leg
+  threshold. Check the driving intervals between usable timed meals, while keeping
+  geography/physical feasibility under the existing itinerary guard.
+- One dietary token anywhere in a day cannot confirm several restrictions for
+  every meal. Match complete requirements, preserve unknown/negated evidence, and
+  route the missing evidence into the existing research/completion policy.
+- Booking search defaults are part of the trip data contract. Project each saved
+  stay's city, dates and occupancy from the backend, preserve the explicit party,
+  and test the submitted provider arguments as well as the visible fields.
+
+## 2026-09-15 - Reconcile identities against calendar coverage
+
+- Range membership does not prove calendar order. Bind each day number to the
+  departure date and use that date for closure checks as well as completion gates.
+- Headcount is semantic data: numbers in ages are not passengers. Share an
+  explicit party parser between search defaults, quote compatibility and pricing;
+  keep unknown counts unverified rather than asserting a match to a default.
+- A reported booking is truth about a purchase, not proof that every linked day
+  remains covered. Reconcile nights separately, retain checkout as a morning
+  occurrence, and test map projection too: a fallback loop can otherwise recreate
+  a hotel return that persistence correctly removed. Scope recovery by booking
+  identity so repeat-city stays and independent replacement bookings survive.
+
+## 2026-09-15 - A Sync Export In An Async Route Freezes The Whole App
+
+- A local Standard PDF export with photos took 1,547s. Image fetching took about
+  45s (28 images one at a time, one 12s CDN timeout plus a 10s Places fallback).
+  About 25 minutes went into browser print attempts. ReportLab then paid for
+  another 45 serial photo fetches. The route was `async def` doing blocking I/O,
+  so every other request queued behind it and they all completed the same
+  second the export returned. Any route that renders, fetches or spawns a
+  process belongs in `asyncio.to_thread`.
+- The print wedge did not reproduce offline. Headless Chrome printed the same
+  4 MB packet in 3-13s, and `subprocess.run` timeouts held in isolation. It did
+  line up with a prod deploy, a canary deploy (Playwright Chrome smoke tests)
+  and suite-health all running at once, and it released one second after the
+  deploy exited. When a hang cannot be reproduced, remove the ways to wait
+  rather than tuning timeouts: a private `--user-data-dir` per attempt, no
+  captured pipes, a process-tree kill, a total deadline, and no retrying other
+  browsers after a hang.
+- To time a worktree's code against real config, run from a directory whose
+  code has `.env`: settings resolve `.env` beside the code, not in the working
+  directory. Without it, static maps silently fall back to SVG and a
+  "faster" run is really a different packet. Compare image counts, not just
+  timings.
+
+## 2026-09-15 - A Step Function In A Shared Cost Is An Optimiser Bug Waiting
+
+- Sharing one local-travel estimate between the renderer and the validator was
+  right, but the estimate was a step function: 1.5 km walked took 20 min, 1.6 km
+  by taxi took 4. The trip rebalance hill-climbs on that cost, so a tidy
+  clustered day scored as more travel than a scattered one and it traded stops
+  apart, reporting four "moves" that cancelled out and left gaps in both days.
+  Any cost an optimiser reads must be monotonic in the quantity it stands for;
+  band each mode from the previous band's edge instead of from zero.
+- A read-only `az containerapp list` after a 19-minute canary deploy hung seven
+  minutes and died on a TLS reset (WinError 10054), throwing away a verified
+  canary. `az` stderr never reaches a PowerShell transcript: the traceback was
+  only in `~/.azure/commands/<timestamp>.<command>.<pid>.log`. Retry idempotent
+  control-plane reads and include the CLI output in the thrown error.
+- A nested script's `Stop-RunLog` stopped its caller's transcript, so
+  `canary-deploy.log` ended at the image push and never showed the deploy or
+  smoke stage. A shared begin/end helper needs a depth, not a flag.
+- Suite health started beside `deploy-prod.ps1` filed six vitest timeouts as NEW;
+  all passed serially. Record what shared the machine and never accept a baseline
+  from that run. The one serial failure was Testing Library's 1s `findBy`
+  default against a 2s cold first render of `<App />`: `testTimeout` had been
+  raised for this machine, but `findBy` has its own budget.
+- The shared `.venv` imports `tripplanner` from the primary checkout's `src`
+  (editable install). Running pytest in a worktree without
+  `PYTHONPATH=<worktree>\src` silently tests master's code, not the fix.
+- A git process on the owner's Windows machine measured 0.5-1.5s at times
+  (`git config` alone 1.5s), and ~0.25s at others. Tests that build fixture
+  repositories should write `.git/config` directly and avoid bare remotes and
+  hook shells; the Lab store tests went from 6-27s to under 1.5s. One run of
+  that test also stalled 18 minutes inside a synchronous git spawn and never
+  reproduced; `execFileSync` has no timeout, so a stall freezes the whole
+  process, vitest's own test timeout included.

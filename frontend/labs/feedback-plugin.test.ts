@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { chmod, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -21,23 +21,29 @@ async function createRepository() {
   await writeFile(storePath, "{}\n", "utf8");
   await writeFile(resolve(root, "unrelated.txt"), "initial\n", "utf8");
   execFileSync("git", ["init", "-q"], { cwd: root });
-  execFileSync("git", ["config", "user.name", "Lab Test"], { cwd: root });
-  execFileSync("git", ["config", "user.email", "lab-test@example.com"], { cwd: root });
-  execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: root });
+  // Every git process costs 0.5-1.5s on the owner's Windows machine (measured
+  // 2026-09-15; `git config` alone took 1.5s), so configuration is written
+  // directly rather than spawned three more times.
+  await appendFile(
+    resolve(root, ".git/config"),
+    "[user]\n\tname = Lab Test\n\temail = lab-test@example.com\n[commit]\n\tgpgsign = false\n",
+    "utf8",
+  );
   execFileSync("git", ["add", "."], { cwd: root });
   execFileSync("git", ["commit", "-q", "-m", "Initial"], { cwd: root });
   return { root, storePath };
 }
 
-// Only the push-failure test below needs a real remote; building one costs a
-// handful more git subprocess spawns, which is exactly what made this file
-// slow under sandbox-promotion load. Keep it out of the hot path.
-async function addRemote(root: string) {
-  const remote = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-remote-"));
-  temporaryRepositories.push(remote);
-  execFileSync("git", ["init", "-q", "--bare", remote]);
-  execFileSync("git", ["remote", "add", "origin", remote], { cwd: root });
-  return remote;
+// Only the push-failure test below needs a remote. An origin that does not exist
+// fails the push with no bare repository to create and no hook shell to start,
+// which together cost more than the rest of that test.
+async function addUnreachableRemote(root: string) {
+  const remote = resolve(root, "..", `${root.split(/[\\/]/).pop()}-missing-remote.git`);
+  await appendFile(
+    resolve(root, ".git/config"),
+    `[remote "origin"]\n\turl = ${remote.replaceAll("\\", "/")}\n\tfetch = +refs/heads/*:refs/remotes/origin/*\n`,
+    "utf8",
+  );
 }
 
 afterEach(async () => {
@@ -130,13 +136,10 @@ describe("commitSelectionStore", () => {
 
   it("reports a push failure after preserving the local Lab commit", async () => {
     const { root, storePath } = await createRepository();
-    const remote = await addRemote(root);
+    await addUnreachableRemote(root);
     await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
-    const hook = resolve(remote, "hooks/pre-receive");
-    await writeFile(hook, "#!/bin/sh\nexit 1\n", "utf8");
-    await chmod(hook, 0o755);
 
-    expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow();
+    expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow(/git push/);
     expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
       .toBe("Record trip-feedback Lab handoff");
   }, 15_000);

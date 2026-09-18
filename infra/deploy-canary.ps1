@@ -57,10 +57,22 @@ if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
     $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
 }
 
-if (-not $NoBuild -and $ImageTag -eq "latest") {
-    $ImageTag = (git rev-parse --short HEAD 2>$null)
-    if ([string]::IsNullOrWhiteSpace($ImageTag)) {
+if (-not $NoBuild) {
+    # Pin the commit now. The primary checkout can be fast-forwarded during the
+    # minutes of Azure validation below, and the image must hold the commit
+    # its tag names, not whatever HEAD is when the build finally starts.
+    $buildCommit = $null
+    if ($ImageTag -ne "latest") {
+        $buildCommit = (git rev-parse --verify --quiet "$ImageTag^{commit}" 2>$null)
+    }
+    if ([string]::IsNullOrWhiteSpace($buildCommit)) {
+        $buildCommit = (git rev-parse --verify --quiet HEAD 2>$null)
+    }
+    if ([string]::IsNullOrWhiteSpace($buildCommit)) {
         throw "Could not resolve the current Git commit for the immutable image tag."
+    }
+    if ($ImageTag -eq "latest") {
+        $ImageTag = (git rev-parse --short $buildCommit)
     }
 }
 
@@ -84,6 +96,15 @@ Write-Host "Image Tag: $ImageTag`n"
 
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
+$stageName = "Prerequisite checks"
+$stageTimer = Start-DeploymentTimer
+if (-not $NoBuild) {
+    # Publishing is the last thing to fail and the cheapest to check, so check
+    # it before minutes of Bicep compilation and what-if.
+    $ghcrCredential = Resolve-GhcrPublishCredential
+    Write-Host "  ✓ GHCR publish credential verified ($($ghcrCredential.Source))"
+    $ghcrCredential = $null
+}
 if (-not (Test-Path $bicepFile)) {
     throw "Bicep file not found: $bicepFile"
 }
@@ -143,26 +164,14 @@ if (-not [string]::IsNullOrWhiteSpace($OAuthRedirectBase) -and $OAuthRedirectBas
     throw "Hosted OAuth redirect base must use HTTPS: $OAuthRedirectBase"
 }
 Write-Host "  ✓ Files exist`n"
-
-# Step 2: Validate Bicep
-Write-Host "✓ Step 2: Validating Bicep template..."
-$stageName = "Bicep validation"
-$stageTimer = Start-DeploymentTimer
-$validation = az deployment group validate `
-    --resource-group $canaryRG `
-    --template-file $bicepFile `
-    --parameters $bicepParams `
-    --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
-    2>&1
-if ($LASTEXITCODE -ne 0) {
-    throw "Bicep validation failed: $validation"
-}
-Write-Host "  ✓ Template is valid`n"
 Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
-# Step 3: Dry run (optional)
+# Step 2: What-if. No separate validate step: what-if runs the same ARM
+# preflight validation and `create` repeats it before changing anything. The
+# standalone call cost another az + Bicep compile cycle (60-255s measured, ~5s
+# of it in Azure).
 if ($DryRun) {
-    Write-Host "✓ Step 3: Performing DRY RUN (no changes)..."
+    Write-Host "✓ Step 2: Performing DRY RUN (no changes)..."
     $stageName = "Infrastructure what-if"
     $stageTimer = Start-DeploymentTimer
     az deployment group what-if `
@@ -178,10 +187,10 @@ if ($DryRun) {
     exit 0
 }
 
-Write-Host "✓ Step 3: Checking infrastructure changes..."
+Write-Host "✓ Step 2: Validating template and checking infrastructure changes..."
 $stageName = "Infrastructure what-if"
 $stageTimer = Start-DeploymentTimer
-$rawWhatIf = az deployment group what-if `
+$whatIfOutput = @(az deployment group what-if `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
@@ -189,10 +198,14 @@ $rawWhatIf = az deployment group what-if `
     --result-format ResourceIdOnly `
     --no-pretty-print `
     --only-show-errors `
-    --output json 2>$null | Out-String
-if ($LASTEXITCODE -ne 0) {
-    throw "Canary infrastructure what-if failed."
+    --output json 2>&1)
+$whatIfExitCode = $LASTEXITCODE
+# What-if now carries template validation, so its errors must reach the owner.
+$whatIfErrors = @($whatIfOutput | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }) -join "`n"
+if ($whatIfExitCode -ne 0) {
+    throw "Canary template validation or what-if failed. Azure CLI output:`n$whatIfErrors"
 }
+$rawWhatIf = @($whatIfOutput | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] }) -join "`n"
 $whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Canary what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Canary"
 Write-Host "  ✓ What-if contains no deletes`n"
@@ -203,7 +216,7 @@ if (-not $NoBuild) {
     Write-Host "✓ Step 0: Building & pushing image from current code..."
     $stageName = "Image build and push"
     $stageTimer = Start-DeploymentTimer
-    & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag
+    & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag -Commit $buildCommit
     if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
     Write-Host "  ✓ Image ready`n"
     Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null

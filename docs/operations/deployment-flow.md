@@ -36,10 +36,15 @@ az login
 gh auth refresh -h github.com -s write:packages
 ```
 
-The image publisher establishes a fresh GHCR login before building. It uses
-`GHCR_TOKEN`, `CR_PAT`, or `GITHUB_TOKEN` when set; otherwise it uses the active
-GitHub CLI token only when that token belongs to `munishgoyal1` and includes
-`write:packages`. Provider and OAuth settings remain in the uncommitted `.env`;
+The image publisher establishes a fresh GHCR login before building. It tries
+`GHCR_TOKEN`, `CR_PAT`, `GITHUB_TOKEN`, the active GitHub CLI token, and Docker's
+stored `ghcr.io` credential, in that order, and accepts the first one GitHub
+confirms belongs to `munishgoyal1` and carries the classic `write:packages`
+scope. A rejected candidate is named with its reason (expired, wrong owner,
+missing scope). Reading the image manifest is not accepted as proof: the package
+is public, so that read succeeds with no credential. `deploy-canary.ps1` runs
+the same check first, before Bicep validation, so a missing credential fails in
+seconds. Provider and OAuth settings remain in the uncommitted `.env`;
 hosted environment-owned Azure OpenAI keys and OAuth callback bases are resolved
 by the deployment scripts.
 
@@ -85,11 +90,17 @@ so the image's SHA identifies its contents.
 
 The script:
 
-1. Resolves the current Git short SHA.
-2. Validates Bicep, the shared Cosmos account/database, Azure OpenAI access, and
-   the environment-owned OAuth callback.
-3. Runs Azure what-if and blocks any delete operation.
-4. Builds one Docker image and pushes the SHA plus `latest` to GHCR. The manual
+1. Resolves the Git commit once (HEAD, or the commit an explicit `-ImageTag`
+   names) and verifies the GHCR publish credential.
+2. Checks the shared Cosmos account/database, Azure OpenAI access, and the
+   environment-owned OAuth callback.
+3. Runs Azure what-if, which also performs ARM template validation, and blocks
+   any delete operation. There is no separate `az deployment group validate`:
+   it repeated what-if's validation at the cost of another Bicep compile, and
+   `az deployment group create` validates again before changing anything.
+4. Builds one Docker image from a `git archive` export of that commit — not the
+   live checkout, which other sessions may fast-forward mid-deploy, and without
+   uncommitted edits — and pushes the SHA plus `latest` to GHCR. The manual
   GitHub Actions workflow may perform this image publication only; it has no
   Azure credentials or deployment step.
 5. Applies `main.bicep` and canary parameters.
@@ -99,9 +110,17 @@ The script:
 
 The image publisher reports dependency/application build time, each tag push, total
 publish time, image ID, and local uncompressed bytes. Canary and production scripts
-report Bicep validation, what-if, ARM deployment, Container App rollout, smoke, and
+report prerequisite checks, what-if, ARM deployment, Container App rollout, smoke, and
 total elapsed time; canary also reports image build/push time. Compare repeated runs
 before optimizing. Registry transfer size is not the same as local uncompressed size.
+
+Most Bicep-stage time is local, not Azure. A traced validate spent about 5s in ARM
+and the rest in `az` launching `bicep.exe` twice (template, then `.bicepparam`).
+Those launches take ~4s warm but tens of seconds when the machine is under memory
+pressure or has just resumed from Modern Standby, which is why the same stage has
+measured 60s and 255s. The deployment scripts disable az's per-compile Bicep
+version check (`AZURE_BICEP_CHECK_VERSION=false`); run `az bicep upgrade`
+deliberately instead.
 
 To redeploy an already-pushed artifact or apply infrastructure changes without
 building a new image:

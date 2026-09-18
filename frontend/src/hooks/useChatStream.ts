@@ -296,9 +296,7 @@ export function useChatStream({
     const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
     const turnSeconds = () => Math.max(1, Math.round((Date.now() - turnStartedAtRef.current) / 1000));
     let pendingTokens = "";
-    let tokenFrame: number | null = null;
     const flushTokens = () => {
-      tokenFrame = null;
       if (!pendingTokens) return;
       const text = pendingTokens;
       pendingTokens = "";
@@ -313,16 +311,14 @@ export function useChatStream({
     };
     const discardPendingTokens = () => {
       pendingTokens = "";
-      if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-      tokenFrame = null;
     };
     let handledError = false;
+    let completion: Promise<void> | undefined;
 
     try {
       await streamChat(outgoing, {
         onToken: (text) => {
           pendingTokens += text;
-          if (tokenFrame == null) tokenFrame = window.requestAnimationFrame(flushTokens);
         },
         onProgress: (stage) => {
           setProgress({ label: PROGRESS_LABELS[stage], startedAt: turnStartedAtRef.current });
@@ -357,8 +353,6 @@ export function useChatStream({
           setActiveTool(null);
         },
         onDone: (reply, tripId) => {
-          if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-          flushTokens();
           setActiveTool(null);
           setProgress(null);
           onTurnStatus?.({
@@ -366,26 +360,30 @@ export function useChatStream({
             message: "Wrapping up",
             detail: "Loading the latest view of your trip.",
           });
-          setMessages((messages) => {
-            const copy = [...messages];
-            copy[copy.length - 1] = {
-              ...copy[copy.length - 1],
-              tools: Array.from(usedTools),
-              tool_trace: toolTrace.slice(),
-              ts: Date.now(),
-              seconds: turnSeconds(),
-            };
-            return copy;
-          });
-          setBusy(false);
-          setFailedRequest(null);
-          trackEvent("planning_completed", { proposal_only: proposalOnly });
-          void onTurnComplete(tripId, {
-            proposalOnly,
-            startedWithoutTrip: !hasActiveTrip,
-            request: outgoing,
-            reply,
-          });
+          completion = (async () => {
+            await onTurnComplete(tripId, {
+              proposalOnly,
+              startedWithoutTrip: !hasActiveTrip,
+              request: outgoing,
+              reply,
+            });
+            if (streamController.signal.aborted) return;
+            discardPendingTokens();
+            setMessages((messages) => {
+              const copy = [...messages];
+              copy[copy.length - 1] = {
+                ...copy[copy.length - 1],
+                text: reply,
+                tools: Array.from(usedTools),
+                tool_trace: toolTrace.slice(),
+                ts: Date.now(),
+                seconds: turnSeconds(),
+              };
+              return copy;
+            });
+            setFailedRequest(null);
+            trackEvent("planning_completed", { proposal_only: proposalOnly });
+          })();
         },
         onError: (message) => {
           if (streamController.signal.aborted) return;
@@ -412,9 +410,10 @@ export function useChatStream({
           trackEvent("planning_failed", { proposal_only: proposalOnly });
         },
       }, { proposalOnly, requestId, signal: streamController.signal });
+      await completion;
     } catch (error) {
       if (streamController.signal.aborted) {
-        discardPendingTokens();
+        flushTokens();
         setMessages((current) => {
           const next = [...current];
           const draft = next[next.length - 1];
@@ -456,8 +455,7 @@ export function useChatStream({
       }
       setActiveTool(null);
       setProgress(null);
-      if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-      flushTokens();
+      discardPendingTokens();
       setBusy(false);
     }
   }

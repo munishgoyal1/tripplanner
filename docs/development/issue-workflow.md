@@ -11,7 +11,8 @@ The repository is private, issues are enabled, and the default branch is `master
 
 An issue holds one unit of work and its live state: what is wrong, who is on it,
 what was found, what changed, and whether the owner has confirmed it. It is
-deliberately short-lived. It is closed when the fix reaches `master`.
+closed when its entire acceptance scope reaches `master`. A feature umbrella
+stays open across milestones; a configuration PR closes only its bounded child.
 
 The issue body and its complete chronological comment thread form the handoff.
 Owner comments are cumulative scope and context, like saved UX Lab handoff notes:
@@ -26,27 +27,27 @@ part of the same fix, or conflicts with existing scope in a way that cannot be
 resolved from the thread, the worker blocks with the exact question. It does not
 silently omit the comment or widen the issue by guessing.
 
-Immediate work does not need that handoff record. A fix requested and completed in
-the current chat stays in that chat, whether the lane is primary `master` or a
-sandbox and regardless of size. Do not create an issue merely because the chat
-found a bug or the fix became substantive; that discards useful conversational
-context and creates queue work for something already being handled.
+Owner direction, 2026-09-13: use GitHub issues for work management, especially
+backlog, and create an issue for every feature or material enhancement, including
+same-chat implementation. Search for a matching issue first. Keep the detailed
+feature brief in `docs/feature-briefs-backlog/` and link issue and brief both ways.
 
-Create an issue only when one of these is true:
+Issue bodies capture the problem/outcome, latest owner decisions, scope and
+non-goals, constraints/examples, dependencies, acceptance criteria, validation,
+milestones and the repository brief. Issues hold ownership and progress; briefs
+remain the coding-agent implementation contract. Update both when scope changes.
 
-- the owner explicitly creates it or asks an agent to create it;
-- the deterministic trip-audit producer files a finding;
-- a specific audit run needs a durable scheduled work item; or
-- the work cannot be handled now and is intentionally parked as backlog.
-
-If an immediate fix reveals a distinct deferred follow-up, only the deferred
-follow-up becomes an issue. The current fix remains chat-local.
+Audits, scheduled work, tracked fixes and deferred work continue to use issues.
+A small immediate bug fix may remain chat-local unless tracking is requested.
+Do not create an issue for every speculative sentence or bulk-file historical
+ideas; add a missing issue when an existing brief is adopted as feature/backlog work.
+An umbrella is not a second executable queue item while a child owns its work.
 
 An issue is not a place to keep truth. Durable knowledge keeps its existing owner:
 
 | Kind of information | Where it belongs |
 | --- | --- |
-| Explicit, audited, scheduled, or intentionally deferred work and its progress | GitHub issue |
+| Feature/enhancement work, tracked fixes, audits and backlog progress | GitHub issue |
 | Product intent, scope, and design taste | `docs/PRODUCT.md` |
 | Current capability and status | `docs/REQUIREMENTS.md` |
 | Ownership, architecture, contracts, commands | `docs/CODEMAP.md` |
@@ -71,7 +72,7 @@ State labels, applied by agents, one at a time:
 | `agent:blocked` | Waiting on an owner decision. The agent has asked in the issue and stopped. |
 | `agent:needs-verify` | The fix is in `master`. The owner has not confirmed it yet. |
 
-Lane labels, `lane:master` and `lane:sbx-<n>`, record which worktree owns the
+Lane labels, including `lane:gpt-<task-slug>`, `lane:master` and `lane:sbx-<n>`, record which worktree owns the
 issue. The number is the sandbox's permanent port slot, so it survives a rename.
 There is only one GitHub account behind every agent, so the assignee cannot say
 which session owns the work; the lane label is what makes that visible in a list.
@@ -109,9 +110,9 @@ owner confirms              -> remove agent:needs-verify
 Parallel lanes make double-work and merge collisions the default failure, not the
 exception. Claiming is what prevents both.
 
-The rules below apply only once work has an issue through the intake policy above.
-They do not force any primary or sandbox chat to manufacture an issue for work it
-is fixing immediately.
+The rules below apply to issue-backed work, including every feature under the
+intake policy above. Claim the bounded milestone; do not close a parent feature
+until all of its acceptance criteria are met.
 
 Before starting issue-backed work, look at what other lanes already own:
 

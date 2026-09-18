@@ -124,7 +124,11 @@ def test_every_spend_ceiling_names_its_currency():
             for line in _profile(environment).splitlines()
             if line.startswith("COST_CEILING_") and "=" in line
         ]
-        amounts = [name for name in ceilings if name.endswith(("DAILY", "WEEKLY", "MONTHLY"))]
+        amounts = [
+            name
+            for name in ceilings
+            if name.endswith(("HOURLY", "DAILY", "WEEKLY", "MONTHLY"))
+        ]
         assert amounts, f"no spend ceilings found in {environment}.env"
         for name in amounts:
             assert "_INR_" in name, f"{name} does not state its currency"
@@ -143,6 +147,7 @@ def test_ceiling_accessors_return_the_profile_values_unconverted():
     budget would silently become 88x what the profile says.
     """
     for window, name in (
+        ("hourly", "COST_CEILING_INR_HOURLY"),
         ("daily", "COST_CEILING_INR_DAILY"),
         ("weekly", "COST_CEILING_INR_WEEKLY"),
         ("monthly", "COST_CEILING_INR_MONTHLY"),
@@ -185,3 +190,173 @@ def test_no_per_trip_call_budget_remains_in_config():
         "conversation_limit",
     ):
         assert not hasattr(limits_config, retired), f"{retired} is still configurable"
+
+
+# --- Cosmos derivation ---------------------------------------------------------
+
+
+def test_every_window_the_ledger_enforces_has_a_ceiling_and_a_reset():
+    """A window in COST_CEILING_WINDOWS with no key or reset silently never rolls.
+
+    ``_rolled_windows`` keys each window's bucket; a window the key function does
+    not handle falls through to the monthly key, so an hourly burst would
+    accumulate against the month and never reset.
+    """
+    from datetime import UTC, datetime
+
+    from tripplanner import cost_ledger
+
+    now = datetime(2026, 9, 13, 14, 30, tzinfo=UTC)
+    keys = {
+        window: cost_ledger._window_key(window, now)
+        for window in limits_config.COST_CEILING_WINDOWS
+    }
+    assert len(set(keys.values())) == len(keys), f"two windows share one key: {keys}"
+    for window in limits_config.COST_CEILING_WINDOWS:
+        assert limits_config.cost_ceiling_inr(window) > 0
+        assert cost_ledger._resets_at(window, now) > now.isoformat().replace("+00:00", "Z")
+
+
+def test_hourly_ceiling_is_a_burst_of_the_daily_one():
+    """Hourly must bind tighter than daily but still buy a few trips.
+
+    Equal to daily would make it decorative; too small would refuse the two or
+    three back-to-back trips the owner builds in one sitting.
+    """
+    model = cost_model.load()
+    p95_trip_inr = float(model["cosmosSizing"]["p95TripCostInr"])
+    for environment in ENVIRONMENTS:
+        hourly = float(_setting(environment, "COST_CEILING_INR_HOURLY"))
+        daily = float(_setting(environment, "COST_CEILING_INR_DAILY"))
+        assert hourly < daily, f"{environment}: hourly ceiling does not bind"
+        assert hourly / p95_trip_inr >= 3, (
+            f"{environment}: hourly ceiling buys fewer than three worst-case trips"
+        )
+
+
+def test_cosmos_burst_demand_covers_a_peak_burst_of_trips():
+    """The recorded burst demand must cover what the ceilings actually admit.
+
+    Three concurrent builds fanned across places_cache._MAX_WORKERS threads demand
+    several hundred RU/s. Where the free-tier cap is lower, that gap is recorded
+    rather than silently hidden.
+    """
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
+
+    for environment in ENVIRONMENTS:
+        row = guardrails["azure"]["cosmos"][environment]
+        peak = derive.peak_concurrent_trips(environment, model)
+        burst_demand = (
+            peak
+            * derive.ru_per_trip(model)
+            / float(model["cosmosSizing"]["tripBuildSeconds"])
+            * float(model["cosmosSizing"]["burstFactor"])
+        )
+        assert int(row["burstDemandRuPerSecond"]) >= burst_demand
+        assert int(row["ruPerSecond"]) >= int(model["cosmosSizing"]["minimumRuPerSecond"])
+
+
+def test_provisioned_cosmos_throughput_is_never_billed():
+    """Owner policy: canary and prod together stay inside the account's free 1000 RU/s.
+
+    Burst sizing once derived 700 RU/s for each database -- 1400 in an account whose
+    free tier covers 1000, so every deploy would have billed 400 RU/s around the clock
+    for bursts a retried 429 absorbs.
+    """
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
+    data_bicep = (ROOT / "infra" / "data.bicep").read_text("utf-8")
+    caps = derive.free_tier_caps(model)
+
+    provisioned_in_account = {
+        environment
+        for environment in ENVIRONMENTS
+        if f"cosmosConfig.{environment}.ruPerSecond" in data_bicep
+    }
+    assert provisioned_in_account == set(caps), "every database in the account needs a cap"
+    total = sum(int(guardrails["azure"]["cosmos"][name]["ruPerSecond"]) for name in caps)
+    assert total <= int(model["cosmosSizing"]["freeTierRuPerSecond"])
+    for name, cap in caps.items():
+        assert int(guardrails["azure"]["cosmos"][name]["ruPerSecond"]) <= cap
+
+
+def test_derivation_refuses_caps_that_would_bill():
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    model["cosmosSizing"]["freeTierAllocationRuPerSecond"]["prod"] = 700
+
+    with pytest.raises(SystemExit, match="over the 1000 RU/s free tier"):
+        derive.check_free_tier_budget(model)
+
+
+def test_peak_concurrency_is_bounded_by_both_controls():
+    """Cost and abuse controls both cap it; neither may be ignored."""
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    for environment in ENVIRONMENTS:
+        peak = derive.peak_concurrent_trips(environment, model)
+        assert peak <= derive.max_concurrent_global(environment)
+        assert peak <= derive.hourly_ceiling_inr(environment) / float(
+            model["cosmosSizing"]["p95TripCostInr"]
+        )
+        assert peak >= 1
+
+
+def test_cosmos_throughput_tracks_the_hourly_ceiling():
+    """Raising the burst ceiling must raise the demand the database is sized from.
+
+    A guardrail that stays put when the budget moves is the drift this whole
+    derivation exists to prevent. Provisioning itself stops at the free-tier cap.
+    """
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    baseline = derive.cosmos_burst_demand_ru_per_second("prod", model)
+    model["cosmosSizing"]["p95TripCostInr"] = (
+        float(model["cosmosSizing"]["p95TripCostInr"]) / 4
+    )
+    assert derive.cosmos_burst_demand_ru_per_second("prod", model) > baseline
+    assert derive.derive_cosmos_ru_per_second("prod", model) == derive.free_tier_caps(model)["prod"]
+
+
+def test_cosmos_throttling_alert_does_not_page_at_severity_one():
+    """A retried 429 is not an outage.
+
+    Cosmos throttling has its own thresholded rule; it reached severity 1 only
+    through failureAlert's catch-all ERROR match, which paged every five minutes
+    for a condition that is only meaningful in aggregate.
+    """
+    guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
+    alerts = guardrails["azureInfraHealthAlerts"]
+    assert alerts["cosmosThrottlingAlert"]["severity"] >= 3
+    assert alerts["cosmosThrottlingAlert"]["threshold"] >= 20
+
+    query = (ROOT / "infra" / "queries" / "application-failures.kql").read_text("utf-8")
+    assert "429" in query and "storage_operation" in query, (
+        "the severity-1 failure query no longer excludes Cosmos throttling"
+    )
+
+
+def test_derived_cosmos_values_are_not_hand_edited():
+    """The checked-in rows must equal what the derivation computes."""
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
+    for environment in ENVIRONMENTS:
+        assert guardrails["azure"]["cosmos"][environment]["ruPerSecond"] == (
+            derive.derive_cosmos_ru_per_second(environment, model)
+        )
+    assert guardrails["azureInfraHealthAlerts"]["cosmosThrottlingAlert"]["threshold"] == (
+        derive.derive_cosmos_throttle_threshold(model)
+    )
+
+
+def test_bicep_reads_cosmos_throughput_from_the_derived_file():
+    """A literal RU/s in Bicep would drift from the budget the moment it moved."""
+    data_bicep = (ROOT / "infra" / "data.bicep").read_text("utf-8")
+    assert "billing-guardrails.json" in data_bicep
+    assert "ruPerSecond" in data_bicep
+    module = (ROOT / "infra" / "modules" / "cosmos-data.bicep").read_text("utf-8")
+    assert "databaseThroughput int = 400" not in module

@@ -226,6 +226,7 @@ def test_categorized_owner_launchers_have_cross_platform_help() -> None:
         "azure": ("Azure-Services-Control",),
         "google": ("Google-Maps-Control", "Google-Places-Control"),
         "runtime": ("Apply-Runtime-Config",),
+        "testing": ("Suite-Health",),
     }
 
     for platform, suffix in (("mac", ".command"), ("win", ".cmd")):

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createElement } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   capCircuitZoom,
   airportIcon,
@@ -43,6 +43,14 @@ const { fetchMapsConfigMock, fetchMapViewMock } = vi.hoisted(() => ({
   fetchMapsConfigMock: vi.fn(),
   fetchMapViewMock: vi.fn(),
 }));
+
+// `restoreMocks: true` in vitest.config.ts does not clear a hoisted vi.fn()'s
+// call history in Vitest 4, so fetches from earlier tests in this file (aborted
+// on unmount) would otherwise count against a later call-count assertion.
+beforeEach(() => {
+  fetchMapsConfigMock.mockClear();
+  fetchMapViewMock.mockClear();
+});
 
 vi.mock("../api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../api")>();

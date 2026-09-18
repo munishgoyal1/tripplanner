@@ -250,6 +250,12 @@ export interface OpsOverview {
     by_provider: OpsUsageRollup[];
     by_operation: OpsUsageRollup[];
     by_interaction: OpsUsageRollup[];
+  } | null;
+  overview_status?: { state: "ready" | "refreshing" | "error"; error?: string | null };
+  provider_usage_status?: {
+    state: "pending" | "refreshing" | "ready" | "error";
+    generated_at: string | null;
+    error?: string | null;
   };
   cache: {
     configured: boolean;
@@ -291,7 +297,10 @@ export async function fetchOpsOverview(
   const params = new URLSearchParams({ days: String(days) });
   if (startDate) params.set("start_date", startDate);
   if (endDate) params.set("end_date", endDate);
-  const response = await apiFetch(`${BASE}/ops/overview?${params}`, { signal });
+  const timeout = AbortSignal.timeout(45_000);
+  const response = await apiFetch(`${BASE}/ops/overview?${params}`, {
+    signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
+  });
   ensureOk(response, "Operations overview unavailable");
   return response.json() as Promise<OpsOverview>;
 }
@@ -477,9 +486,11 @@ export function tripIcsUrl(): string {
   return `${BASE}/trip/export.ics?${params.toString()}`;
 }
 
-export type ExportTemplate = "standard" | "detailed" | "trip_book" | "trip_card";
+export type ExportTemplate = "standard" | "detailed" | "trip_book" | "trip_card" | "booking_intent";
 
 export interface ExportOptions {
+  trip_id?: string;
+  updated_at?: string;
   include_photos: boolean;
   include_map_circuit: boolean;
   include_budgets: boolean;
@@ -494,6 +505,8 @@ export function tripExportUrl(options: ExportOptions, autoPrint = false): string
     include_budgets: options.include_budgets ? "1" : "0",
     template: options.template,
     auto_print: autoPrint ? "1" : "0",
+    trip_id: options.trip_id || "",
+    updated_at: options.updated_at || "",
   });
   return `${BASE}/trip/export/print?${params.toString()}`;
 }
@@ -505,6 +518,8 @@ export function tripExportPdfUrl(options: ExportOptions): string {
     include_photos: options.include_photos ? "1" : "0",
     include_map_circuit: "1",
     include_budgets: options.include_budgets ? "1" : "0",
+    trip_id: options.trip_id || "",
+    updated_at: options.updated_at || "",
   });
   return `${BASE}/trip/export.pdf?${params.toString()}`;
 }
@@ -561,6 +576,8 @@ export async function emailTripExport(
       include_budgets: options.include_budgets,
       template: options.template,
       request_id: requestId,
+      trip_id: options.trip_id || "",
+      updated_at: options.updated_at || "",
     }),
   });
   const result = await res.json() as EmailExportResult;

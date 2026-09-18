@@ -163,6 +163,74 @@ body {
   opacity: 0.1;
 }
 
+/*
+ * Planner workspace finish (UX Lab #31, option F · Crisp flow rows).
+ * Scoped to the workspace roots so public pages keep the Aegean ground: slightly
+ * cooler neutrals, stronger ink and secondary text, and hairline-bordered chips.
+ */
+.workspace-crisp {
+  --background: 0.962 0.004 85;
+  --paper: 0.997 0.001 90;
+  --card: 0.997 0.001 90;
+  --sand: 0.958 0.004 85;
+  --sidebar: 0.978 0.003 85;
+  --border: 0.89 0.006 85;
+  --ink: 0.19 0.012 50;
+  --foreground: 0.19 0.012 50;
+  --muted-foreground: 0.43 0.012 60;
+}
+
+.workspace-crisp .chip {
+  @apply rounded border border-border bg-paper px-1.5 py-px text-[11px];
+}
+
+/*
+ * Itinerary stop rows respond to the pane's own width, not the viewport. On a
+ * narrow pane only the stop name shares its line with the booking status, so the
+ * status never narrows the text below it; from 600px the tags, Notes & tips and
+ * status join the stop's line and rows get shorter.
+ */
+.itinerary-rows {
+  container-type: inline-size;
+}
+
+.it-stop {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-areas: "time name status" ". detail detail" ". tags tags" ". extra extra";
+  column-gap: 10px;
+  align-items: start;
+}
+.it-stop-time { grid-area: time; }
+.it-stop-main { display: contents; }
+.it-stop-name { grid-area: name; min-width: 0; }
+.it-stop-detail { grid-area: detail; min-width: 0; }
+.it-stop-tags { grid-area: tags; min-width: 0; }
+.it-stop-status { grid-area: status; }
+.it-stop-extra { grid-area: extra; min-width: 0; }
+.it-stop-tags:empty,
+.it-stop-extra:empty { display: none; }
+.it-leg { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 10px; }
+.it-leg-arrival { display: block; }
+
+@container (min-width: 600px) {
+  .it-stop {
+    grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1fr) auto;
+    grid-template-areas: "time main tags status" ". extra extra extra";
+  }
+  .it-stop-main { display: block; grid-area: main; min-width: 0; }
+  .it-stop-tags { padding-top: 1px; padding-left: 0; }
+  .it-leg { grid-template-columns: 46px minmax(0, 1fr); }
+  .it-leg-text { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .it-leg-arrival { flex-shrink: 0; white-space: nowrap; }
+}
+
+@container (min-width: 880px) {
+  .it-stop { grid-template-columns: 54px minmax(0, 1fr) minmax(0, 1.3fr) 124px; }
+  .it-leg { grid-template-columns: 54px minmax(0, 1fr); }
+  .it-stop-status { justify-self: end; }
+}
+
 /* Slim, neutral scrollbars feel less "OS-default" inside cards. */
 *::-webkit-scrollbar {
   height: 8px;

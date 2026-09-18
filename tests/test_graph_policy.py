@@ -19,6 +19,45 @@ def _tool_call(name: str, call_id: str) -> AIMessage:
     )
 
 
+def test_partial_eight_day_plan_is_completed_before_hotel_research():
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="finish this family road trip"),
+                  _tool_call("update_trip_plan", "save"),
+                  ToolMessage(content="Trip plan updated.", tool_call_id="save")],
+        active_trip={"destination": "Madurai and Rameshwaram",
+                     "departure_date": "2026-10-12", "return_date": "2026-10-19",
+                     "day_wise_itinerary": [
+                         {"day": day, "stops": [{"name": "Hotel TBD", "kind": "hotel"}]}
+                         for day in [3, 7]
+                     ]},
+        proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool == "update_trip_plan"
+    assert "6 days missing" in decision.requirement
+    assert "every day together" in decision.requirement
+
+
+def test_new_research_between_noop_saves_is_not_a_stalled_repair_loop():
+    messages = [HumanMessage(content="finish this family road trip")]
+    for index, name in enumerate([
+        "search_hotels", "update_trip_plan", "nearby_restaurants", "update_trip_plan",
+    ]):
+        messages.extend([
+            _tool_call(name, str(index)),
+            ToolMessage(content="Trip plan updated (no material changes)."
+                        if name == "update_trip_plan" else "Fresh grounded candidates",
+                        tool_call_id=str(index)),
+        ])
+    decision = resolve_completion_policy(
+        messages=messages,
+        active_trip={"destination": "Madurai", "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Hotel TBD", "kind": "hotel"}]},
+        ]},
+        proposal_only=False, has_planning_intent=True,
+    )
+    assert not decision.stopped_for_no_progress
+
+
 def _tool_phases(count: int) -> list[BaseMessage]:
     messages: list[BaseMessage] = []
     for phase in range(count):
@@ -906,6 +945,36 @@ def test_restaurant_research_continues_past_the_first_turn_phase_budget() -> Non
     assert decision.forced_reason == "missing_named_restaurant"
 
 
+def test_first_turn_researches_a_meal_for_a_long_road_day() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a road trip from Bangalore to Madurai"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Madurai",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{
+                    "name": "Drive: Bangalore to Madurai",
+                    "kind": "transport",
+                    "duration_min": 540,
+                }],
+            }],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
+    assert "long road journey" in (decision.requirement or "")
+
+
 def test_planning_resume_cannot_end_without_arrival_journey() -> None:
     decision = resolve_completion_policy(
         messages=[
@@ -1212,7 +1281,10 @@ def test_hotel_tbd_can_finish_after_provider_and_place_attempts() -> None:
         "create_trip_plan", "search_hotels", "search_places_with_reviews", "update_trip_plan"
     ):
         messages.extend([
-            _tool_call(name, name),
+            AIMessage(content="", tool_calls=[{
+                "name": name, "id": name,
+                "args": {"city": "Srinagar"} if name == "search_hotels" else {},
+            }]),
             ToolMessage(
                 content="No hotels found" if name == "search_hotels" else "Done", tool_call_id=name,
             ),

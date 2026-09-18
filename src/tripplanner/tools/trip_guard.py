@@ -200,6 +200,16 @@ def _journey_endpoints(stop: Any) -> tuple[str, str] | None:
     return (source, target) if source and target else None
 
 
+def _departure_buffer(stop: Any) -> int:
+    if _stop_kind(stop) == "flight":
+        return PRE_DEPARTURE_BUFFER_MIN
+    if _stop_kind(stop) == "transport" and (
+        _journey_endpoints(stop) or _MODE_PREFIX_RE.match(_stop_name(stop))
+    ):
+        return TURNAROUND_MIN
+    return 0
+
+
 def _home_bound_leg(stop: Any, home: str) -> tuple[bool, bool]:
     """``(leaves_home, arrives_home)`` for one transport stop.
 
@@ -361,7 +371,7 @@ def facts_for(name: str, destination: str) -> place_facts.PlaceFacts:
 
 
 def day_dates(plan: dict[str, Any]) -> dict[int, str]:
-    """Calendar date per day number, from the entry itself or the start date.
+    """Calendar date per day number, anchored to departure when known.
 
     A weekday closure is only checkable against a real date, so a plan that
     never wrote one simply keeps those invariants silent.
@@ -377,25 +387,17 @@ def day_dates(plan: dict[str, Any]) -> dict[int, str]:
     out: dict[int, str] = {}
     for day, entry, _stops in days_of(plan):
         text = str(entry.get("date") or "").strip()
-        if place_facts.weekday_of(text) is not None:
-            out[day] = text
-        elif start is not None:
+        if start is not None:
             out[day] = (start + timedelta(days=day - 1)).isoformat()
+        elif place_facts.weekday_of(text) is not None:
+            out[day] = text
     return out
 
 
 def _calendar_violations(
     plan: dict[str, Any], structured: list[tuple[int, dict[str, Any], list[Any]]]
 ) -> list[Violation]:
-    """A day's own written date must land inside the trip's booked window.
-
-    Content merged or replaced from an unrelated trip carries that trip's own
-    dates, which essentially never fall inside this trip's departure/return
-    range. Catching that here is exact and needs no place lookups or identity
-    matching -- unlike trying to confirm content belongs to a destination by
-    name. Only days that wrote a real, parseable date are checked; a day that
-    never wrote one degrades this invariant to silent, per module contract.
-    """
+    """Written dates must follow day numbers within the booked window."""
     departure_raw = str(plan.get("departure_date") or "").strip()
     return_raw = str(plan.get("return_date") or "").strip()
     try:
@@ -410,7 +412,14 @@ def _calendar_violations(
         return []
 
     out: list[Violation] = []
+    seen_days: set[int] = set()
     for day, entry, _stops in structured:
+        if day in seen_days:
+            out.append(Violation(
+                "I14", "Trip calendar", f"Day {day} occurs more than once in the itinerary.",
+                day, None,
+            ))
+        seen_days.add(day)
         text = str(entry.get("date") or "").strip()
         try:
             entry_date = date.fromisoformat(text) if text else None
@@ -418,6 +427,7 @@ def _calendar_violations(
             entry_date = None
         if entry_date is None:
             continue
+        expected = departure + timedelta(days=day - 1)
         if entry_date < departure or entry_date > return_day:
             out.append(
                 Violation(
@@ -429,6 +439,12 @@ def _calendar_violations(
                     None,
                 )
             )
+        elif entry_date != expected:
+            out.append(Violation(
+                "I14", "Trip calendar",
+                f"Day {day} is dated {text}, but must be {expected.isoformat()} "
+                "in the trip's consecutive day sequence.", day, None,
+            ))
     return out
 
 
@@ -438,6 +454,11 @@ def _calendar_violations(
 
 
 def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
+    if isinstance(stop, dict):
+        saved = _coords_from_summary(stop)
+        if saved:
+            return saved
+        destination = str(stop.get("city") or destination)
     name = _stop_name(stop)
     if not name:
         return None
@@ -448,7 +469,9 @@ def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
 
 
 def travel_min(a: tuple[float, float], b: tuple[float, float]) -> int:
-    return max(TURNAROUND_MIN, round((_haversine_km(a, b) / ROAD_SPEED_KMH) * 60) + TURNAROUND_MIN)
+    from tripplanner.web.schedule import _route_stats_for_distance
+
+    return int(_route_stats_for_distance(_haversine_km(a, b))["duration_min"])
 
 
 # --------------------------------------------------------------------------- #
@@ -462,9 +485,16 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     destination = str(plan.get("destination") or "")
     env = envelope(plan)
     structured = days_of(plan)
+    from tripplanner.web.map_pins import _day_place_context
+
+    structured = [
+        (day, entry, [dict(stop, city=stop.get("city") or _day_place_context(entry, destination))
+                      if isinstance(stop, dict) else stop for stop in stops])
+        for day, entry, stops in structured
+    ]
 
     out.extend(_envelope_violations(structured, env, str(plan.get("origin") or "")))
-    out.extend(_presence_violations(structured, env))
+    out.extend(_presence_violations(structured, env, str(plan.get("origin") or "")))
     out.extend(_hours_violations(structured, destination, day_dates(plan)))
     out.extend(_availability_violations(structured, destination))
     out.extend(_repeat_visit_violations(structured))
@@ -517,7 +547,7 @@ def _envelope_violations(
 
 
 def _presence_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope
+    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope, origin: str = ""
 ) -> list[Violation]:
     """Ordering-based presence, for the times a leg carries no clock time."""
     out: list[Violation] = []
@@ -533,7 +563,8 @@ def _presence_violations(
             )
             if leg_at is not None:
                 for stop in stops[leg_at + 1:]:
-                    if _stop_kind(stop) in _TRANSPORT_KINDS or _stop_kind(stop) == "hotel":
+                    if (_stop_kind(stop) in _TRANSPORT_KINDS or _stop_kind(stop) == "hotel"
+                            or _is_home_endpoint(stop, origin)):
                         continue
                     name = _stop_name(stop) or "An untitled stop"
                     out.append(
@@ -584,7 +615,7 @@ def _hours_violations(
             name = _stop_name(stop)
             if not name:
                 continue
-            facts = facts_for(name, destination)
+            facts = facts_for(name, str(stop.get("city") or destination) if isinstance(stop, dict) else destination)
             if facts.closed_on(day_iso):
                 weekday = place_facts.weekday_of(day_iso)
                 named = (
@@ -698,19 +729,17 @@ def _feasibility_violations(
     for day, _entry, stops in structured:
         timed = [(stop, _time_of(stop)) for stop in stops]
         timed = [(stop, at) for stop, at in timed if at is not None]
-        timed.sort(key=lambda pair: pair[1])
+        ready = None
         for index in range(len(timed) - 1):
             current, current_at = timed[index]
             following, following_at = timed[index + 1]
-            ends = current_at + _duration_of(current)
-            if _stop_kind(following) in _TRANSPORT_KINDS:
+            duration = _duration_of(current)
+            if index == 0 and _stop_kind(current) == "hotel" and not current.get("duration_min"):
+                duration = 0
+            ends = max(current_at, ready or current_at) + duration
+            if buffer_min := _departure_buffer(following):
                 # Two hours is an airport, not a car. Asking for check-in time
                 # before a drive turns a real rule into background noise.
-                buffer_min = (
-                    PRE_DEPARTURE_BUFFER_MIN
-                    if _stop_kind(following) == "flight"
-                    else TURNAROUND_MIN
-                )
                 needed = ends + buffer_min
                 if needed > following_at:
                     out.append(
@@ -724,12 +753,12 @@ def _feasibility_violations(
                             _stop_name(following),
                         )
                     )
+                ready = max(needed, following_at)
                 continue
             here = _coords(current, destination)
             there = _coords(following, destination)
-            if not here or not there:
-                continue
-            needed = ends + travel_min(here, there)
+            needed = ends + (travel_min(here, there) if here and there else 0)
+            ready = max(needed, following_at)
             grace = 0 if _has_a_time_of_its_own(following) else FEASIBILITY_GRACE_MIN
             if needed > following_at + grace:
                 out.append(
@@ -804,6 +833,7 @@ def _stay_violations(
     if not required:
         return []
     cities = _stay_locations(plan)
+    dates = day_dates(plan)
     out: list[Violation] = []
     for day, _entry, stops in structured:
         if day not in required:
@@ -814,6 +844,15 @@ def _stay_violations(
             for stop in stays
             if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
             and not unnamed_lodging(_stop_name(stop), cities)
+            and (
+                not isinstance(stop, dict) or (
+                    stop.get("stay_role") != "checkout"
+                    and (not stop.get("checkin") or not dates.get(day)
+                         or str(stop["checkin"]) <= dates[day])
+                    and (not stop.get("checkout") or not dates.get(day)
+                         or dates[day] < str(stop["checkout"]))
+                )
+            )
         ]
         if concrete:
             continue

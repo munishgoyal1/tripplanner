@@ -115,8 +115,29 @@ _CACHE_CONTAINERS = frozenset({"places_cache", "tool_cache"})
 _CONTAINER_TTLS = {
     **{name: _CACHE_TTL_SECONDS for name in _CACHE_CONTAINERS},
     "provider_usage": 90 * 24 * 60 * 60,
-    "flight_recorder": 7 * 24 * 60 * 60,
+    "flight_recorder": 180 * 24 * 60 * 60,
     "alert_events": 180 * 24 * 60 * 60,
+}
+
+#: Containers that index only the paths their queries filter on, instead of
+#: Cosmos's default of indexing every property of every document. Write RU grow
+#: with the number of indexed values, and a trip-building turn writes one
+#: ``provider_usage`` document of ~150 KB -- 55 call entries and 212 telemetry
+#: events -- where the only query is ``provider_usage._read``'s range on
+#: ``occurred_at``. ``environment`` and ``interaction_id`` stay indexed for
+#: operator lookups. Changing a policy re-indexes in place, online, with no data
+#: migration. Must match ``infra/modules/cosmos-data.bicep``.
+_CONTAINER_INDEXING = {
+    "provider_usage": {
+        "indexingMode": "consistent",
+        "automatic": True,
+        "includedPaths": [
+            {"path": "/occurred_at/?"},
+            {"path": "/environment/?"},
+            {"path": "/interaction_id/?"},
+        ],
+        "excludedPaths": [{"path": "/*"}],
+    },
 }
 
 
@@ -127,36 +148,60 @@ def _container(name: str):
     from azure.cosmos import PartitionKey  # imported lazily
 
     ttl = _CONTAINER_TTLS.get(name)
+    indexing_policy = _CONTAINER_INDEXING.get(name)
     container = _database.create_container_if_not_exists(
         id=name,
         partition_key=PartitionKey(path="/user_id"),
         default_ttl=ttl,
+        indexing_policy=indexing_policy,
     )
-    if ttl is not None:
-        _apply_cache_ttl(container, ttl)
+    if ttl is not None or indexing_policy is not None:
+        _apply_container_settings(container, ttl, indexing_policy)
     _containers[name] = container
     return container
 
 
-def _apply_cache_ttl(container, ttl: int) -> None:
-    """Set the expiry on a cache container that predates this policy.
+def _indexed_paths(policy: dict[str, Any] | None) -> tuple[frozenset[str], frozenset[str]]:
+    """Included and excluded paths, ignoring the ``_etag`` exclusion Cosmos adds itself."""
+    policy = policy or {}
+    included = frozenset(str(entry.get("path")) for entry in policy.get("includedPaths") or [])
+    excluded = frozenset(
+        str(entry.get("path"))
+        for entry in policy.get("excludedPaths") or []
+        if entry.get("path") != '/"_etag"/?'
+    )
+    return included, excluded
+
+
+def _apply_container_settings(
+    container, ttl: int | None, indexing_policy: dict[str, Any] | None
+) -> None:
+    """Bring an existing container's expiry and indexing policy up to date.
 
     ``create_container_if_not_exists`` returns an existing container untouched,
-    so without this an already-deployed cache would keep every row forever.
+    so without this an already-deployed cache would keep every row forever, and a
+    container created before its indexing policy would keep indexing everything.
+    Both settings go in one replace: a replace that omits ``indexingPolicy``
+    resets the container to index every path.
     """
     from azure.cosmos import PartitionKey
 
     try:
         properties = container.read()
-        if properties.get("defaultTtl") == ttl:
+        ttl_current = ttl is None or properties.get("defaultTtl") == ttl
+        indexing_current = indexing_policy is None or _indexed_paths(
+            properties.get("indexingPolicy")
+        ) == _indexed_paths(indexing_policy)
+        if ttl_current and indexing_current:
             return
         _database.replace_container(
             container=container,
             partition_key=PartitionKey(path="/user_id"),
-            default_ttl=ttl,
+            default_ttl=ttl if ttl is not None else properties.get("defaultTtl"),
+            indexing_policy=indexing_policy or properties.get("indexingPolicy"),
         )
-    except Exception as exc:  # noqa: BLE001 - a cache that cannot expire still works
-        log.warning("could not set ttl on %s: %s", container.id, exc)
+    except Exception as exc:  # noqa: BLE001 - a container with old settings still works
+        log.warning("could not update settings on %s: %s", container.id, exc)
 
 
 def _strip_system_fields(doc: dict[str, Any]) -> dict[str, Any]:
@@ -172,13 +217,43 @@ def _payload_bytes(body: dict[str, Any] | None) -> int:
     return len(json.dumps(body, separators=(",", ":"), default=str).encode("utf-8"))
 
 
+def _ru_recorder(fields: dict[str, Any]):
+    """Capture the real RU charge of one Cosmos call into its timing event.
+
+    ``docs/operations/performance-cost.md`` recorded that request-charge capture
+    was not implemented, which left ``cosmosSizing`` in ``config/cost-model.json``
+    -- and therefore the provisioned RU/s derived from it -- an estimate nothing
+    could check. Every operation already emits a timing event, so the charge
+    rides along on that rather than adding a second telemetry path.
+
+    The SDK calls a ``response_hook`` as ``hook(response_headers, result)`` after
+    the request has already succeeded. A hook with any other arity raises from
+    inside the SDK call and fails an operation Cosmos completed, so the signature
+    is pinned by a test that drives the real client.
+    """
+
+    def hook(headers, _result=None) -> None:
+        try:
+            charge = headers.get("x-ms-request-charge")
+            if charge is not None:
+                fields["ru"] = round(float(charge), 3)
+        except Exception:  # noqa: BLE001 - telemetry must never fail a write
+            return
+
+    return hook
+
+
 def read_doc(container: str, user_id: str, doc_id: str) -> dict[str, Any] | None:
     """Point read. Returns app-level payload or ``None`` if not found."""
     from azure.cosmos.exceptions import CosmosResourceNotFoundError
 
-    with timed_operation("storage_operation", "read", store="cosmos", container=container):
+    with timed_operation(
+        "storage_operation", "read", store="cosmos", container=container
+    ) as fields:
         try:
-            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+            item = _container(container).read_item(
+                item=doc_id, partition_key=user_id, response_hook=_ru_recorder(fields)
+            )
         except CosmosResourceNotFoundError:
             return None
     return _strip_system_fields(item)
@@ -192,9 +267,11 @@ def read_doc_versioned(
 
     with timed_operation(
         "storage_operation", "read_versioned", store="cosmos", container=container
-    ):
+    ) as fields:
         try:
-            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+            item = _container(container).read_item(
+                item=doc_id, partition_key=user_id, response_hook=_ru_recorder(fields)
+            )
         except CosmosResourceNotFoundError:
             return None
     return VersionedDocument(
@@ -214,8 +291,8 @@ def upsert_doc(container: str, user_id: str, doc_id: str, body: dict[str, Any]) 
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
-        _container(container).upsert_item(body=payload)
+    ) as fields:
+        _container(container).upsert_item(body=payload, response_hook=_ru_recorder(fields))
 
 
 def create_doc_if_absent(
@@ -233,9 +310,11 @@ def create_doc_if_absent(
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
+    ) as fields:
         try:
-            _container(container).create_item(body=payload)
+            _container(container).create_item(
+                body=payload, response_hook=_ru_recorder(fields)
+            )
         except CosmosHttpResponseError as exc:
             if exc.status_code == 409:
                 raise WriteConflictError(
@@ -264,13 +343,14 @@ def replace_doc_if_version(
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
+    ) as fields:
         try:
             _container(container).replace_item(
                 item=doc_id,
                 body=payload,
                 etag=version,
                 match_condition=MatchConditions.IfNotModified,
+                response_hook=_ru_recorder(fields),
             )
         except CosmosHttpResponseError as exc:
             if exc.status_code == 412:

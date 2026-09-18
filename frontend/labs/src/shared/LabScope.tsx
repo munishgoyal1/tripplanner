@@ -10,6 +10,21 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "itinerary-pane-polish": {
+    changes: [
+      "The itinerary pane body: trip snapshot, plan checks, Day by day header with Add and Reduce a day, day headers, stop rows and travel-from-previous legs",
+      "Typography, spacing, colour use, iconography, surfaces and hover, focus and selected states inside that pane",
+      "Whether secondary trip facts (weather, budget, trip needs) are visible at rest or one tap away, as declared for each option in the fact matrix",
+      "Options A, C, F and G only: small workspace-wide finish changes — neutral tokens, pane header styling, pane radius and shadow, day bar dots and selection, notification strip, toolbar and Details chip styling — with no change to layout, pane order or controls",
+    ],
+    context: [
+      "Every production fact and control; no option removes, renames or reorders the meaning of any statement the pane shows today",
+      "The workspace layout: toolbar, notification strip, day bar, the itinerary-map-details split, pane resizing, hide and maximize, and the Assistant dock",
+      "Map rendering, place details content, planner and agent behaviour, booking semantics, verification and repair logic, and all data contracts",
+      "Options B, D and E leave every element outside the itinerary pane exactly as production renders it today",
+      "F and G refine A in a second round: F and G may additionally strengthen secondary-text contrast, add dates and booking counts to day-bar chips, and show readiness in the itinerary pane header",
+    ],
+  },
   "planner-layout-directions": {
     changes: [
       "The planner's primary spatial model: journey canvas, editorial storyboard, refined three-pane workspace, or the current sbx4 geometry with detail-level polish only",

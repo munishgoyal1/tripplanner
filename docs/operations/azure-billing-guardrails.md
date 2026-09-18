@@ -96,8 +96,15 @@ Alerts email `munishgoyal@aitripplanner.co` through the
 Operational alerts are production-only and carry a `[prod]` title and environment
 property. Application failures remain severity 1. Sustained chat latency and model
 throttling are severity 2; provider-circuit and cache degradation are severity 3.
-Cosmos throttling is severity 3 and requires at least 20 HTTP 429 responses in a
-15-minute window, avoiding escalation on a few SDK-retried requests.
+Cosmos throttling is severity 3 over a 15-minute window. Its threshold is no longer a
+flat 20: `scripts/derive_limits.py` sizes it from the operations a peak burst may
+legitimately issue, so it tracks the INR ceilings like every other guardrail. Cosmos
+429s are also excluded from the severity-1 application-failure query. A 429 is retried
+by the SDK and never reaches the caller, but `app_event()` still logs the attempt at
+`ERROR`, so every throttled operation used to match that catch-all rule and page once
+per five-minute window for a condition only meaningful in aggregate. Throttling is now
+assessed solely by its own thresholded rule, which is how the in-app mirror in
+`alert_events.py` had always routed it.
 
 ## What Azure can cap
 

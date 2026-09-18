@@ -1,0 +1,178 @@
+/* Lab page chrome. The workspace preview itself uses the production Tailwind tokens. */
+.ipp-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 88% 4%, #efd9c055, transparent 26%), #f4f0e8;
+  padding: 28px 20px 72px;
+  color: #29231e;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+.ipp-wrap { max-width: 1500px; margin: 0 auto; }
+.ipp-header { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: end; padding: 48px 8px 34px; }
+.ipp-kicker { display: flex; align-items: center; gap: 7px; margin: 0 0 12px; color: #b54c2d; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.ipp-header h1 { margin: 0; font: 600 clamp(40px, 6vw, 74px)/.9 "Newsreader", serif; letter-spacing: -.035em; color: #282019; }
+.ipp-lede { max-width: 760px; margin: 22px 0 0; font-size: 15px; line-height: 1.7; color: #655c53; }
+.ipp-principle { border: 1px solid #dccfbe; border-radius: 22px; background: #fffaf2; padding: 26px; box-shadow: 0 18px 50px #5e3c2012; }
+.ipp-principle span, .ipp-principle small { display: block; color: #947f6d; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.ipp-principle strong { display: block; margin: 12px 0 20px; font: 600 30px/1.04 "Newsreader", serif; }
+.ipp-section { margin: 28px 0; }
+.ipp-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ipp-option { display: flex; flex-direction: column; min-height: 230px; text-align: left; border: 1px solid #ddd2c3; border-radius: 16px; background: #fffcf7; padding: 16px; transition: .18s; }
+.ipp-option:hover { transform: translateY(-2px); border-color: #c89578; box-shadow: 0 10px 25px #5e3c2014; }
+.ipp-option.selected { border-color: #b54c2d; box-shadow: 0 0 0 3px #b54c2d22, 0 12px 28px #5e3c2018; background: #fff; }
+.ipp-option-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ipp-option-top i { font-style: normal; font-weight: 700; font-size: 14px; color: #282019; }
+.ipp-option-top em { font-style: normal; font-size: 11px; font-weight: 700; color: #b54c2d; background: #b54c2d14; border-radius: 999px; padding: 2px 8px; }
+.ipp-badge { display: inline-flex; width: fit-content; margin-top: 10px; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.ipp-badge.pane { background: #e9efe6; color: #466a4c; }
+.ipp-badge.workspace { background: #f3e2d4; color: #9a4a26; }
+.ipp-option strong { display: block; margin: 10px 0 8px; font: 600 18px/1.15 "Newsreader", serif; color: #282019; }
+.ipp-option p { margin: 0; font-size: 12px; line-height: 1.55; color: #6d6358; }
+.ipp-matrix { overflow-x: auto; border: 1px solid #ddd2c3; border-radius: 16px; background: #fffcf7; }
+.ipp-matrix table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 12px; }
+.ipp-matrix th, .ipp-matrix td { padding: 7px 12px; border-bottom: 1px solid #eee5d8; text-align: center; }
+.ipp-matrix th:first-child, .ipp-matrix td:first-child, .ipp-matrix td:nth-child(2) { text-align: left; }
+.ipp-matrix thead th { position: sticky; top: 0; background: #f7f0e5; font-size: 11px; color: #6d6358; font-weight: 700; }
+.ipp-matrix td.group { color: #947f6d; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.ipp-dot { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+.ipp-dot::before { content: ""; width: 9px; height: 9px; border-radius: 999px; }
+.ipp-dot.rest { color: #466a4c; } .ipp-dot.rest::before { background: #5f8a64; }
+.ipp-dot.tap { color: #9a6a16; } .ipp-dot.tap::before { background: transparent; border: 2px solid #c79329; width: 7px; height: 7px; }
+.ipp-dot.hover { color: #7c7368; } .ipp-dot.hover::before { background: #cfc5b8; }
+.ipp-matrix td.changed { background: #fbf1df; }
+.ipp-preview-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px; margin: 34px 4px 12px; }
+.ipp-preview-head h2 { margin: 0; font: 600 34px/1 "Newsreader", serif; }
+.ipp-preview-head p { max-width: 880px; margin: 10px 0 0; font-size: 13px; line-height: 1.6; color: #655c53; }
+.ipp-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 4px 12px; }
+.ipp-seg { display: inline-flex; gap: 2px; border: 1px solid #ddd2c3; border-radius: 999px; background: #fffcf7; padding: 3px; }
+.ipp-seg button { border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 600; color: #6d6358; }
+.ipp-seg button.on { background: #282019; color: #fff; }
+.ipp-seg-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #947f6d; }
+.ipp-action { flex: 1 1 280px; min-width: 0; border-radius: 999px; background: #282019; color: #f4ede2; padding: 7px 14px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ipp-stage { overflow: auto; border: 1px solid #d8cbb9; border-radius: 18px; background: #e9e1d4; padding: 14px; box-shadow: 0 30px 60px -40px #5e3c2060; }
+.ipp-stage > div { margin: 0 auto; }
+.ipp-compare { display: flex; justify-content: center; gap: 28px; }
+.ipp-compare figure { margin: 0; }
+.ipp-compare figcaption { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6d6358; }
+.ipp-compare .frame { width: 400px; height: 880px; overflow: hidden; border-radius: 10px; box-shadow: 0 16px 40px -24px #5e3c2070; }
+
+/* Workspace token retunes — only the two harmonised options apply these. */
+.ipp-soft {
+  --background: 0.968 0.014 80;
+  --paper: 0.994 0.005 86;
+  --sand: 0.952 0.016 84;
+  --border: 0.905 0.014 84;
+  --sidebar: 0.975 0.01 86;
+}
+.ipp-crisp {
+  --background: 0.962 0.004 85;
+  --paper: 0.997 0.001 90;
+  --card: 0.997 0.001 90;
+  --sand: 0.958 0.004 85;
+  --border: 0.905 0.005 85;
+  --sidebar: 0.978 0.003 85;
+  --ink: 0.21 0.012 50;
+  --foreground: 0.21 0.012 50;
+  --muted-foreground: 0.49 0.01 60;
+}
+/* F and G: the crisp finish with stronger secondary text for readability. */
+.ipp-readable {
+  --ink: 0.19 0.012 50;
+  --foreground: 0.19 0.012 50;
+  --muted-foreground: 0.43 0.012 60;
+  --border: 0.89 0.006 85;
+}
+
+/*
+ * F and G stop rows respond to the pane's own width, not the viewport, so a
+ * wider itinerary pane spends its width on one-line rows instead of height.
+ */
+.ippx-pane { container-type: inline-size; }
+
+/*
+ * Row anatomy shared by F and G. On a narrow pane only the name shares its line
+ * with the status; everything below it spans to the right edge, so the status
+ * pill never narrows the lines that carry most of the text. Once the pane has
+ * room, signals and status join the name's line and rows get shorter.
+ */
+
+/* F · Crisp flow rows */
+.ippf-stop {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-areas: "time name status" ". detail detail" ". sig sig" ". extra extra";
+  column-gap: 10px;
+  align-items: start;
+}
+.ippf-time { grid-area: time; }
+/* Narrow: main dissolves so name and detail take separate grid areas. */
+.ippf-main, .ippg-main { display: contents; }
+.ippf-name { grid-area: name; min-width: 0; }
+.ippf-detail { grid-area: detail; min-width: 0; }
+.ippf-sig { grid-area: sig; min-width: 0; }
+.ippf-status { grid-area: status; }
+.ippf-extra { grid-area: extra; min-width: 0; }
+.ippf-sig:empty, .ippf-extra:empty { display: none; }
+.ippf-leg { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 10px; }
+.ippf-leg-arrival { display: block; }
+@container (min-width: 600px) {
+  .ippf-stop {
+    grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1fr) auto;
+    grid-template-areas: "time main sig status" ". extra extra extra";
+  }
+  /* Wide: name and detail stack inside one cell beside the signals. */
+  .ippf-main { display: block; grid-area: main; min-width: 0; }
+  .ippf-sig { padding-top: 1px; padding-left: 0; }
+  .ippf-leg { grid-template-columns: 46px minmax(0, 1fr); }
+  .ippf-leg-text { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .ippf-leg-arrival { order: 2; flex-shrink: 0; white-space: nowrap; }
+}
+@container (min-width: 880px) {
+  .ippf-stop { grid-template-columns: 54px minmax(0, 1fr) minmax(0, 1.3fr) 124px; }
+  .ippf-leg { grid-template-columns: 54px minmax(0, 1fr); }
+  .ippf-status { justify-self: end; }
+}
+
+/* G · Crisp day sections */
+.ippg-head { display: none; }
+.ippg-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  grid-template-areas: "mark name status" ". detail detail" ". sig sig" ". extra extra";
+  column-gap: 9px;
+  align-items: start;
+}
+.ippg-mark { grid-area: mark; padding-top: 1px; }
+.ippg-time { grid-area: time; display: none; }
+.ippg-name { grid-area: name; min-width: 0; }
+.ippg-detail { grid-area: detail; min-width: 0; }
+.ippg-sig { grid-area: sig; min-width: 0; }
+.ippg-status { grid-area: status; }
+.ippg-extra { grid-area: extra; min-width: 0; }
+.ippg-sig:empty, .ippg-extra:empty { display: none; }
+@container (min-width: 600px) {
+  .ippg-head {
+    display: grid;
+    grid-template-columns: 20px 62px minmax(0, 1.2fr) minmax(0, 1fr) 128px;
+    column-gap: 10px;
+  }
+  .ippg-row {
+    grid-template-columns: 20px 62px minmax(0, 1.2fr) minmax(0, 1fr) 128px;
+    grid-template-areas: "mark time main sig status" ". . extra extra extra";
+    column-gap: 10px;
+  }
+  .ippg-main { display: block; grid-area: main; min-width: 0; }
+  .ippg-time { display: block; }
+  .ippg-time-inline { display: none; }
+  .ippg-status { justify-self: end; }
+  .ippg-list > li:nth-child(even) .ippg-row { background: oklch(var(--sand) / 0.55); }
+}
+
+@media (max-width: 1100px) {
+  .ipp-header { grid-template-columns: 1fr; }
+  .ipp-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .ipp-options { grid-template-columns: 1fr; }
+  .ipp-compare { flex-direction: column; align-items: center; }
+}
+

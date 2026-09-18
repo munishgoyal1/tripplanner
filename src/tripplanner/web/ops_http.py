@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import re
 from datetime import date
 from typing import Any
@@ -43,7 +42,7 @@ async def analytics_event(request: Request) -> Response:
 
 
 @router.get("/ops/overview", include_in_schema=False)
-async def ops_overview(
+def ops_overview(
     request: Request,
     days: int = 30,
     start_date: date | None = None,
@@ -53,11 +52,30 @@ async def ops_overview(
     session = require_owner(request)
     set_user_id(str(session["user_id"]))
 
+    from tripplanner.operations_reporting import _range
+    from tripplanner.operations_usage_report import get_base, get_report
+
+    try:
+        _range(days, start_date, end_date)
+        runtime = get_base(
+            lambda: _build_overview(str(session["user_id"]), days, start_date, end_date),
+            user_id=str(session["user_id"]), days=days, start_date=start_date, end_date=end_date,
+        )
+        runtime["provider_usage"], runtime["provider_usage_status"] = get_report(
+            days=days, start_date=start_date, end_date=end_date,
+            trip_names=runtime.pop("_trip_names", {}),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return runtime
+
+
+def _build_overview(user_id: str, days: int, start_date: date | None, end_date: date | None):
+    set_user_id(user_id)
     from datetime import UTC, datetime, timedelta
 
     from tripplanner.observability import tool_metrics_snapshot
     from tripplanner.ops_metrics import snapshot
-    from tripplanner.provider_usage import summary as provider_usage_summary
     from tripplanner.providers.cache import provider_cache_status
     from tripplanner.providers.fares import get_provider_stats
     from tripplanner.tools.trip_planner import list_saved_trips
@@ -104,7 +122,7 @@ async def ops_overview(
             ),
         },
     }
-    usage = get_owner_usage(str(session["user_id"]))
+    usage = get_owner_usage(user_id)
     runtime["usage"] = {
         "month": usage.get("month"),
         "model_calls": usage.get("calls", 0),
@@ -119,10 +137,10 @@ async def ops_overview(
         for trip in trips
         if trip.get("trip_id")
     }
-    runtime["cost_ceiling"] = await asyncio.to_thread(cost_ledger.snapshot)
+    runtime["cost_ceiling"] = cost_ledger.snapshot()
     runtime["trip_costs"] = {
-        "aggregate": await asyncio.to_thread(cost_ledger.aggregate),
-        "recent": await asyncio.to_thread(cost_ledger.recent_trips, 20, trip_destinations),
+        "aggregate": cost_ledger.aggregate(),
+        "recent": cost_ledger.recent_trips(20, trip_destinations),
     }
     runtime["tools"] = tool_metrics_snapshot()
     provider_stats = get_provider_stats()
@@ -147,24 +165,11 @@ async def ops_overview(
         for provider in sorted(provider_names)
     }
     runtime["cache"] = provider_cache_status()
-    try:
-        runtime["provider_usage"] = provider_usage_summary(
-            days=days,
-            start_date=start_date,
-            end_date=end_date,
-            trip_names={
-                str(trip["trip_id"]): str(trip.get("destination") or "")
-                for trip in trips
-                if trip.get("trip_id")
-            },
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    runtime["_trip_names"] = trip_destinations
     from tripplanner.operations_reporting import snapshot as operations_snapshot
 
     try:
-        durable = await asyncio.to_thread(
-            operations_snapshot,
+        durable = operations_snapshot(
             days=days,
             start_date=start_date,
             end_date=end_date,
@@ -181,8 +186,8 @@ async def ops_overview(
 
     try:
         runtime["alerts"] = {
-            "counts": await asyncio.to_thread(alert_events_snapshot, days),
-            "recent": await asyncio.to_thread(alert_events_recent, 50, days),
+            "counts": alert_events_snapshot(days),
+            "recent": alert_events_recent(50, days),
         }
     except Exception:  # noqa: BLE001 - one dataset must not hide the dashboard
         runtime["alerts"] = {
@@ -193,7 +198,7 @@ async def ops_overview(
 
 
 @router.get("/usage")
-async def usage_for_user(request: Request, user_id: str = "local") -> dict:
+def usage_for_user(request: Request, user_id: str = "local") -> dict:
     """This month's LLM token + cost usage for ``user_id``, plus the INR ceiling.
 
     Per-user figures stay USD because they come from the Azure token catalog;

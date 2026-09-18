@@ -433,8 +433,8 @@ def test_hotel_checkout_is_fitted_before_the_drive_home() -> None:
 
     saved = json.loads(get_trip_plan.invoke({}))
     assert not result.startswith("Error:")
-    assert _stops_on(saved, 6)[0]["time"] == "07:45"
-    assert not [violation for violation in validate_plan(saved) if violation.code == "I1"]
+    assert _stops_on(saved, 6)[0]["time"] == "07:35"
+    assert not [violation for violation in validate_plan(saved) if violation.code in {"I1", "I5"}]
 
 
 def test_authoritative_closed_day_is_rejected_when_no_open_day_fits(
@@ -861,7 +861,7 @@ def test_a_travel_infeasible_planner_update_is_retimed_before_persistence(
     monkeypatch.setattr(
         places_cache,
         "get_details",
-        lambda name, _destination: {
+        lambda name, _destination, **_kwargs: {
             "lat": coordinates[name][0],
             "lng": coordinates[name][1],
         },

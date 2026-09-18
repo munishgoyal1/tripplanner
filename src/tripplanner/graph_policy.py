@@ -10,10 +10,12 @@ from typing import Any, Literal, TypeAlias
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
+from tripplanner.hotel_research import current_hotel_research, unresearched_hotel_cities
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
 )
+from tripplanner.tools.trip_validation import _day_count_gap
 
 COMPLETION_RESEARCH_TOOLS = frozenset({
     "search_flights_duffel",
@@ -46,6 +48,35 @@ MAX_INITIAL_ITINERARY_UPDATES = 8
 # research it has and then finishes with what it has.
 MAX_POST_RESEARCH_UPDATES = 1
 
+
+def saved_itinerary_reply(plan: dict, gaps: Sequence[str]) -> str:
+    lines = [
+        "Planning has stopped; no itinerary work is continuing in the background. "
+        "The requested repair is not confirmed complete. Here is the actual saved itinerary."
+    ]
+    days = plan.get("day_wise_itinerary") or []
+    for day in sorted((row for row in days if isinstance(row, dict)),
+                      key=lambda row: str(row.get("day", "")).zfill(3)):
+        label = f"Day {day.get('day', '?')}"
+        context = " · ".join(str(day[key]) for key in ("date", "city") if day.get(key))
+        lines.append(f"\n**{label}{' — ' + context if context else ''}**\n")
+        stops = day.get("stops") or []
+        if not stops:
+            lines.append("No stops saved for this day.")
+        for stop in stops:
+            if isinstance(stop, dict):
+                time = f"{stop['time']} — " if stop.get("time") else ""
+                kind = f" ({stop['kind']})" if stop.get("kind") else ""
+                lines.append(f"- {time}{stop.get('name') or 'Unnamed stop'}{kind}")
+    if not days:
+        lines.append("\nNo day-by-day itinerary has been saved.")
+    all_gaps = list(dict.fromkeys([*_day_count_gap(plan), *gaps]))
+    if all_gaps:
+        lines.append("\n**Unresolved gaps**\n")
+        lines.extend(f"- {gap}" for gap in all_gaps)
+    return "\n".join(lines)
+
+
 ForcedReason: TypeAlias = Literal[
     "tool_phase_budget",
     "new_trip_creation",
@@ -59,6 +90,7 @@ ForcedReason: TypeAlias = Literal[
     "awaiting_kickoff_answer",
     "trip_kickoff",
     "model_choice",
+    "no_progress",
 ]
 
 
@@ -72,6 +104,7 @@ class CompletionPolicyDecision:
     budget_exhausted: bool = False
     completion_gaps: tuple[str, ...] = ()
     awaiting_kickoff_answer: bool = False
+    stopped_for_no_progress: bool = False
 
 
 _NEW_TRIP_REQUEST_RE = re.compile(
@@ -114,7 +147,7 @@ _OWN_ARRIVAL_RE = re.compile(
     re.IGNORECASE,
 )
 _LODGING_GAP_RE = re.compile(
-    r"\b(?:no concrete hotel|hotel placeholders?|no bookable property|"
+    r"\b(?:no concrete hotel|hotel tbd|hotel placeholders?|no bookable property|"
     r"no concrete lodging anchor)\b",
     re.IGNORECASE,
 )
@@ -123,6 +156,21 @@ _LODGING_GAP_RE = re.compile(
 #: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
 #: not survive a turn, so anything deciding across turns must read this too.
 RAN_TOOLS_KEY = "ran_tools"
+
+
+def is_flight_followup(messages: Sequence[BaseMessage], active_trip: dict[str, Any]) -> bool:
+    if not active_trip.get("day_wise_itinerary"):
+        return False
+    latest = next((str(m.content) for m in reversed(messages) if isinstance(m, HumanMessage)), "")
+    return bool(
+        re.search(r"\b(?:flights?|airfare|flying)\b", latest, re.I)
+        and not re.search(
+            r"\b(?:rebuild|replan|redesign|hotels?|restaurants?|sightseeing|"
+            r"new trip|another trip|entire|whole)\b", latest, re.I,
+        )
+        and not latest_user_starts_new_trip(messages)
+        and not latest_user_requests_different_trip(messages, active_trip)
+    )
 
 
 def _tool_call_positions(messages: Sequence[BaseMessage]) -> list[tuple[int, str]]:
@@ -216,7 +264,7 @@ def trip_update_requirement(
         return (
             "The requested trip change was not saved because update_trip_plan failed: "
             + update_results[-1]
-            + " Correct the rejected fields and call update_trip_plan again before "
+            + " Correct the rejected fields in the full itinerary and call update_trip_plan again before "
             "claiming the itinerary changed."
         )
     if (
@@ -247,6 +295,13 @@ def trip_update_requirement(
         index for index in update_positions if index > latest_research
     ]
     if not updates_after_research:
+        if is_flight_followup(messages, active_trip):
+            return (
+                "Persist the requested flight changes using grounded search results. "
+                "Preserve the saved dates, hotels and sightseeing days. Update only flight "
+                "selections, origin, flight costs and necessary arrival/departure timing. "
+                "If no usable flight was found, report that honestly; do not invent one."
+            )
         return (
             "Research is complete but has not been persisted. Save the full enriched "
             "day_wise_itinerary and the strongest real hotel, activities, meals, costs, "
@@ -306,7 +361,8 @@ def trip_hotel_search_requirement(
     current_turn_names = {
         name for index, name in positions if index > latest_human
     }
-    if "search_hotels" in current_turn_names:
+    pending_cities = unresearched_hotel_cities(messages, active_trip)
+    if "search_hotels" in current_turn_names and not pending_cities:
         return None
     if not active_trip.get("destination") or not active_trip.get("day_wise_itinerary"):
         return None
@@ -321,6 +377,8 @@ def trip_hotel_search_requirement(
     return (
         "The saved itinerary still has no concrete hotel: "
         + " ".join(hotel_gaps)
+        + (" Still research these overnight cities: " + ", ".join(pending_cities) + "."
+           if pending_cities else "")
         + " Search real hotels for every overnight city in one parallel tool-call batch "
         "so the strongest preference-matched options can be selected by default in the "
         "next full-plan update. Do not defer another city's hotel search to a later turn."
@@ -679,10 +737,31 @@ def resolve_completion_policy(
     current_turn_names = {name for index, name in positions if index > latest_human}
     created_this_turn = "create_trip_plan" in current_turn_names
     updated_this_turn = "update_trip_plan" in current_turn_names
+    flight_followup = not created_this_turn and is_flight_followup(messages, active_trip)
+    latest_research = max(
+        (index for index, name in positions
+         if index > latest_human and name in COMPLETION_RESEARCH_TOOLS),
+        default=latest_human,
+    )
+    repair_results = _tool_result_texts(messages, "update_trip_plan", after_index=latest_research)
+    stalled = len(repair_results) >= 2 and (
+        all("updated (no material changes)" in result for result in repair_results[-2:])
+        or (repair_results[-1].startswith("Error:") and repair_results[-1] == repair_results[-2])
+    )
+    if not proposal_only and stalled:
+        return CompletionPolicyDecision(
+            tool_phases=tool_phases, forced_tool=None,
+            forced_reason="tool_phase_budget" if tool_phases >= MAX_TOOL_PHASES_PER_TURN
+            else "no_progress",
+            budget_exhausted=tool_phases >= MAX_TOOL_PHASES_PER_TURN,
+            stopped_for_no_progress=True,
+            completion_gaps=tuple(planning_completion_gaps(active_trip)),
+        )
     core_gaps_for_planning_turn = (
         tuple(core_planning_completion_gaps(active_trip))
         if (
             not proposal_only
+            and not flight_followup
             and (created_this_turn or (has_planning_intent and updated_this_turn))
         )
         else ()
@@ -768,13 +847,22 @@ def resolve_completion_policy(
     if (
         not proposal_only
         and not new_trip_flow
+        and not flight_followup
         and active_trip.get("destination")
-        and not active_trip.get("day_wise_itinerary")
+        and (not active_trip.get("day_wise_itinerary") or _day_count_gap(active_trip))
         and (created_this_turn or has_planning_intent)
+        and len(repair_results) < MAX_INITIAL_ITINERARY_UPDATES
     ):
         requirement = trip_update_requirement(
             messages, active_trip, has_planning_intent=has_planning_intent
         )
+        if _day_count_gap(active_trip):
+            requirement = (
+                "The itinerary must cover the entire trip before further research or a final "
+                "reply. " + " ".join(_day_count_gap(active_trip))
+                + " Submit every day together in one full structured day_wise_itinerary, "
+                "including the outbound and return journeys. Preserve useful saved stops."
+            )
         if requirement:
             return CompletionPolicyDecision(
                 tool_phases=tool_phases,
@@ -806,9 +894,25 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    hotel_evidence = current_hotel_research(messages)
+    if (
+        not proposal_only and not flight_followup and not new_trip_flow
+        and not hotel_fallback_requirement and not origin_requirement
+        and not (update_requirement and "Error:" in update_requirement)
+        and len(repair_results) < 2
+        and any(row.get("properties") for row in hotel_evidence.values())
+        and any(_LODGING_GAP_RE.search(gap) for gap in planning_completion_gaps(active_trip))
+    ):
+        update_requirement = (
+            "Hotel research returned real properties. Select the best suitable property for "
+            "each researched overnight city in selected_hotels and replace matching Hotel TBD "
+            "stops in the full day_wise_itinerary. Use availability_status=unverified when "
+            "rates or rooms are not verified. Do not save only research metadata or notes. "
+            "If no candidate is suitable, record the specific reason instead of inventing one."
+        )
     hotel_search_requirement = (
         None
-        if proposal_only
+        if proposal_only or flight_followup
         or (journey_safety_gap and updated_this_turn and not created_this_turn)
         or new_trip_flow
         or hotel_fallback_requirement
@@ -821,7 +925,7 @@ def resolve_completion_policy(
     )
     restaurant_search_requirement = (
         None
-        if proposal_only
+        if proposal_only or flight_followup
         or new_trip_flow
         or hotel_fallback_requirement
         or update_requirement
@@ -837,6 +941,7 @@ def resolve_completion_policy(
     )
     if (
         non_lodging_core_gaps
+        and len(repair_results) < MAX_INITIAL_ITINERARY_UPDATES
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement

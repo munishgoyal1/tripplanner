@@ -19,6 +19,68 @@ ID. Changed-path selection and publication tiers are documented in
 
 ## Assistant planning
 
+### EB-ROAD-001 - One complete self-drive route
+
+For a self-drive itinerary, research each overnight city and select suitable
+grounded hotels even when room prices/availability remain unverified. A search
+for one city cannot satisfy the other cities. A returned property candidate
+requires a bounded selection pass, not a metadata-only save with Hotel TBD.
+Known city spelling aliases (Bangalore/Bengaluru, Rameshwaram/Rameswaram,
+Kanyakumari/Kanniyakumari) match hotel addresses without accepting other cities.
+The same identity is used for research coverage and saved lodging evidence, so
+a successful alias search cannot leave the city gate stuck in repeated searches.
+Map name/address matching uses those aliases too: Bengaluru is a valid Bangalore
+endpoint, and Rameswaram/Kanniyakumari addresses do not hide the selected hotels.
+Rejected itinerary errors take priority over hotel-selection nudges. A forced
+full-trip repair must submit all days; notes or selections alone cannot satisfy
+it. If planning stops at a safety limit, render the actual saved days and gaps
+directly, without a model claiming that rejected proposed changes were saved.
+When the traveller delegates an optional detour decision, choose one route that
+fits dates, pace and party needs. Do not persist competing Option A/B stops or
+ambiguous road origins/destinations. Explain excluded detours in notes.
+
+Prepare named place coordinates in their day locality and both road endpoint
+cities during the authorized save. Read-only map loads do not buy missing facts.
+Every explicit driving leg can include its origin and destination on the map,
+including home on return. A missing hotel ends the transfer at its named city;
+later sightseeing must not become transfer waypoints. Concrete previous stays
+remain the preferred departure anchor. The local 300 km inference cutoff does
+not prohibit an explicit drive; chronology and routing evidence still apply.
+Automatic repair cannot move an attraction between different day cities, or
+between unspecified localities on a multi-city road trip.
+Timing settlement uses the validator's hotel duration and keeps checkout on the
+departure side of a drive. A return drive precedes home arrival; flight-style
+departure ordering must not move home arrival before driving. Removed unresolved
+route alternatives are not protected transport commitments to restore later.
+Presence checks accept arrival at home after returning, and its map row reuses
+the origin-city anchor instead of searching for a business named "City home".
+Saved identity annotation uses the same day locality as map preparation. Generic
+home-arrival rows replace stale business coordinates with the known origin-city
+identity; explicit confirmed place bindings remain authoritative.
+Checkout fitting, chronology and feasibility agree on a 10-minute road departure
+buffer. A terminal-arrival marker is not another departure needing that buffer.
+Forced full repairs receive the actual saved stop list, not only day titles.
+Do not fill remaining days with hotels or sightseeing in the traveller's home
+city unless requested; use them to balance the return journey.
+
+Proof: `tests/test_roadtrip_completeness.py`, `tests/test_trip_plan.py`,
+`tests/test_trip_view_journeys_transfers.py`, `tests/test_trip_guard.py`.
+
+### EB-PROVIDER-001 - Honor explicit LiteAPI-only flight inventory
+
+**Trigger:** Search flights with `TRAVEL_FLIGHT_PROVIDER=liteapi` and receive
+no availability or a provider error.
+
+**Expected:** Both flight tools expose unavailable evidence without attempting
+Duffel or Amadeus. A missing key remains a configuration error, not permission
+to select another inventory source. Other selector modes keep existing fallback.
+Explicit LiteAPI uses a separate tool-result cache namespace, so previous legacy
+search results cannot satisfy the new selection. Old research is retained.
+Saved prices keep their original evidence; indefinite retention is not a hold.
+
+**Proof:** [test_flight_provider_fallback.py](../tests/test_flight_provider_fallback.py)
+and cache retention/refresh cases in [test_tools_cache.py](../tests/test_tools_cache.py).
+
 ### EB-PLAN-CTX-001 - Resolve follow-ups against the current trip
 
 **Trigger:** Ask any follow-up with a trip selected, including after resuming it
@@ -45,8 +107,16 @@ planning loads preferences and duration advice before one creation. Empty-worksp
 planning and proposal-only review do not require this departure confirmation. Unknown indispensable
 facts and past saved dates may require clarification; provider facts stay grounded.
 
+Flight-only follow-ups preserve intermediate itinerary days and do not force
+hotel, restaurant or attraction research to repair pre-existing gaps. Flights
+may adjust arrival/departure timing and transfers. Two no-material-change saves
+or identical rejected saves end further tool work with an honest status instead
+of an unbounded repair loop.
+
 **Executable proof:**
 
+- [`tests/test_flight_followup.py`](../tests/test_flight_followup.py) exercises flight
+  scope, no-progress termination, model tool selection, and persistence preservation.
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_receives_fresh_trip_context_without_history` and `test_existing_trip_followups_cannot_create_another_trip` cover fresh context and tool availability across destinations and request types.
 - [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_trip_departure_requires_a_clear_whole_trip_request` covers conservative detection and proposal-only behavior.
 - [`tests/test_usage.py`](../tests/test_usage.py) - `test_chat_preserves_trip_departure_notice` covers JSON/SSE notice delivery and transcript persistence. Natural-language compliance still requires a live model check.
@@ -58,6 +128,9 @@ either enabled (the default) or disabled.
 
 **Expected:**
 
+- Day N's calendar date is departure plus N minus one. Duplicate day numbers,
+  reversed dates and mismatched dates inside the trip window are coherence gaps.
+  Closure checks use that canonical date; overnight transport does not shift day labels.
 - In every planning mode, build immediately using explicit trip facts first,
   then saved travel-party/family context, preferences and relevant history, then
   sensible editable assumptions. Do not ask to confirm party, days, dates or routine
@@ -73,6 +146,20 @@ either enabled (the default) or disabled.
   hotel/rate, and a clear final-summary and persistent workspace gap. Missing inventory
   does not trigger an indefinite completion-repair loop or a request to choose a hotel.
   Such a draft is not booking-ready; date, geography and journey-integrity checks remain.
+- A missing inventory provider, empty room inventory, or provider failure triggers
+  one bounded hotel-specific Places fallback within the hotel search. One suitable
+  grounded property is enough for a recommendation; unverified room price,
+  occupancy, refundability and date availability remain explicit. Research results
+  carry city, dates, status, candidate count and reason into the next saved update.
+  Each Hotel TBD shows its matching reason, or explicitly says research is not
+  recorded. A city-specific placeholder cannot borrow a name-only hotel in another
+  city. Hotel research gaps never extend the completion repair loop.
+- A transient model read/protocol failure retries only that model invocation, once.
+  Previously executed tools are not replayed. SSE publishes text from successful
+  agent responses, discarding failed-attempt fragments while progress and tool
+  events continue. Repeated failure preserves the existing interrupted-turn path.
+  Request completion and recovery-attempt outcomes are measured independently;
+  closing an unfinished SSE response records an interrupted request.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
@@ -88,6 +175,26 @@ either enabled (the default) or disabled.
   unmount, and active-trip changes clear in-flight status.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
+- Present the itinerary once, after planning and the workspace refresh finish.
+  Intermediate tool-call prose stays out of the answer; progress remains visible
+  and Send remains unavailable until the panes load. The final answer covers every
+  saved day in order, then states assumptions and gaps. Missing days take precedence
+  over enrichment; a partial two-day save cannot satisfy an eight-day build. A
+  stopped run identifies missing days honestly and never implies background
+  itinerary completion. Background guide/photo loading does not build missing days.
+  New research between saves resets the consecutive no-progress guard; two
+  unproductive saves against unchanged evidence still stop the loop. Chronology
+  rejection reports cascading earliest times together, avoiding one-stop retries.
+  Returning to Planner reuses the workspace response when available and otherwise
+  performs a bounded itinerary fetch. A request that never settles leaves the
+  loading state after 30 seconds, reports the failure, and offers Retry.
+  Bookings/Home return navigation must display a received itinerary under React
+  Strict Mode. Seed consumption occurs with committed state updates; repeated
+  renders cannot mark an unapplied payload as consumed. Remounts reuse the payload,
+  while a subsequent explicit revision still fetches fresh itinerary data.
+  Proof: `tests/test_graph_policy.py`, `tests/test_itinerary_completion.py`,
+  `tests/test_trip_reliability.py`, `frontend/src/components/ChatPanel.test.tsx`,
+  and `frontend/src/components/ItineraryPanel.test.tsx`.
 - A planning turn normally uses at most ten tool phases. A first planning turn
   that reaches that semantic budget permits bounded initial repairs for
   journey edges, named meal coverage on substantial days, and positive
@@ -102,6 +209,8 @@ either enabled (the default) or disabled.
 
 **Executable proof:**
 
+- [`tests/test_trip_reliability.py`](../tests/test_trip_reliability.py) - bounded model fault injection, SSE fragment isolation, tool non-replay, hotel evidence, and completion/recovery denominators
+- [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_lodging_research_is_saved_and_city_results_are_merged`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_hotel_fallback_uses_successful_result_from_parallel_batch`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
 - [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
@@ -267,6 +376,53 @@ the evidence that produced the finding.
 - [`tests/test_request_security.py`](../tests/test_request_security.py)
 
 ## Planner workspace
+
+### EB-BOOKING-001 - Research, lock, export and report external bookings
+
+**Trigger:** Open Bookings directly from the workspace toolbar, adjust a saved alternative, export
+an intention, or record a purchase made through any provider/offline.
+
+**Expected:**
+
+- Opening/reloading reads saved evidence only. Explicit flight/hotel research
+  retains the existing intention and exposes refreshed alternatives separately.
+- Booking research prefills explicit trip party counts, ages and currency, and
+  lets the traveller select the saved flight or stay whose city and dates apply.
+  Hotel searches retain matching saved room allocation and nationality. Unknown
+  allocation/profile assumptions are visible; missing nationality or child ages
+  must be supplied before hotel research. Each child and infant needs one age.
+- Whole-party flight and all-night stay caps are independent; known over-cap
+  choices fail without a write. Missing fees/party/baggage/freshness/currency remain
+  unverified. Same-property room variants are not collapsed into one product.
+- Before saving, show before/after product, price, terms, affected day schedule,
+  category totals and conflicts. Stale/cross-trip commands are rejected atomically.
+- Lock creates a reversible intention, never a booking or price hold. Changes to
+  relevant context require review. A link click never records a purchase.
+- Packet formats carry trip/revision, selected versus proposed items, alternatives,
+  source/expiry and provider handoff gaps. Unknown links are copyable checklists;
+  product-page links make no exact-rate guarantee. Exports omit private references.
+- Actual reports update existing units, preserve intended versus actual, accept
+  unknown paid amounts without inventing zero, and reject duplicate confirmations.
+  Old coordinates and product-specific terms cannot masquerade as the new product.
+  Timing/cost mismatches are previewed and retained as review warnings.
+- Reported hotel dates reconcile linked overnight anchors. Uncovered nights show
+  Hotel TBD without stale booking/place identity; checkout covers the morning,
+  not that night's lodging. Maps cannot close a route back to an uncovered stay.
+  Extensions may restore that booking's unresolved anchors; unrelated stays,
+  including repeat visits to the same property, remain intact and require review.
+- Search defaults, quote occupancy checks and price totals share explicit party
+  counts. Decimal ages never add passengers; unknown headcounts remain unverified.
+- Keyboard confirmation and a 320px layout retain the same review step as desktop.
+
+**Executable proof:**
+
+- [`tests/test_booking_intent.py`](../tests/test_booking_intent.py)
+- [`tests/test_calendar_booking_reconcile.py`](../tests/test_calendar_booking_reconcile.py)
+- [`frontend/src/components/BookingPage.test.tsx`](../frontend/src/components/BookingPage.test.tsx)
+- [`frontend/e2e/booking-intent.spec.ts`](../frontend/e2e/booking-intent.spec.ts)
+
+Live account/redirect continuity and native device parity are not established by
+mocked provider tests or Chromium mobile-width checks.
 
 ### EB-DEAL-001 - Compare and recheck exact finalized-trip offers
 
@@ -680,9 +836,16 @@ Journey and After check-in sections.
 public-transit evidence.
 
 **Expected:** Legs up to 1.5 km may be shown as Walk. A 3 km leg is shown as Taxi,
-and Metro is never inferred from distance alone.
+and Metro is never inferred from distance alone. A longer leg never takes less
+time than a shorter one: each mode band starts at the previous band's upper-edge
+duration, so a 1.6 km taxi shows 20 min (the 1.5 km walk), not 4. The validator
+and the trip rebalance share this estimate, so a tidy clustered day is never
+traded apart to "save" travel.
 
 **Executable proof:**
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_longer_local_hop_never_takes_less_time`
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_it_leaves_a_good_plan_alone`
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_uses_taxi_for_three_kilometres`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_keeps_short_walks_walkable`
@@ -753,9 +916,16 @@ inter-city edge. A road journey that starts the day renders the saved home area
 or origin city as a separate `O` endpoint, labels the drive as departing from
 that origin, formats long durations in hours and minutes, and includes planned
 snack/rest breaks using saved or inferred driving preferences. Its insight says
-that the same taxi or self-drive vehicle continues through authored waypoints,
-calls out scenic breaks, and prompts a meal stop on a long drive when none is
-authored. An explicit meal remains a separately focusable itinerary waypoint.
+  that the same taxi or self-drive vehicle continues through authored waypoints
+  and calls out scenic breaks. Four hours or more of driving across a day requires
+  a named restaurant meal within the journey, with a saved time and at least
+  20 minutes for the meal. Driving between meals cannot exceed four hours;
+  splitting the drive into legs or adding dinner after arrival cannot satisfy
+  coverage. Missing journey clocks remain unresolved. Planning researches and
+  saves the stop instead of assigning the gap to the traveller as a toolbar warning.
+  An explicit meal remains a separately focusable itinerary waypoint.
+  Every planned meal must evidence every applicable saved dietary restriction;
+  negated or explicitly unverified text cannot establish a dietary match.
 For Drive and Bus transfers, worthwhile researched scenic and named meal breaks
 are explicit ordered stops before the destination terminal/check-in. A fixed bus
 service includes only real scheduled or feasible breaks and never implies a
@@ -771,6 +941,7 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_city_origin_drive_includes_origin_and_rest_break`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_first_turn_researches_a_meal_for_a_long_road_day`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_mode_tagged_gangtok_flights_expand_with_both_airports`
 - [`tests/test_trip_persistence.py`](../tests/test_trip_persistence.py) - `test_prompt_requires_grounded_ordered_road_breaks`
@@ -815,7 +986,10 @@ printable file. Standard (including the older `detailed` alias) keeps itinerary
 panel facts without Trip Book contents. PDF download uses the same HTML layout
 as preview. Checked stop photos appear in the PDF, not only in HTML preview.
 Download PDF and Send show independent progress. Email includes the PDF and a
-trip URL.
+trip URL. Generating a PDF or email never stalls the rest of the app: other
+requests keep answering while it runs. A browser print that hangs is abandoned
+within about a minute and the ReportLab fallback is returned, rather than
+retrying every browser in turn.
 
 **Executable proof:**
 
@@ -825,6 +999,8 @@ trip URL.
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `does not mark email as sending while a PDF download is in progress`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_embed_packet_images_uses_places_bytes_when_url_fetch_fails`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_html_to_pdf_stops_after_a_hung_browser`
+- [`tests/test_email_export_idempotency.py`](../tests/test_email_export_idempotency.py) - `test_pdf_and_email_exports_render_off_the_event_loop`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
@@ -859,6 +1035,13 @@ starts from a city/home-area point connects that `O` endpoint to the first
 destination place; both endpoints remain in the day circuit and route focus.
 Clicking a route-shaped drive or toy-train itinerary row frames the complete
 dotted day route, including for legacy rows persisted with a generic kind.
+Local travel before, between and after transfers remains represented. An unresolved
+flight or rail gap splits the path into separately drawable segments; it must not
+erase earlier local edges or fabricate a ground bridge. Itinerary travel totals
+sum local sections independently and do not offer a single Google Maps route
+across separated sections. A missing hotel coordinate remains a visible evidence
+gap; route rendering does not repair historical schedule or geography errors.
+
 
 **Executable proof:**
 
@@ -866,6 +1049,7 @@ dotted day route, including for legacy rows persisted with a generic kind.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
+- [`tests/test_trip_reliability.py`](../tests/test_trip_reliability.py) - complete return-drive circuits and preserved segments across unresolved flights
 
 ### EB-STATE-001 - Keep planner surfaces synchronized
 
@@ -1010,7 +1194,9 @@ than guessing.
 ### EB-TRACE-001 - Reconstruct a planning turn privately
 
 **Trigger:** Build or edit a trip in local, canary or production with `TRIPPLANNER_FLIGHT_RECORDER=1` explicitly enabled in the environment profile
-and the backend restarted. The flag defaults to `0` in local, canary and prod.
+and the backend restarted. The checked-in profiles set it to `1` in local only and
+`0` in canary and prod; `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE` is `0` in all three.
+The code default, with no value set, remains off.
 
 **Expected:** Model/tool/API metadata, shared provider attempts, semantic logs and
 saved revisions share trace identifiers and UTC times. Model/provider attempts keep
@@ -1022,9 +1208,10 @@ omission/truncation is explicit, and sensitive documents/credentials remain excl
 Streaming is unchanged. Recording uses a bounded asynchronous queue and batches;
 overflow is reported and prioritizes failure evidence, never blocks trip work or
 drops financial accounting. A process crash may lose unflushed diagnostic events.
-Local spool/history retention is seven days with a 50 MiB cap per diagnostic store;
-Cosmos recorder data expires after seven days. Failed uploads retain pending files
-within that budget. Export detects corrupt chunks, reads legacy and batched formats,
+The local recorder spool keeps files for 180 days within a 500 MiB cap, pruned at
+most once a minute, so it can briefly exceed the cap; Cosmos recorder data expires
+after 180 days. Failed uploads retain pending files within that budget. The separate
+interaction study store keeps its seven-day / 50 MiB retention. Export detects corrupt chunks, reads legacy and batched formats,
 and includes research preceding trip identity assignment. Browser SDK internals are
 outside this contract.
 
@@ -1047,3 +1234,62 @@ history is retained and remains inspectable. Enabling the master flag restores
 EB-TRACE-001; hosted environments still prohibit the local raw trip archive.
 
 **Executable proof:** `tests/test_flight_recorder_flag.py`, `tests/test_debug_store.py`.
+
+
+### EB-OPS-LOAD-001 - Operations reporting must not stall the workspace
+
+**Trigger:** Open or refresh Operations on a local database with large usage
+batches, or before any consented analytics event has been saved.
+
+**Expected:** Operations opens without waiting for a historical usage scan.
+Local emulator overview and usage snapshots survive backend restarts and remain
+visible while expired snapshots refresh in the background. A timestamp identifies
+the saved figures; failures retain the last good report and show an error instead
+of replacing it with zero totals. On the first-ever range without a saved usage
+report, Business/Trips are usable while that section prepares independently.
+Requests for the same range share one calculation; trip names are applied per
+response without duplicating global ledger scans across signed-in/local sessions.
+
+Overview snapshots are scoped by database, user and range; global usage snapshots
+by database and range. Memory is bounded to eight snapshots and disk to 32 files
+under `TRIPPLANNER_HOME/operations/usage-reports`. Snapshots become eligible for
+background refresh after 60 seconds; the timestamp remains the actual successful
+calculation time, not the time the page was opened. The dashboard transfers only
+creation/update interaction drilldowns that it renders, retaining all provider,
+service, cost, token and cache totals; the source ledger is unchanged.
+
+The local acceptance target is useful dashboard content within 2.5 seconds and
+snapshot API p95 below 1 second with the existing local dataset, including a
+backend restart with persisted snapshots and expiry. These are measured local
+service objectives, not a claim of a production SLA or field Core Web Vitals.
+The one-time first overview inventory may require a short database read; usage
+history rebuilding is never awaited by page navigation.
+
+An absent product-events collection means no saved analytics events. Other database
+failures remain errors. Synchronous reporting and usage reads run in the HTTP
+worker pool so health and workspace requests remain responsive. The dashboard
+permits one refresh at a time, cancels stale range reads, bounds its request wait
+to 45 seconds, and shows Retry after a failed initial fetch. Pending usage is
+checked every three seconds; normal refreshes remain every 30 seconds.
+
+**Proof:** `tests/test_ops_dashboard.py`, `tests/test_operations_reporting.py`,
+`tests/test_operations_usage_report.py`, `tests/test_provider_usage.py`, and
+`frontend/src/ops/OpsDashboard.test.tsx`.
+
+### Locality and itinerary timing (2026-09-14)
+
+Saved stop coordinates are authoritative for itinerary distances as well as map pins
+and feasibility checks. Unresolved stops are looked up in their stop/day city, not
+the combined multi-city destination; a different provider business is not accepted
+as the requested stop. Unknown locations break the measured route instead of
+silently connecting the stops on either side. Hotel/rest visits retain their
+saved order; an added final hotel return never inherits an afternoon visit time.
+
+A drive row states departure and arrival; allocated road segments count its travel
+once. Local travel estimates use the same calculation in rendering and validation.
+Check-in time and accumulated lateness carry forward. The UI and export distinguish
+planned card times from earliest possible arrival and explicitly label next-day
+arrivals. Day travel totals include explicit drives. Known overlapping durations
+remain validation failures even when coordinates are unavailable. These checks feed
+the existing graph completion gate; saved invalid plans are not silently repaired
+by reading the itinerary.

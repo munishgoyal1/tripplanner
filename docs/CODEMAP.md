@@ -25,11 +25,42 @@ The project has one trip agent. Do not add router or personal-assistant agents.
 The Assistant builds the itinerary; Details and Map mutate the same persisted
 trip through shared API contracts.
 
+Flight-only follow-ups are identified by `graph_policy.is_flight_followup`.
+`graph.py` binds flight-relevant tools, adds scoped instructions and stamps
+`_edit_scope=flights` into update arguments. `tools/trip_planner.py` rejects
+unrelated selections and intermediate-day rewrites and skips whole-trip repair
+on that path. Repeated no-op/rejected saves terminate through the policy's
+`stopped_for_no_progress` result and a final model call without tools.
+
+Hotel searches return structured `hotel_research` alongside fallback `candidates`
+or normalized live offers. `graph.py` attaches current-turn evidence to the next
+non-flight update as `lodging_research`; `tools/trip_planner.py` merges it by city.
+The itinerary and completion-gap projection expose matching date/city reasons.
+The SSE adapter publishes successful `trip_agent` outputs rather than partial
+model stream events, so retrying a model invocation cannot duplicate displayed text.
+Only terminal outputs without tool calls enter the answer. `useChatStream.ts`
+holds that answer and the busy state until `onTurnComplete` reloads the workspace;
+the final reply replaces buffered text in one update. `graph_policy.py` prioritizes
+missing date-range coverage over research and scopes stalled-save detection to
+the latest research batch. `trip_validation._itinerary_time_errors` propagates
+earliest corrected times so a rejected circuit can be fixed in one resubmission.
+Hotel completion tracks city-specific attempts and requires bounded selection
+when property candidates exist. `update_trip_plan` rejects unselected route
+alternatives and prepares road endpoints plus day-locality place metadata inside
+the authorized mutation. `map_pins` registers both driving cities; `day_journey`
+uses the destination city when a stay is unresolved. `trip_rebalance._place`
+prevents cross-city relocation and refuses ambiguous cross-day moves on multi-city
+road trips. Explicit drives are exempt from the local-leg distance inference cap.
+`day_journey.py` retains completed local path segments when an unresolved transfer
+resets the active path; `map_view.py` builds legs separately for each segment.
+
 ## Runtime Ownership
 
 | Path | Owns |
 | --- | --- |
 | `src/tripplanner/graph.py` | Agent/tool loop, model invocation and telemetry, and model-facing tool-result budget |
+| `src/tripplanner/model_recovery.py` | One retry for transient model read/protocol failures at the invocation boundary, never the graph/tool boundary; recovery events and sampled metrics |
+| `src/tripplanner/hotel_research.py` | Current-turn hotel tool evidence, city/date research persistence payload and lodging concerns; rates and availability stay distinct from property recommendations |
 | `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, semantic tool-phase budget, conservative whole-trip intent, creation/resume confirmation eligibility and departure-notice text |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions, dated prompt assembly and compact current-trip facts supplied by the graph on every model call; full itinerary detail remains behind get_trip_plan |
@@ -40,7 +71,7 @@ trip through shared API contracts.
 | `src/tripplanner/web/http_context.py` | Shared request-identity helpers used by HTTP routers |
 | `src/tripplanner/web/trip_http.py` | Trip workspace HTTP routes: view, mutate, export, share, and history |
 | `src/tripplanner/web/account_http.py` | Preferences, documents, privacy, guest migrate, and auth HTTP routes |
-| `src/tripplanner/web/ops_http.py` | Owner ops, analytics ingest, and usage HTTP routes |
+| `src/tripplanner/web/ops_http.py` | Owner ops, analytics ingest, and usage HTTP routes; synchronous reporting/usage use the worker pool so database latency cannot block the API event loop |
 | `src/tripplanner/web/runtime_routes.py` | Independent health, public demo (including ETag), provider readiness, and tool metrics routes; registered before the SPA catch-all |
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
@@ -61,7 +92,7 @@ trip through shared API contracts.
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
-| `src/tripplanner/cost_ledger.py` | The one cost control: environment-wide INR spend ceilings (daily/ISO-week/calendar-month) across Azure OpenAI and Google Cloud together, enforced from measured per-call cost with reserve-then-reconcile admission so concurrent turns cannot collectively breach a ceiling none of them breaches alone; unpriced billable calls are charged the rolling P95 rather than zero. Also writes the per-trip cost documents (provider/operation breakdown, LLM turns, cache savings, anomaly flag) the operations dashboard reads |
+| `src/tripplanner/cost_ledger.py` | The one cost control: environment-wide INR spend ceilings (daily/ISO-week/calendar-month) across Azure OpenAI and Google Cloud together, enforced from measured per-call cost with reserve-then-reconcile admission so concurrent turns cannot collectively breach a ceiling none of them breaches alone; unpriced billable calls are charged the rolling P95 rather than zero. The single window document is kept exact rather than sharded: every mutation in the process goes through one group-committing writer that applies all queued mutations to one read and writes once, with ETag re-read and jittered retry across processes. Also writes the per-trip cost documents (provider/operation breakdown, LLM turns, cache savings, anomaly flag) the operations dashboard reads |
 | `src/tripplanner/cost_model.py` | Cached `config/cost-model.json` loader and the single sanctioned USD->INR boundary; free-pool shares and quota-sizing inputs for `scripts/derive_limits.py` |
 | `src/tripplanner/limits_config.py` | Every runtime limit in one place: the INR spend ceilings, anti-abuse admission rates, and presentation caps. Deliberately holds no per-trip or per-turn call budget -- the agent makes whatever calls a quality itinerary needs and the ceiling bounds the money |
 | `src/tripplanner/cli.py` | Local command-line experience |
@@ -87,6 +118,13 @@ trip through shared API contracts.
 | `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
 | `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
+| `src/tripplanner/decisions/booking_intent.py` | Pure purchase grouping, category feasibility, intent fingerprints, isolated adjustment candidates and external-booking reconciliation |
+| `src/tripplanner/web/booking_http.py` | Authenticated active-trip/revision binding, serialized preview/apply, explicit research and booking snapshot routes; saves through `tools/trip_planner.py` |
+| `src/tripplanner/web/booking_export.py` | Cache-only redacted booking-intent packets shared by HTML/PDF/JSON/email/share; no provider calls |
+| `src/tripplanner/decisions/booking_defaults.py` | Read-only projection of saved party, ages, currency and per-flight/per-stay search context, with explicit assumptions |
+| `src/tripplanner/party.py` | Shared explicit adult/child/infant counts and optional headcount for search defaults, quote compatibility, pricing and budget projection; age numbers are excluded |
+| `src/tripplanner/decisions/booking_stays.py` | Per-night reconciliation after an actual hotel report; identity-scoped gaps, checkout-only anchors and recovery without overwriting unrelated stays |
+| `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; direct toolbar navigation, saved search target selection and existing ExportModal delivery |
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
@@ -95,8 +133,8 @@ trip through shared API contracts.
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with numbered circuit insets, then essentials, documents, and optional place context |
-| `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available; stop photos are inlined as data URIs (Places media fallback) before print; ReportLab keeps the day/stop structure and can embed the same photo bytes |
-| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Opt-in via the central `TRIPPLANNER_FLIGHT_RECORDER` environment flag (default off); bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, seven-day retention, 50 MiB local spool cap, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
+| `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available; stop photos are inlined as data URIs (Places media fallback) before print, distinct images fetched concurrently; each print attempt gets a private `--user-data-dir`, discarded output, and a process-tree kill on timeout, and one hung attempt (or a 60s total deadline) ends the browser path; ReportLab keeps the day/stop structure and can embed the same photo bytes. `build_export_html` warms place details, stop photos and day static maps concurrently (paid scope only) before the serial render. The `/trip/export.pdf` and `/trip/export/email` routes run this work via `asyncio.to_thread` |
+| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Opt-in via the central `TRIPPLANNER_FLIGHT_RECORDER` environment flag (code default off; on in the local profile only, verbose off in every profile); bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, 180-day retention (local spool and Cosmos `flight_recorder` TTL), 500 MiB local spool cap checked at most once a minute, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/aggregate ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, capped local LLM-prompt preview plus full counts, tool, detailed provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: opt-in local-only history of real trip revisions gated by the master recorder flag for investigation and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
@@ -104,6 +142,7 @@ trip through shared API contracts.
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, timed-operation, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/operations_reporting.py` | Durable owner-dashboard reporting: allowlisted page analytics, inclusive date ranges, cross-user trip/chat/feedback joins, and non-secret infrastructure configuration snapshots |
+| `src/tripplanner/operations_usage_report.py` | Local dashboard last-good snapshots: bounded memory/disk, atomic persistence, background refresh after expiry, database/range/user isolation, strict failure preservation, freshness metadata and compact rendered-only interaction drilldowns; hosted reporting keeps its synchronous query behavior |
 | `src/tripplanner/provider_usage.py`, `usage_attribution.py`, `interaction_telemetry.py` | Content-free provider/model ledger and interaction timeline; one bounded hosted document per attributed interaction retains ordered semantic events, aggregated low-level counts, attempted-call detail, unit-counted cache rollups, new-trip/update classification, and request, trip, audit, automation, and background attribution while measured calls/tokens stay distinct from versioned catalog cost estimates, cache savings, and unknown-price calls. Each interaction also emits one operational flow summary; local summaries may name a bounded set of Places cache/provider decisions, while hosted ledgers and summaries remain content-free. Local development additionally writes one fail-open study artifact under `TRIPPLANNER_HOME/trip-telemetry/interactions/`; hosted environments never write it |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
@@ -289,8 +328,9 @@ Cosmos containers have explicit ownership:
 | `guest_credentials` | Guest capability records |
 | `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
 | `places_cache` | Google Places details, shared across users at partition `_shared` |
+| `trip_costs` | Cost ledger, partitioned by environment: the one `_windows_v1` document admission serialises on, plus one cost document per trip |
 | `tool_cache` | Results of read-only tools, shared unless the tool is user-specific |
-| `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, cache hits/savings, and failures, while allowlisted ordered telemetry events preserve flow and reduce hosted writes to normally one per interaction |
+| `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, cache hits/savings, and failures, while allowlisted ordered telemetry events preserve flow and reduce hosted writes to normally one per interaction. Indexes only `occurred_at`, `environment` and `interaction_id` (nothing queries the nested values), and Cosmos writes go through a background writer so a throttled write never holds the request; `provider_usage.flush` drains it at shutdown |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data
@@ -353,7 +393,7 @@ that the reviewable one does not, which is when `--save` is worth running.
 | Area | Primary paths | Contract |
 | --- | --- | --- |
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
-| Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately. A provider that returns nothing must fall through to the next source, never end the search |
+| Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Cache before calls and label evidence/freshness. Explicit LiteAPI flight selection stops legacy Duffel/Amadeus fallback on empty/error; other modes retain ordered fallback. `tools_cache.py` isolates explicit LiteAPI flight/hotel results from retained legacy results. Places hotel metadata is not priced inventory |
 | Item comparisons and overrides | `decisions/`, provider search tools, `web/trip_view.py`, and `frontend/src/components/DecisionPanel.tsx` | Persist candidates from the exact search response, rank with kind-specific deterministic rules, mutate through the active-trip owner, and keep opaque provider references out of display and share contracts |
 | Currency normalization | `providers/fx.py` consumed by `decisions/rules.py` | Published ECB reference rates, cached; an unavailable rate drops the money term rather than comparing raw amounts across currencies |
 | Trip cost evidence, recheck, and what-if | `decisions/trip_cost.py`, `decisions/price_recheck.py`, `decisions/budget_what_if.py`, provider registry, `web/budget.py`, and `web/trip_view.py` | Classify quote evidence; compare exact products only with known mandatory costs/FX; apply consented public benefit terms; explicitly verify stale exact flight offers or re-search exact-context stays; persist bounded observations without replacing selections |
@@ -365,6 +405,18 @@ that the reviewable one does not, which is when `--save` is worth running.
 
 Booking means grounded selection and verified handoff material. The application
 does not purchase, pay, cancel, or manage provider orders.
+
+Booking intent persists as backward-compatible `category_caps` and
+`booking_intent.records[item_id]` alongside existing selections/decisions.
+Selected items and repeated anchors receive `booking_item_id`; actual provider
+references remain private in the record, never copied into itinerary stop notes.
+GET `/trip/bookings` projects the existing document. POST uses the workspace
+exclusive guard and per-user mutation lock, compares `trip_id`/`updated_at`, builds
+a private candidate, and requires the exact command's preview token before one
+authoritative save. Returning to `/planner` reloads all main trip surfaces.
+`graph.py` keeps completion ownership; planning validation reads category gaps.
+Quote/source time and lock/booking state are independent. Rechecks cannot change
+selected intentions, and normal selection overrides cannot replace booked items.
 
 ### Outbound call rules
 
@@ -455,6 +507,7 @@ snapshots. `graph_policy.py` enforces draft creation/persistence before refineme
 | `scripts/README.md` | Developer workflow and utility script ownership |
 | `scripts/win/user/` | Windows owner-facing run and prompt-log launchers |
 | `scripts/win/user/sandbox/` | Windows owner-facing sandbox launchers (new, run, serve, stop, update, promote, discard, list) |
+| `scripts/win/user/testing/` | Windows owner-facing suite-health launcher (full pytest + vitest run against the known-failure baseline) |
 | `scripts/win/canary/` | Windows owner-facing launcher for the canary deployment |
 | `scripts/win/prod/` | Windows owner-facing launchers for the approval-gated production deployment and rollback |
 | `scripts/mac/` | macOS launcher equivalents with the same subfolder layout and base names |

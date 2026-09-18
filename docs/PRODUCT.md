@@ -54,8 +54,20 @@ useful itinerary. Interactive mode permits optional refinement after the first
 saved itinerary. Old kickoff cards cannot block an empty draft. Persist the useful
 day-by-day proposal before additional research, then enrich it with provider facts.
 Missing origin remains unresolved travel, not self-arranged arrival.
-Research hotels with a bounded place fallback; unavailable inventory becomes a
-city-specific Hotel TBD with visible workspace and final-summary gaps. Preserve
+The traveller reviews one coherent itinerary when the planning turn and all trip
+panes are ready. Internal saves may build the draft incrementally, but progress
+is the only presentation until that boundary. Present every day, then assumptions
+and unresolved gaps; do not substitute a status checklist or imply missing days
+will arrive through background work. A stopped build must be explicitly labelled
+incomplete. Guide and photo warming is separate from itinerary construction.
+An optional destination delegated to the planner is a decision to make, not two
+branches to leave in the plan. Include it only if the actual travel time and rest
+fit the requested pace; otherwise exclude it and explain why. A self-drive trip
+keeps that mode, definite overnight cities and a complete route back home.
+Research hotels with a bounded place fallback. Recommend a suitable grounded
+property even when its room rate and date availability remain unverified. Only
+missing suitable property evidence becomes a city-specific Hotel TBD, with the
+research reason visible in the workspace and final summary. Preserve
 date, geography and journey integrity, and distinguish a useful draft from a
 booking-ready plan. The traveller refines a useful proposal, rather than doing the
 planner's research or resolving every provider failure.
@@ -184,10 +196,17 @@ Ordinary flight, hotel, date and itinerary edits never create a replacement trip
 - **Optimize for the traveler, not the provider.** Ranking may optimize total
   practical trip cost, time, comfort, reliability, preference fit, and risk.
   Affiliate relationships are disclosed and never change the ranking objective.
-- **Booking stays external.** The future booking bridge sends the user to the
-  selected provider or affiliate, preserves verified handoff details, and
-  ingests booking confirmations. Tripplanner does not take booking payment or
-  become the merchant of record.
+- **Booking stays external.** The Bookings review surface sends the user to the
+  selected provider or affiliate and exports a versioned booking-intent list
+  through download, email or sharing. Locking saves the user's final research
+  choices, not inventory. Users may book elsewhere or offline, then report actual
+  bookings for reconciliation into the main itinerary. Tripplanner does not take
+  booking payment or become the merchant of record.
+- **Initial inventory scope is LiteAPI-only for flights and hotels.** Start with
+  search using available account access. Retain research indefinitely under the
+  current owner-directed cache settings, while preserving original checked times
+  and separating retained observations from current price/availability. Tiqets is
+  the next attraction-ticket candidate; multi-provider comparison is later work.
 
 The durable promise is a surprising amount of time and effort saved: a smooth,
 preference-aware, realistic, intelligent itinerary that is more practical and
@@ -245,8 +264,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   route, and Trip context — so the three-column hierarchy is legible before its content
   loads. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while export/new/reset share one outlined group and thumbs up/down/rating share
-  one sand-colored group. Thin separators make each feedback and itinerary action
+  while export/new/reset share one outlined group, Bookings is a direct workflow
+  action, and thumbs up/down/rating share one sand-colored group. Saved-trip,
+  feedback, and action outlines use the same restrained rounded-rectangle radius.
+  Thin separators make each feedback and itinerary action
   independently scannable without breaking the compact groups. Account preferences use a gear beside the sign-in or
   short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
@@ -636,8 +657,10 @@ If a redesign violates the above without a stated reason, push back.
   `learned_notes` / `past_trip_mentions` / `interests` / `dislikes` richer.
 - The trip panel is the showroom. Anything that makes it feel more like an
   Airbnb listing page (photos, ratings, reviews, attractions) is on-brand.
-- Booking handoffs through verified provider actions are a future direction; the
-  current "finalize → manual booking" loop is fine for now.
+- Bookings now supports research, previewed adjustments, locked intentions,
+  versioned exports and reported external purchases. Provider product links and
+  offline checklists are useful without claiming exact-rate checkout continuity.
+  Verified provider-specific checkout handoffs remain a future direction.
 
 ## 9) When this file goes out of date
 

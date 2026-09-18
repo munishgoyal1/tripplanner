@@ -24,6 +24,7 @@ from tripplanner.web.transport import (
     _canonical_transport_name,
     _normalized_stop_kind,
     _resolved_transfer_mode,
+    _transport_route_endpoints,
     _transport_terminal_refs,
 )
 
@@ -74,6 +75,7 @@ class DayJourney:
     detached_pin_ids: list[str] = field(default_factory=list)
     transfer_mode: str | None = None
     route_disconnected: bool = False
+    completed_segments: list[list[str]] = field(default_factory=list)
 
     @property
     def is_transfer(self) -> bool:
@@ -88,6 +90,7 @@ class _OpenTransfer:
     circuit_id: str
     #: A known arrival terminal that must follow any en-route waypoints.
     arrival_id: str | None = None
+    fallback_arrival_id: str | None = None
     #: Ground edges are committed only after a compatible destination is found.
     pending_edges: list[Edge] = field(default_factory=list)
 
@@ -123,6 +126,8 @@ class _JourneyWalk:
             self.journey.detached_pin_ids.append(pin_id)
 
     def _reset_route(self) -> None:
+        if self.journey.route_ids:
+            self.journey.completed_segments.append(list(self.journey.route_ids))
         for pin_id in self.journey.route_ids:
             self._detach(pin_id)
         self.journey.route_ids.clear()
@@ -178,6 +183,9 @@ class _JourneyWalk:
         self.journey.transfer_mode = mode
         circuit_id = _route_circuit_id(self.journey.day, stop_index, mode)
         transfer = _OpenTransfer(mode=mode, circuit_id=circuit_id)
+        if mode == "Drive" and (endpoints := _transport_route_endpoints(name)):
+            if destination_pin := self._resolve_pin(endpoints[1], "origin"):
+                transfer.fallback_arrival_id = self._remember(destination_pin)
         metrics = _saved_metrics(stop)
         if metrics:
             self.saved_metrics[circuit_id] = metrics
@@ -243,6 +251,11 @@ class _JourneyWalk:
 
         pin = self._resolve_pin(name, kind)
         if not pin:
+            if kind == "hotel" and self._open and self._open.fallback_arrival_id:
+                arrival = self._open.fallback_arrival_id
+                self._commit_pending(arrival, self._open)
+                self._place(arrival)
+                self._open = None
             return
         pin_id = self._remember(pin)
         pin_kind = str(pin["kind"])
@@ -302,6 +315,11 @@ class _JourneyWalk:
         return True
 
     def finish(self) -> DayJourney:
+        if self._open and self._open.fallback_arrival_id:
+            arrival = self._open.fallback_arrival_id
+            self._commit_pending(arrival, self._open)
+            self._place(arrival)
+            self._open = None
         self._close_pending_arrival()
         return self.journey
 

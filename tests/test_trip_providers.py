@@ -119,7 +119,9 @@ def test_hotel_search_uses_google_fallback_when_amadeus_unconfigured(monkeypatch
     class FakeGoogleSearch:
         @staticmethod
         def invoke(args):
-            return json.dumps([{"name": "Grounded Hotel", "rating": 4.7, **args}])
+            return json.dumps([{"name": "Grounded Hotel", "rating": 4.7,
+                                "place_id": "grounded", "address": "Paris, France",
+                                "types": ["lodging"], **args}])
 
     # No live provider configured, so best-effort falls through to Amadeus then Google.
     monkeypatch.setattr(hotel_search, "get_hotel_providers", lambda: [])
@@ -225,11 +227,12 @@ class TestDuffelHelpers:
         from tripplanner import config
         # No live provider configured, so the friendly Duffel setup message surfaces.
         monkeypatch.setattr(duffel_flights, "get_flight_provider", lambda: None)
-        monkeypatch.setattr(
-            config, "get_settings",
-            lambda: type("S", (), {"duffel_api_key": ""})(),
+        settings = config.get_settings().model_copy(
+            update={"duffel_api_key": "", "travel_flight_provider": "duffel"}
         )
-        monkeypatch.setattr(duffel_flights, "get_settings", config.get_settings)
+        monkeypatch.setattr(
+            duffel_flights, "get_settings", lambda: settings,
+        )
         assert not duffel_flights.is_configured()
         result = search_flights_duffel.invoke({
             "origin": "Delhi",

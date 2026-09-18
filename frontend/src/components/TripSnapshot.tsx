@@ -1,9 +1,11 @@
 import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Budget, TripOverview } from "../types";
 import { recheckPrices } from "../api";
 import WeatherIcon from "./WeatherIcon";
 import { formatDate, formatSourceAmount, useDisplayPreferences, type DisplayCurrency } from "../lib/displayPreferences";
+
+type SnapshotTab = "overview" | "weather" | "budget";
 
 interface Props {
   overview: TripOverview;
@@ -20,7 +22,7 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
   const tone = budget.over_budget ? "bg-rose-500" : pct >= 80 ? "bg-amber-400" : "bg-sage";
 
   return (
-    <div className="border-t border-border pt-3">
+    <div>
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase text-muted">Trip spend</p>
@@ -36,7 +38,7 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
               )}
             </>
           )}
-          <p className="mt-0.5 text-base font-semibold text-ink">
+          <p className="mt-0.5 text-base font-semibold tabular-nums text-ink">
             {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
             {hasTarget && <span className="text-xs font-normal text-muted"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}
           </p>
@@ -47,8 +49,8 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
       </div>
       {hasTarget && (
         <>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
-            <div className={`h-full rounded-full ${tone}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+          <div className="mt-2 h-1.5 overflow-hidden rounded-sm bg-sand">
+            <div className={`h-full rounded-sm ${tone}`} style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
           <div className="mt-1 flex justify-between text-[11px] text-muted">
             <span className={budget.over_budget ? "font-medium text-rose-700" : ""}>
@@ -67,6 +69,11 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
   );
 }
 
+/**
+ * The trip's one authoritative snapshot. Identity and cost stay above the tabs;
+ * Overview, Weather and Budget panels all stay mounted, and the inactive ones are
+ * hidden, so every fact is one tap away without lengthening the pane.
+ */
 export default function TripSnapshot({
   overview,
   booked,
@@ -78,11 +85,14 @@ export default function TripSnapshot({
   const { currency } = useDisplayPreferences();
   const [rechecking, setRechecking] = useState(false);
   const [recheckOutcome, setRecheckOutcome] = useState("");
+  const [tab, setTab] = useState<SnapshotTab>("overview");
+  // useId returns ":r0:"; colons are not safe in id selectors that label lookups may use.
+  const idBase = `trip-snapshot${useId().replace(/:/g, "")}`;
   const statusTone = overview.status === "booked"
-    ? "bg-brand/10 text-brand ring-brand/20"
+    ? "border-brand/30 bg-brand/10 text-brand"
     : overview.status === "finalized"
-      ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-      : "bg-sand text-muted ring-border";
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+      : "border-border bg-paper text-muted";
   const countFacts = [
     { label: "days", value: overview.counts.days, icon: CalendarDays },
     { label: overview.counts.hotels === 1 ? "stay" : "stays", value: overview.counts.hotels, icon: BedDouble },
@@ -102,6 +112,11 @@ export default function TripSnapshot({
       ? `with ${overview.counts.activities} planned ${overview.counts.activities === 1 ? "place" : "places"}.`
       : "with itinerary details still being planned.",
   ].filter(Boolean).join(" ");
+  const tabs: Array<[SnapshotTab, string]> = [
+    ["overview", "Overview"],
+    ["weather", "Weather"],
+    ...(overview.budget ? [["budget", "Budget"] as [SnapshotTab, string]] : []),
+  ];
 
   async function runPriceRecheck() {
     setRechecking(true);
@@ -132,11 +147,12 @@ export default function TripSnapshot({
       tabIndex={onAllDaysMap ? 0 : undefined}
       onClick={onAllDaysMap}
       onKeyDown={(event) => {
-        if (!onAllDaysMap || (event.key !== "Enter" && event.key !== " ")) return;
+        // Keys pressed on the tabs or the recheck action belong to those controls.
+        if (!onAllDaysMap || event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
         event.preventDefault();
         onAllDaysMap();
       }}
-      className={`border-b px-4 py-4 transition ${
+      className={`border-b px-3.5 pb-3 pt-3.5 transition ${
         active
           ? "border-brand/30 bg-brand/5 ring-inset ring-2 ring-brand/20"
           : onAllDaysMap
@@ -145,10 +161,12 @@ export default function TripSnapshot({
       }`}
       title={onAllDaysMap ? "Show all itinerary days on map" : undefined}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase text-brand">Trip snapshot</p>
-          <h1 className="display mt-0.5 text-2xl leading-tight font-normal text-ink">
+          <span className={`inline-flex rounded border px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.06em] ${statusTone}`}>
+            {overview.status}
+          </span>
+          <h1 className="display mt-1 text-2xl leading-tight font-normal text-ink">
             {overview.destination || "Your trip"}
           </h1>
           <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -156,11 +174,8 @@ export default function TripSnapshot({
           </p>
         </div>
         <div className="shrink-0 text-right">
-          <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${statusTone}`}>
-            {overview.status}
-          </span>
           {overview.total_cost != null && (
-            <p className="mt-1.5 text-sm font-semibold text-ink">{formatSourceAmount(overview.total_cost, overview.budget?.currency || "USD", currency)}</p>
+            <p className="text-base font-semibold tabular-nums text-ink">{formatSourceAmount(overview.total_cost, overview.budget?.currency || "USD", currency)}</p>
           )}
           {costEvidence?.summary && (
             <p
@@ -194,36 +209,86 @@ export default function TripSnapshot({
         </div>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-muted">{tripSummary}</p>
-
-      {stops != null && booked != null && (
-        <div className="mt-3 border-t border-border pt-3">
-          <div className="flex items-center justify-between gap-3 text-xs">
-            <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
-              <CheckCircle2 size={13} className="text-emerald-600" aria-hidden />
-              {booked} of {stops} ready
-            </span>
-            <span className={remainingStops ? "text-amber-700" : "text-emerald-700"}>
-              {remainingStops ? `${remainingStops} need booking` : "All confirmed"}
-            </span>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand" aria-label={`${readinessPct}% of stops ready`}>
-            <div className="h-full rounded-full bg-sage" style={{ width: `${readinessPct}%` }} />
-          </div>
-        </div>
-      )}
-
-      <div className="mt-3 grid grid-cols-4 gap-1.5">
-        {countFacts.map(({ label, value, icon: Icon }) => (
-          <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border bg-paper px-1 py-2.5">
-            <Icon size={12} className="shrink-0 text-muted" aria-hidden />
-            <p className="text-xs font-semibold tabular-nums text-ink">{value}</p>
-            <span className="truncate text-[9px] font-medium uppercase text-muted">{label}</span>
-          </div>
+      <div role="tablist" aria-label="Trip snapshot sections" className="mt-3 flex gap-0.5 rounded-md bg-sand p-0.5">
+        {tabs.map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`${idBase}-tab-${id}`}
+            aria-selected={tab === id}
+            aria-controls={`${idBase}-panel-${id}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              setTab(id);
+            }}
+            className={`h-7 flex-1 rounded text-[12px] font-semibold transition ${
+              tab === id ? "bg-paper text-ink shadow-sm ring-1 ring-border" : "text-muted hover:text-ink"
+            }`}
+          >
+            {label}
+            {id === "budget" && overview.budget?.pct_used != null && (
+              <span className="ml-1 font-normal tabular-nums text-muted">{overview.budget.pct_used}%</span>
+            )}
+          </button>
         ))}
       </div>
 
-      <div className="mt-3 border-t border-border pt-3">
+      <div
+        role="tabpanel"
+        id={`${idBase}-panel-overview`}
+        aria-labelledby={`${idBase}-tab-overview`}
+        hidden={tab !== "overview"}
+        className="mt-3 space-y-3"
+      >
+        <p className="text-[13px] leading-relaxed text-ink/80">{tripSummary}</p>
+        {stops != null && booked != null && (
+          <div>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+                <CheckCircle2 size={13} className="text-emerald-600" aria-hidden />
+                {booked} of {stops} ready
+              </span>
+              <span className={remainingStops ? "text-amber-700" : "text-emerald-700"}>
+                {remainingStops ? `${remainingStops} need booking` : "All confirmed"}
+              </span>
+            </div>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-sm bg-sand" aria-label={`${readinessPct}% of stops ready`}>
+              <div className="h-full rounded-sm bg-sage" style={{ width: `${readinessPct}%` }} />
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-4 divide-x divide-border rounded-md border border-border">
+          {countFacts.map(({ label, value, icon: Icon }) => (
+            <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 flex-col items-center gap-0.5 py-1.5">
+              <span className="inline-flex items-center gap-1 text-[13px] font-semibold tabular-nums text-ink">
+                <Icon size={12} className="shrink-0 text-muted" aria-hidden />
+                {value}
+              </span>
+              <span className="truncate text-[10px] text-muted">{label}</span>
+            </div>
+          ))}
+        </div>
+        {overview.family_pills && overview.family_pills.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {overview.family_pills.map((pill) => <span key={pill} className="chip">{pill}</span>)}
+          </div>
+        )}
+        {overview.constraints && overview.constraints.length > 0 && (
+          <p className="text-xs leading-relaxed text-muted">
+            <span className="font-semibold text-ink">For this trip:</span>{" "}
+            {overview.constraints.join(" · ")}
+          </p>
+        )}
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`${idBase}-panel-weather`}
+        aria-labelledby={`${idBase}-tab-weather`}
+        hidden={tab !== "weather"}
+        className="mt-3"
+      >
         <div className="flex items-center justify-between gap-3">
           <p className="text-[10px] font-semibold uppercase text-muted">Weather</p>
           {overview.weather && (
@@ -232,43 +297,42 @@ export default function TripSnapshot({
         </div>
         {overview.weather ? (
           <>
-          <div className="mt-2 flex flex-wrap gap-1.5" aria-label={`${overview.weather.source_label} weather summary`}>
-            {overview.weather.days.map((day, index) => (
-              <span
-                key={day.date}
-                className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-50 px-2 text-[11px] font-medium text-ink ring-1 ring-sky-100"
-                title={`${day.date}: ${day.summary}${day.precip_probability_pct != null ? `, ${day.precip_probability_pct}% precipitation` : ""}`}
-              >
-                <span className="text-sky-700"><WeatherIcon condition={day.condition} size={14} /></span>
-                <span>D{index + 1}</span>
-                {day.high_c != null && <span className="tabular-nums">{Math.round(day.high_c)}°</span>}
-              </span>
-            ))}
-          </div>
-          {overview.weather.packing_advice.length > 0 && (
-            <p className="mt-2 text-xs leading-relaxed text-muted">
-              <span className="font-semibold text-ink">Pack:</span>{" "}
-              {overview.weather.packing_advice.join(". ")}.
-            </p>
-          )}
+            <div className="mt-2 flex flex-wrap gap-1.5" aria-label={`${overview.weather.source_label} weather summary`}>
+              {overview.weather.days.map((day, index) => (
+                <span
+                  key={day.date}
+                  className="inline-flex h-7 items-center gap-1 rounded border border-border bg-paper px-2 text-[11px] font-medium text-ink"
+                  title={`${day.date}: ${day.summary}${day.precip_probability_pct != null ? `, ${day.precip_probability_pct}% precipitation` : ""}`}
+                >
+                  <span className="text-sky-700"><WeatherIcon condition={day.condition} size={14} /></span>
+                  <span>D{index + 1}</span>
+                  {day.high_c != null && <span className="tabular-nums">{Math.round(day.high_c)}°</span>}
+                </span>
+              ))}
+            </div>
+            {overview.weather.packing_advice.length > 0 && (
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                <span className="font-semibold text-ink">Pack:</span>{" "}
+                {overview.weather.packing_advice.join(". ")}.
+              </p>
+            )}
           </>
         ) : (
           <p className="mt-2 text-xs text-muted">Forecast unavailable for this trip.</p>
         )}
       </div>
 
-      {overview.family_pills && overview.family_pills.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {overview.family_pills.map((pill) => <span key={pill} className="chip">{pill}</span>)}
+      {overview.budget && (
+        <div
+          role="tabpanel"
+          id={`${idBase}-panel-budget`}
+          aria-labelledby={`${idBase}-tab-budget`}
+          hidden={tab !== "budget"}
+          className="mt-3"
+        >
+          <BudgetSummary budget={overview.budget} displayCurrency={currency} />
         </div>
       )}
-      {overview.constraints && overview.constraints.length > 0 && (
-        <p className="mt-3 text-xs leading-relaxed text-muted">
-          <span className="font-semibold text-ink">For this trip:</span>{" "}
-          {overview.constraints.join(" · ")}
-        </p>
-      )}
-      {overview.budget && <div className="mt-3"><BudgetSummary budget={overview.budget} displayCurrency={currency} /></div>}
     </section>
   );
 }

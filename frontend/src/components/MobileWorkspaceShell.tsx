@@ -24,7 +24,7 @@ export default function MobileWorkspaceShell({
   feedback,
 }: Props) {
   return (
-    <section className="flex h-screen flex-col bg-sand">
+    <section className="workspace-crisp flex h-screen flex-col bg-sand">
       <header className="relative z-30 flex h-11 shrink-0 items-center justify-between border-b border-border bg-paper/95 px-3 backdrop-blur">
         <div className="rounded-full bg-sand ring-1 ring-border">
           {hasTrip && <TripFeedbackControl initial={feedback} mobile />}

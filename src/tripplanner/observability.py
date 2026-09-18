@@ -498,9 +498,6 @@ def _correlation_fields(fields: dict[str, Any]) -> dict[str, str]:
     }
 
 
-_MAX_FULL_PROMPT_CHARS = 20_000
-
-
 def full_llm_prompt_logging_enabled() -> bool:
     """Honor the ``LOG_FULL_LLM_PROMPTS`` env switch. Off by default.
 
@@ -574,11 +571,14 @@ def log_llm_prompt(
             # safety net kept here; ordinary trip/preference content is
             # deliberately left untouched, that's the point of the feature.
             # Order matters: _BEARER before _INLINE (see flight_recorder.sanitize()).
-            scrubbed = _INLINE.sub(r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", full_prompt_text))
-            fields["prompt_full_truncated"] = len(scrubbed) > _MAX_FULL_PROMPT_CHARS
-            fields["prompt_full"] = scrubbed[:_MAX_FULL_PROMPT_CHARS]
+            scrubbed = _INLINE.sub(
+                r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", full_prompt_text),
+            )
+            fields["prompt_full_truncated"] = False
+            fields["prompt_full"] = scrubbed
     _APP_EVENT_LOGGER.info(
-        f"LLM PROMPT {model}{turn_phase_text} messages={message_count} words={len(words)}{preview_text}",
+        f"LLM PROMPT {model}{turn_phase_text} messages={message_count} "
+        f"words={len(words)}{preview_text}",
         extra=fields,
     )
 
@@ -794,14 +794,20 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
 
 
 @contextmanager
-def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
-    """Emit one content-free terminal duration event for an operation."""
+def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[dict[str, Any]]:
+    """Emit one content-free terminal duration event for an operation.
+
+    Yields the mutable field dict so a caller can attach something only knowable
+    once the call has returned -- ``storage_cosmos`` uses it to record the real
+    ``x-ms-request-charge`` in RU. The fields are read in the ``finally`` block,
+    so anything set inside the ``with`` body is included in the emitted event.
+    """
     started = time.perf_counter()
     status = "ok"
     error = None
     status_code = None
     try:
-        yield
+        yield fields
     except Exception as exc:
         status = "error"
         error = type(exc).__name__

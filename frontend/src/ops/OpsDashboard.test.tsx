@@ -327,4 +327,48 @@ describe("OpsDashboard", () => {
     expect(screen.getByRole("tab", { name: /api & cost/i })).toBeInTheDocument();
     expect(screen.queryByText("Page not found.")).not.toBeInTheDocument();
   });
+  it("shows server failures and allows retry instead of loading forever", async () => {
+    vi.mocked(fetchOpsOverview).mockRejectedValueOnce(Object.assign(new Error("server"), { status: 500 }));
+    render(<OpsDashboard />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Operations overview unavailable");
+    expect(screen.queryByText("Loading")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await screen.findByText("Activation funnel");
+  });
+
+  it("does not overlap refresh requests", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    vi.mocked(fetchOpsOverview).mockImplementationOnce(() => new Promise(() => {}));
+    const beforeRefresh = vi.mocked(fetchOpsOverview).mock.calls.length;
+    const refresh = screen.getByRole("button", { name: "Refresh metrics" });
+    fireEvent.click(refresh);
+    fireEvent.click(refresh);
+    expect(fetchOpsOverview).toHaveBeenCalledTimes(beforeRefresh + 1);
+  });
+
+  it("shows business data while the first usage report is prepared", async () => {
+    vi.mocked(fetchOpsOverview).mockResolvedValue({
+      ...overview, provider_usage: null,
+      provider_usage_status: { state: "pending", generated_at: null },
+    });
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+    expect(screen.getByText(/Preparing the first usage report/)).toBeInTheDocument();
+    expect(screen.queryByText("Measured calls")).not.toBeInTheDocument();
+  });
+
+  it("keeps last-good cost figures visible during a background refresh", async () => {
+    vi.mocked(fetchOpsOverview).mockResolvedValue({
+      ...overview, provider_usage_status: { state: "refreshing", generated_at: "2026-08-10T12:00:00Z" },
+    });
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+    expect(screen.getByText("Measured calls")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Usage report as of");
+    expect(screen.getByRole("status")).toHaveTextContent("Updating");
+  });
+
 });

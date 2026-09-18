@@ -86,14 +86,28 @@ $imagePrefix = "ghcr.io/munishgoyal1/tripplanner:"
 $canaryHistoryLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
 
 function Get-CanaryImages {
-    $images = @(az containerapp list `
-        --resource-group $CanaryResourceGroup `
-        --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
-        --output tsv)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect canary images in $CanaryResourceGroup."
+    # A read-only query, so a transient transport failure is retried. It runs
+    # again straight after a ~20 minute canary deploy, where one TLS reset
+    # (WinError 10054) used to discard an already verified canary.
+    $attempts = 3
+    for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+        $output = @(az containerapp list `
+            --resource-group $CanaryResourceGroup `
+            --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
+            --output tsv 2>&1)
+        if ($LASTEXITCODE -eq 0) {
+            return @($output |
+                Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] } |
+                ForEach-Object { "$_".Trim() } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        }
+        $errors = ($output | ForEach-Object { "$_" }) -join "`n"
+        if ($attempt -lt $attempts) {
+            Write-Host -ForegroundColor Yellow "[canary] Image inspection attempt $attempt of $attempts failed; retrying.`n$errors"
+            Start-Sleep -Seconds (10 * $attempt)
+        }
     }
-    return @($images | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    throw "Could not inspect canary images in $CanaryResourceGroup after $attempts attempts. Azure CLI output:`n$errors"
 }
 
 function Test-CanaryImageVerified {
@@ -230,6 +244,8 @@ Write-Host "`n✓ Approval confirmed. Proceeding with production deployment...`n
 
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
+$stageName = "Prerequisite checks"
+$stageTimer = Start-DeploymentTimer
 if (-not (Test-Path $bicepFile)) {
     throw "Bicep file not found: $bicepFile"
 }
@@ -289,26 +305,12 @@ if (-not [string]::IsNullOrWhiteSpace($OAuthRedirectBase) -and $OAuthRedirectBas
     throw "Hosted OAuth redirect base must use HTTPS: $OAuthRedirectBase"
 }
 Write-Host "  ✓ Files exist`n"
-
-# Step 2: Validate Bicep
-Write-Host "✓ Step 2: Validating Bicep template..."
-$stageName = "Bicep validation"
-$stageTimer = Start-DeploymentTimer
-$validation = az deployment group validate `
-    --resource-group $prodRG `
-    --template-file $bicepFile `
-    --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
-    2>&1
-if ($LASTEXITCODE -ne 0) {
-    throw "Bicep validation failed: $validation"
-}
-Write-Host "  ✓ Template is valid`n"
 Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
-# Step 3: Dry run (optional)
+# Step 2: What-if. No separate validate step: what-if runs the same ARM
+# preflight validation and `create` repeats it before changing anything.
 if ($DryRun) {
-    Write-Host "✓ Step 3: Performing DRY RUN (no changes)..."
+    Write-Host "✓ Step 2: Performing DRY RUN (no changes)..."
     $stageName = "Infrastructure what-if"
     $stageTimer = Start-DeploymentTimer
     az deployment group what-if `
@@ -324,10 +326,10 @@ if ($DryRun) {
     exit 0
 }
 
-Write-Host "✓ Step 3: Checking infrastructure changes..."
+Write-Host "✓ Step 2: Validating template and checking infrastructure changes..."
 $stageName = "Infrastructure what-if"
 $stageTimer = Start-DeploymentTimer
-$rawWhatIf = az deployment group what-if `
+$whatIfOutput = @(az deployment group what-if `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
@@ -335,10 +337,14 @@ $rawWhatIf = az deployment group what-if `
     --result-format ResourceIdOnly `
     --no-pretty-print `
     --only-show-errors `
-    --output json 2>$null | Out-String
-if ($LASTEXITCODE -ne 0) {
-    throw "Production infrastructure what-if failed."
+    --output json 2>&1)
+$whatIfExitCode = $LASTEXITCODE
+# What-if now carries template validation, so its errors must reach the owner.
+$whatIfErrors = @($whatIfOutput | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }) -join "`n"
+if ($whatIfExitCode -ne 0) {
+    throw "Production template validation or what-if failed. Azure CLI output:`n$whatIfErrors"
 }
+$rawWhatIf = @($whatIfOutput | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] }) -join "`n"
 $whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Production what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Production"
 Write-Host "  ✓ What-if contains no deletes`n"
