@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from tripplanner.observability import app_event
-from tripplanner.validation.harness.pricing import azure_openai_rate
+from tripplanner.pricing import azure_openai_rate
 
 _CONTAINER = "users"
 _LOCK = threading.Lock()

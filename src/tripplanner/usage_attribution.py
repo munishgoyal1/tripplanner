@@ -339,7 +339,7 @@ _BATCH: contextvars.ContextVar[UsageBatch | None] = contextvars.ContextVar(
 
 
 def current_attribution() -> UsageAttribution:
-    from tripplanner.validation.harness.context import current_context
+    from tripplanner.observability.context import current_context
 
     harness = current_context()
     if harness is not None:

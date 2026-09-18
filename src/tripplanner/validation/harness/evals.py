@@ -1,28 +1,6 @@
-"""Harness namespace for deterministic plan-quality evaluations.
+"""Compatibility alias for tripplanner.evals."""
 
-The legacy ``tripplanner.evals`` module remains available to existing scripts and
-callers. Harness orchestration imports through this module so eval execution and
-reporting have one stable validation namespace while compatibility is preserved.
-"""
+import sys
+from importlib import import_module
 
-from tripplanner.evals import (
-    SCENARIOS,
-    CheckResult,
-    EvalCheck,
-    EvalResult,
-    EvalScenario,
-    evaluate_plan,
-    format_result,
-    scenario_by_id,
-)
-
-__all__ = [
-    "SCENARIOS",
-    "CheckResult",
-    "EvalCheck",
-    "EvalResult",
-    "EvalScenario",
-    "evaluate_plan",
-    "format_result",
-    "scenario_by_id",
-]
+sys.modules[__name__] = import_module("tripplanner.evals")

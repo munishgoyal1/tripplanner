@@ -25,7 +25,7 @@ from azure.cosmos import CosmosClient, PartitionKey, exceptions
 
 from tripplanner import tools_cache
 from tripplanner.cache_merge import merge_cache_documents
-from tripplanner.validation.emulator import EMULATOR_ENDPOINT, EMULATOR_KEY
+from tripplanner.harness.sources.emulator import EMULATOR_ENDPOINT, EMULATOR_KEY
 
 SYSTEM_FIELDS = frozenset({"_rid", "_self", "_etag", "_attachments", "_ts"})
 PLACES_CONTAINER = "places_cache"

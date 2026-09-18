@@ -15,12 +15,12 @@ from pathlib import Path
 from time import monotonic
 from typing import Any
 
-from tripplanner.usage_attribution import current_attribution, current_batch
-from tripplanner.validation.harness.pricing import (
+from tripplanner.pricing import (
     CATALOG_VERSION,
     GOOGLE_PLACES_USD_PER_REQUEST,
     TAVILY_USD_PER_SEARCH,
 )
+from tripplanner.usage_attribution import current_attribution, current_batch
 
 _CONTAINER = "provider_usage"
 _LOCK = threading.Lock()

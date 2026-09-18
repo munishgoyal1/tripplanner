@@ -135,11 +135,13 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with numbered circuit insets, then essentials, documents, and optional place context |
 | `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available; stop photos are inlined as data URIs (Places media fallback) before print, distinct images fetched concurrently; each print attempt gets a private `--user-data-dir`, discarded output, and a process-tree kill on timeout, and one hung attempt (or a 60s total deadline) ends the browser path; ReportLab keeps the day/stop structure and can embed the same photo bytes. `build_export_html` warms place details, stop photos and day static maps concurrently (paid scope only) before the serial render. The `/trip/export.pdf` and `/trip/export/email` routes run this work via `asyncio.to_thread` |
 | `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Opt-in via the central `TRIPPLANNER_FLIGHT_RECORDER` environment flag (code default off; on in the local profile only, verbose off in every profile); bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, 180-day retention (local spool and Cosmos `flight_recorder` TTL), 500 MiB local spool cap checked at most once a minute, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
-| `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/aggregate ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, capped local LLM-prompt preview plus full counts, tool, detailed provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
+| `src/tripplanner/observability/` | Shared runtime telemetry, independent of harness execution and evals. `__init__.py` preserves the existing event/logging API and process-wide observer state; `context.py` owns run correlation; `evidence.py` owns serializable event evidence. Low-level successes still reach observers/ledgers while human logs omit successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: opt-in local-only history of real trip revisions gated by the master recorder flag for investigation and emulator restore; never active in hosted mode |
-| `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
-| `src/tripplanner/validation/harness/`, `scripts/runtime_evidence_gate.py` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, quality, model-round, throttle, retry-delay, and token reports. The Azure OpenAI catalog in `pricing.py` uses longest-prefix matching so `gpt-5.4-mini` is not priced as `gpt-5`. The hermetic comparison gate requires six representative scenarios, material round reduction, bounded p95 latency, no quality regression, and successful degradation before behavior-sensitive runtime policy changes. `tripplanner.evals` remains the compatibility API |
-| `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
+| `src/tripplanner/harness/` | Harness engineering: scenario execution (`runner.py`), event collection (`evidence.py`), stored-trip audit orchestration (`audit.py`), acquisition/deduplication (`corpus.py`, `sources/`), accepted-finding policy (`baseline.py`), paid generation (`generation/`, `budget.py`), and report assembly/persistence (`report.py`, `audit_report.py`). Retains immutable `audit/reports/` history and inspection provenance aliases |
+| `src/tripplanner/evals/` | Evaluation criteria and scoring: pure trip input contracts, deterministic plan/guard/render/metamorphic evaluators, human-rated gates/taste dimensions, findings/grouping, rule registry, corpus observations and operational metrics. `python -m tripplanner.evals` and existing public plan-eval imports remain supported. No LLM judge is implemented by the ownership refactor |
+| `src/tripplanner/pricing.py`, `scripts/runtime_evidence_gate.py` | Shared versioned provider price catalog, independent of the harness; Azure OpenAI longest-prefix matching preserves model-specific prices. The unchanged hermetic comparison gate consumes harness reports for six representative scenarios, material round reduction, bounded p95 latency, no quality regression and successful degradation |
+| `src/tripplanner/validation/` | Compatibility adapters only. Existing submodule imports resolve to canonical harness/eval modules and share their state; `findings.py` re-exports finding definitions and baseline helpers from their separate owners. New callers use canonical paths |
+| `src/tripplanner/harness/generation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, timed-operation, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/operations_reporting.py` | Durable owner-dashboard reporting: allowlisted page analytics, inclusive date ranges, cross-user trip/chat/feedback joins, and non-secret infrastructure configuration snapshots |
 | `src/tripplanner/operations_usage_report.py` | Local dashboard last-good snapshots: bounded memory/disk, atomic persistence, background refresh after expiry, database/range/user isolation, strict failure preservation, freshness metadata and compact rendered-only interaction drilldowns; hosted reporting keeps its synchronous query behavior |
@@ -159,6 +161,76 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `scripts/prod-cache-sync.ps1`, `scripts/prod_cache_sync.py` | Owner-triggered, merge-only cache exchange between local `tripplanner-cache` and production; fixed shared/global partition allowlists, destination TTL policy, original evidence timestamps, fail-safe overlapping per-source watermarks, ETag writes, RU/byte/delta JSON reports, and an explicit production-write approval gate |
 | `scripts/dev/resolve-all-recorded-conflicts.ps1` | Manual all-worktree recovery: finds pending merges in primary, sandbox, multiagent, and standalone-branch worktrees, delegates recorded `rerere` decisions to the canonical resolver, and aggregates genuinely new conflicts without starting, aborting, or publishing merges |
 | `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid Trip Quality Corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); the run cap combines measured model-ledger deltas with versioned catalog estimates for billable Google calls attributed to each unique turn, while preserving both components separately from authoritative provider billing; logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, one same-principal recovery turn repairs a completed empty draft, acceptance requires at least two stops per itinerary day, three consecutive completed barren turns stop with a failing exit, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; output reports accepted yield, richness, and the cost breakdown; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
+
+### Harness engineering, evals, and reusable boundaries
+
+Milestone 1 of [#349](https://github.com/munishgoyal1/tripplanner/issues/349)
+separates execution from judgment without changing scoring or spending behavior.
+The remaining capability roadmap is in [brief 004](feature-briefs-backlog/004-auto-validation-harness.md).
+
+- **Harness engineering** supplies the controlled environment around an execution:
+  scenario selection, source adapters, budget admission, execution, evidence capture,
+  baseline policy, and durable reports. An audit is one harness workflow.
+- **Evals** define what is measured and how an output is assessed. They accept
+  supplied inputs/evidence; they do not acquire a corpus or run the planner.
+  Production guard logic stays in `tools/trip_guard.py` and related domain owners;
+  deterministic eval adapters reuse it. `graph.py` still owns runtime completion.
+- **Observability** explains runtime behavior through logs, events, metrics and
+  correlation. **Tracing** is the ordered model/tool/request execution evidence,
+  including the existing opt-in private flight recorder; it does not judge quality.
+  Full recorder relocation and a new tracing backend are outside this milestone.
+
+Dependency direction:
+
+```text
+harness -> evals -> supplied contracts / shared event evidence
+harness -> shared observability and pricing
+runtime telemetry/accounting -> shared observability and pricing
+trip-specific eval adapters -> production domain guards and view builders
+```
+
+Neither evals nor runtime telemetry/accounting imports the harness or legacy
+validation adapters. The explicitly invoked local audit-inspection HTTP route
+may call `harness.audit`; this does not place auditing in ordinary trip execution.
+`observability.context.RunContext` / `run_scope` own correlation, with
+`harness.context.HarnessContext` / `harness_scope` as compatibility names. Existing
+usage attribution still classifies that scope as an audit. `HarnessEvent` and
+`HarnessEvidence` retain their public names/serialization under
+`observability.evidence`; the subscribing collector lives in `harness.evidence`.
+These are prospective extraction boundaries, not a published generic library.
+
+Behavior and migration contracts:
+
+- Existing `tripplanner.evals` public exports and module CLI remain stable.
+  Lazy plan-eval exports avoid loading production critics just to use an input
+  contract. Legacy `validation` adapters remain during caller migration.
+- Preserve report versions, fields, rule IDs and the registry's serialized
+  `evaluated_in` identities. Those legacy module paths still resolve and contribute
+  to historical rule fingerprints; a directory move must not invalidate comparison.
+- Corpus files, baselines, ratings, and immutable audit history stay in their
+  existing locations. Offline audits stay provider-denied; paid generation remains
+  explicit and budgeted. Incremental reuse and judge calls are later milestones.
+- `tests/test_harness_boundaries.py` protects dependency direction, shared legacy
+  module state, context restoration, runtime import isolation and module CLI.
+  Existing eval, audit, pricing and report tests continue exercising compatibility
+  paths. The changed-path selector knows the new owners.
+
+Potential reusable horizontals, for a later in-repo package or separate repository:
+
+| Candidate | Present owner | Extraction prerequisite |
+| --- | --- | --- |
+| Execution correlation | `observability/context.py` | Make initiator/attribution policy explicit; current run scopes imply Tripplanner audit attribution |
+| Event evidence and collection | `observability/evidence.py`, `harness/evidence.py` | Inject observer subscription instead of importing the application event bus; stabilize a generic versioned event schema |
+| Scenario runner and evidence report | `harness/runner.py`, `harness/report.py` | Separate the `plan_quality` trip adapter, inject timing/release metadata and evaluator collection |
+| Operational evaluators | `evals/operational.py` | Document event vocabulary and inject provider rates; Google/Azure conventions are application adapters |
+| Finding grouping and accepted baseline | `evals/findings.py`, `harness/baseline.py` | Parameterize identities/provenance and keep acceptance policy separate from evaluation results |
+| Provider pricing | `pricing.py` | Separate reusable rate matching from provider-specific catalog data; never conflate estimates with invoices |
+
+Trip shapes, preferences, geography/itinerary rules, view-model checks, market
+matrices, emulator adapters, and existing `evals/contracts.py` are Tripplanner
+domain code. Keep them out of a generic core. A second real consumer should drive
+the extraction API; milestone 1 does not add a framework, packaging dependency,
+judge abstraction, or speculative plugin system.
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Checked-in `config/environments/local.env`, `canary.env`, and

@@ -27,12 +27,13 @@ os.environ["TRIPPLANNER_DEBUG_STORE"] = "0"
 for _variable in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_CONNECTION_STRING"):
     os.environ[_variable] = ""
 
-from tripplanner.validation import findings as findings_module  # noqa: E402
-from tripplanner.validation import generate as generate_module  # noqa: E402
-from tripplanner.validation import observations as observations_module  # noqa: E402
-from tripplanner.validation import quality as quality_module  # noqa: E402
-from tripplanner.validation import registry as registry_module  # noqa: E402
-from tripplanner.validation import runner  # noqa: E402
+from tripplanner.evals import findings as findings_module  # noqa: E402
+from tripplanner.evals import human as quality_module  # noqa: E402
+from tripplanner.evals import observations as observations_module  # noqa: E402
+from tripplanner.evals import registry as registry_module  # noqa: E402
+from tripplanner.harness import audit as runner  # noqa: E402
+from tripplanner.harness import baseline as baseline_module  # noqa: E402
+from tripplanner.harness.generation import generate as generate_module  # noqa: E402
 
 _BAR = "-" * 78
 
@@ -162,7 +163,7 @@ def main(argv: list[str] | None = None) -> int:
             _print_observations(result)
 
     path = runner.baseline_path(REPO_ROOT)
-    from tripplanner.validation import report as report_module
+    from tripplanner.harness import audit_report as report_module
 
     destination = REPORT_ROOT / report_module.LATEST_FILE
     # Read before writing: the report it replaces is what "since last time"
@@ -173,7 +174,7 @@ def main(argv: list[str] | None = None) -> int:
         previous = {}
     payload = report_module.build_report(
         result,
-        findings_module.load_baseline(path),
+        baseline_module.load_baseline(path),
         previous,
         quality_ratings=quality_module.load(runner.corpus_root(REPO_ROOT)),
     )
@@ -188,8 +189,8 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.accept:
-        baseline = findings_module.accept(result.groups, findings_module.load_baseline(path))
-        findings_module.save_baseline(path, baseline)
+        baseline = baseline_module.accept(result.groups, baseline_module.load_baseline(path))
+        baseline_module.save_baseline(path, baseline)
         print(f"\nAccepted {len(result.groups)} finding group(s) into {path.name}.")
         return 0
 
@@ -199,7 +200,7 @@ def main(argv: list[str] | None = None) -> int:
         print("\nCorpus is empty: nothing was checked.", file=sys.stderr)
         return 2
 
-    stale = findings_module.stale_keys(result.groups, findings_module.load_baseline(path))
+    stale = baseline_module.stale_keys(result.groups, baseline_module.load_baseline(path))
     if stale and not args.as_json:
         print(f"\n{len(stale)} accepted finding(s) no longer occur; --accept to prune.")
     return 1 if result.new else 0
