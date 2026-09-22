@@ -2,10 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, ExternalLink, LockKeyhole, RefreshCw } from "lucide-react";
 import { bookingCommand, bookingJsonUrl, fetchBookings, shareBookings,
   type Actual, type BookingResult, type BookingRow, type BookingView, type Category,
-  type Choice, type Command, type Search } from "../bookingApi";
+  type Choice, type Command, type HandoffLevel, type Search } from "../bookingApi";
 import ExportModal from "./ExportModal";
 
 const categories: Category[] = ["flights", "hotels", "tickets", "transport"];
+// The button says what the link is evidenced to do; the title carries the caveat.
+const HANDOFF_ACTIONS: Record<HandoffLevel, string> = {
+  exact_offer: "Open verified offer · checkout",
+  product_page: "Open provider · product page",
+  search_page: "Open provider page · price not carried",
+  no_online_handoff: "Open provider link",
+};
 const money = (row: Pick<Choice, "currency" | "amount">) =>
   row.amount == null ? "Price unknown" : `${row.currency} ${row.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 const dateLine = (row: Choice) => [row.start_date, row.end_date && `to ${row.end_date}`, row.time].filter(Boolean).join(" ");
@@ -256,7 +263,7 @@ export default function BookingPage() {
           {row.warnings?.map((warning) => <p key={warning} className="mt-2 text-sm text-amber-800">{warning}</p>)}
           <div className="mt-4 flex flex-wrap gap-2">
             {!row.booked && <button disabled={busy} className="btn-ghost" onClick={() => void run({ action: row.intent_state === "locked" ? "unlock" : "lock", item_id: row.id })}><LockKeyhole size={14} /> {row.intent_state === "locked" ? "Unlock intention" : "Lock intention"}</button>}
-            {row.url ? <a className="btn-ghost" href={row.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} /> Open provider · product page</a> : <span className="self-center text-xs text-muted">No verified booking link. Use these details with any provider.</span>}
+            {row.url ? <a className="btn-ghost" title={row.handoff_label} href={row.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} /> {HANDOFF_ACTIONS[row.handoff] ?? "Open provider link"}</a> : <span className="self-center text-xs text-muted">No verified booking link. Use these details with any provider.</span>}
             <button disabled={busy} className="btn-ghost" onClick={() => setReportId(reportId === row.id ? "" : row.id)}>{row.actual ? "Edit reported booking" : "Record booking made elsewhere"}</button>
             {!row.booked && <button disabled={busy} className="btn-ghost" onClick={() => setIntentId(intentId === row.id ? "" : row.id)}>Edit researched intent details</button>}
             <label className="text-xs">Booking requirement<select className="input block" value={row.disposition} disabled={busy || row.booked} onChange={(e) => void run({ action: "disposition", item_id: row.id, disposition: e.target.value })}>

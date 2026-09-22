@@ -19,6 +19,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `hosted_smoke.py` | Read-only hosted HTTP smoke implementation |
 | `performance_baseline.py` | Hermetic endpoint performance baseline |
 | `smoke_test.py` | Local provider credential and connectivity smoke |
+| `liteapi_access_probe.py` | Dated LiteAPI access evidence for one exact trip context; hotel and flight capabilities reported separately, refuses to run without a key, and records denials as evidence |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
 | `dev/full-2way-sync.ps1` | Convergence sync for every local branch, including sandbox, multiagent, and unattached branches; automatically replays recorded conflict resolutions across every lane type; pass `sbx` for registered sandboxes only |

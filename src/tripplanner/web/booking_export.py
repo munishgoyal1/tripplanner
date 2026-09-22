@@ -44,7 +44,12 @@ def packet_lines(packet: dict) -> list[str]:
                 f"Source/suggested provider: {row['provider'] or 'unverified'} | Checked: {row['checked_at'] or 'unknown'} | Expires: {row['expires_at'] or 'unknown'}",
                 f"Mandatory costs: {'complete in saved evidence' if row['complete_cost'] else 'not fully verified'}",
                 "Details: " + describe(row["details"]),
-                f"Handoff: {row['handoff']} — {row['url'] or 'Use these details to book anywhere, including offline.'}",
+                f"Handoff: {row['handoff_label']}"
+                + (
+                    f" {row['url']}"
+                    if row["url"]
+                    else " Use these details to book anywhere, including offline."
+                ),
             ]
         )
         if row["intended"]:
@@ -87,7 +92,8 @@ def build_html(plan: dict | None, *, auto_print: bool = False) -> str:
         f"<p>{escape(line)}</p>" if line else "<hr>" for line in packet_lines(packet)
     )
     links = "".join(
-        f'<li><a href="{escape(row["url"], quote=True)}" rel="noopener noreferrer">{escape(row["name"])} — {escape(row["handoff"])}</a></li>'
+        f'<li><a href="{escape(row["url"], quote=True)}" rel="noopener noreferrer">{escape(row["name"])}</a>'
+        f" — {escape(row['handoff_label'])}</li>"
         for row in packet["rows"]
         if row["url"]
     )

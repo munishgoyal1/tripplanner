@@ -92,6 +92,10 @@ class Source(BaseModel):
     checked_at: datetime | None = None
     expires_at: datetime | None = None
     confidence: Confidence = Confidence.LIVE
+    # Set only by a recorded continuity check that followed this exact URL and
+    # found the product, rate, dates and party intact. Absent means unverified,
+    # which is why it stays None rather than False.
+    exact_offer_verified: bool | None = None
 
 
 class RunningCost(BaseModel):

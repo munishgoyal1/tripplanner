@@ -118,7 +118,8 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
 | `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
-| `src/tripplanner/decisions/booking_intent.py` | Pure purchase grouping, category feasibility, intent fingerprints, isolated adjustment candidates and external-booking reconciliation |
+| `src/tripplanner/decisions/booking_intent.py` | Pure purchase grouping, category feasibility, intent fingerprints, isolated adjustment candidates, the four-level handoff ladder and its labels, and external-booking reconciliation |
+| `scripts/liteapi_access_probe.py` | Dated LiteAPI technical-access evidence for one exact trip context; hotel search and flight search reported separately with link/expiry/cost-completeness evidence, refuses to run without a key, records denials rather than retrying, and claims no vendor permission or live-quote quality |
 | `src/tripplanner/web/booking_http.py` | Authenticated active-trip/revision binding, serialized preview/apply, explicit research and booking snapshot routes; saves through `tools/trip_planner.py` |
 | `src/tripplanner/web/booking_export.py` | Cache-only redacted booking-intent packets shared by HTML/PDF/JSON/email/share; no provider calls |
 | `src/tripplanner/decisions/booking_defaults.py` | Read-only projection of saved party, ages, currency and per-flight/per-stay search context, with explicit assumptions |
@@ -489,6 +490,16 @@ authoritative save. Returning to `/planner` reloads all main trip surfaces.
 `graph.py` keeps completion ownership; planning validation reads category gaps.
 Quote/source time and lock/booking state are independent. Rechecks cannot change
 selected intentions, and normal selection overrides cannot replace booked items.
+
+`decisions/booking_intent.py` owns the handoff ladder: `HANDOFF_EXACT_OFFER`,
+`HANDOFF_PRODUCT_PAGE`, `HANDOFF_SEARCH_PAGE` and `HANDOFF_NONE`, with
+`HANDOFF_LABELS` as the single owner of the sentence every surface shows. The
+level comes from what supplied the link, not from its presence: a provider-offer
+field with product context is a product page, while a venue site, a bare provider
+host and a traveller-typed link are provider pages. `HANDOFF_EXACT_OFFER` needs
+`Source.exact_offer_verified`, set only by a recorded continuity check, so nothing
+produces it yet. Rows carry `handoff` plus `handoff_label`; packets and the web
+page render the label, never the token.
 
 ### Outbound call rules
 

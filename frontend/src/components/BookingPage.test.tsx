@@ -23,7 +23,9 @@ const view: BookingView = {
     id: "stay", category: "hotels", name: "Garden Hotel", selected: true,
     amount: 70000, currency: "INR", start_date: "2026-12-01", end_date: "2026-12-03", time: "",
     checked_at: "2026-11-01", expires_at: "", provider: "liteapi", complete_cost: false,
-    url: "https://example.com/hotel", handoff: "product_page", details: { room_name: "Double" },
+    url: "https://example.com/hotel", handoff: "product_page",
+    handoff_label: "Provider product page: the remaining checkout selection is visible. The researched price is not held.",
+    details: { room_name: "Double" },
     decision_id: "stay", option_id: "room-1", alternatives: [], booked: false, actual: null,
     intended: null, intent_state: "draft", evidence: "stale", disposition: "needs_booking",
   }],
@@ -75,6 +77,23 @@ describe("Booking intent workflow", () => {
     expect(screen.getByRole("link", { name: /Open provider/ }).getAttribute("rel")).toContain("noopener");
     fireEvent.click(screen.getByRole("button", { name: "Export booking intent list" }));
     expect(screen.getByRole("dialog").textContent).toContain("goa v1");
+  });
+
+  it("says what each handoff level is evidenced to do", async () => {
+    render(<BookingPage />);
+    const product = await screen.findByRole("link", { name: /Open provider · product page/ });
+    expect(product.getAttribute("title")).toContain("price is not held");
+
+    cleanup();
+    const search = structuredClone(view);
+    search.rows[0].handoff = "search_page";
+    search.rows[0].handoff_label =
+      "Provider or official page: the researched price does not carry over. Use the copied details.";
+    fetchBookings.mockResolvedValue(search);
+    render(<BookingPage />);
+    const link = await screen.findByRole("link", { name: /price not carried/ });
+    expect(link.getAttribute("title")).toContain("does not carry over");
+    expect(screen.queryByRole("link", { name: /product page/ })).toBeNull();
   });
 
   it("previews a lock without booking, then commits exactly that preview", async () => {

@@ -504,3 +504,75 @@ def test_booking_email_snapshot_delivery_and_revision_guard(monkeypatch, tmp_pat
     with pytest.raises(HTTPException) as error:
         itinerary_email.send_itinerary_email(req, base_url="https://example.com")
     assert error.value.status_code == 409 and len(client.calls) == 1
+
+
+def test_handoff_levels_state_only_what_the_saved_link_evidences():
+    plan = make_plan()
+    rows = {row["category"]: row for row in booking.build_booking_view(plan)["rows"]}
+    # LiteAPI flight and hotel offers carry no link, so there is no online handoff.
+    assert rows["flights"]["handoff"] == booking.HANDOFF_NONE
+    assert rows["hotels"]["handoff"] == booking.HANDOFF_NONE
+    assert "book offline" in rows["flights"]["handoff_label"]
+    # A venue site on an itinerary stop is somewhere to start, not a product page.
+    assert rows["tickets"]["handoff"] == booking.HANDOFF_SEARCH_PAGE
+    assert "does not carry over" in rows["tickets"]["handoff_label"]
+
+
+def test_provider_offer_link_is_a_product_page_until_continuity_is_verified():
+    plan = make_plan()
+    stay = plan["selected_hotels"][0]
+    stay["source"] = {**stay["source"], "url": "https://provider.example/hotels/goa-1?rate=flex"}
+    row = next(r for r in booking.build_booking_view(plan)["rows"] if r["category"] == "hotels")
+    assert row["handoff"] == booking.HANDOFF_PRODUCT_PAGE
+    assert "not held" in row["handoff_label"]
+
+    stay["source"]["exact_offer_verified"] = True
+    verified = next(r for r in booking.build_booking_view(plan)["rows"] if r["category"] == "hotels")
+    assert verified["handoff"] == booking.HANDOFF_EXACT_OFFER
+    assert "carry through" in verified["handoff_label"]
+
+
+def test_bare_provider_host_and_manual_link_never_claim_product_context():
+    plan = make_plan()
+    stay = plan["selected_hotels"][0]
+    stay["source"] = {**stay["source"], "url": "https://provider.example/"}
+    row = next(r for r in booking.build_booking_view(plan)["rows"] if r["category"] == "hotels")
+    assert row["handoff"] == booking.HANDOFF_SEARCH_PAGE
+
+    ticket = next(row for row in booking.units(plan) if row["category"] == "tickets")
+    candidate, _ = booking.prepare_change(
+        plan,
+        {
+            "action": "manual",
+            "item_id": ticket["id"],
+            "actual": {
+                "product": "Museum timed entry",
+                "provider": "Venue",
+                "amount": 1200,
+                "currency": "INR",
+                "start_date": "2026-12-01",
+                "time": "12:00",
+                "notes": "Two adult entries",
+                "url": "https://example.com/museum/timed-entry",
+            },
+        },
+    )
+    manual = next(
+        r for r in booking.build_booking_view(candidate)["rows"] if r["id"] == ticket["id"]
+    )
+    assert manual["handoff"] == booking.HANDOFF_SEARCH_PAGE
+
+
+def test_packets_carry_the_handoff_sentence_rather_than_a_bare_token():
+    plan = make_plan()
+    plan["selected_hotels"][0]["source"] = {
+        **plan["selected_hotels"][0]["source"],
+        "url": "https://provider.example/hotels/goa-1",
+    }
+    lines = booking_export.packet_lines(booking_export.snapshot(plan))
+    handoffs = [line for line in lines if line.startswith("Handoff: ")]
+    assert handoffs and all("_" not in line.split(":", 1)[1].split(" http")[0] for line in handoffs)
+    assert any("remaining checkout selection is visible" in line for line in handoffs)
+    assert any("No online handoff" in line for line in handoffs)
+    html = booking_export.build_html(plan)
+    assert "product_page" not in html and "remaining checkout selection" in html

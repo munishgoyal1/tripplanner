@@ -70,6 +70,65 @@ def safe_url(value: Any) -> str:
         return ""
 
 
+# The literal handoff levels from brief 009. A level states what the link is
+# evidenced to carry, never what it might carry: only a recorded continuity
+# check promotes a link to an exact offer, and no provider sets that today.
+HANDOFF_EXACT_OFFER = "exact_offer"
+HANDOFF_PRODUCT_PAGE = "product_page"
+HANDOFF_SEARCH_PAGE = "search_page"
+HANDOFF_NONE = "no_online_handoff"
+
+HANDOFF_LABELS = {
+    HANDOFF_EXACT_OFFER: (
+        "Exact-offer checkout: the verified product, rate, dates and party carry through."
+    ),
+    HANDOFF_PRODUCT_PAGE: (
+        "Provider product page: the remaining checkout selection is visible. "
+        "The researched price is not held."
+    ),
+    HANDOFF_SEARCH_PAGE: (
+        "Provider or official page: the researched price does not carry over. "
+        "Use the copied details."
+    ),
+    HANDOFF_NONE: (
+        "No online handoff: book offline, pay locally, or nothing needs booking here."
+    ),
+}
+
+
+def _url_with_origin(raw: dict, source: dict, *, manual: bool) -> tuple[str, str]:
+    """Return the safe URL and what supplied it, keeping first-truthy selection."""
+    candidates: tuple[tuple[Any, str], ...] = (
+        ((raw.get("booking_url"), "manual"),)
+        if manual
+        else (
+            (source.get("url"), "offer"),
+            (raw.get("booking_url"), "offer"),
+            (raw.get("provider_url"), "offer"),
+            (raw.get("url"), "site"),
+            (raw.get("website"), "site"),
+        )
+    )
+    for value, origin in candidates:
+        if str(value or "").strip():
+            return safe_url(value), origin
+    return "", "none"
+
+
+def handoff_level(url: str, origin: str, source: dict) -> str:
+    """Classify the handoff level the saved evidence actually supports."""
+    if not url:
+        return HANDOFF_NONE
+    if origin == "offer" and source.get("exact_offer_verified") is True:
+        return HANDOFF_EXACT_OFFER
+    parts = urlsplit(url)
+    if origin == "offer" and (parts.path.strip("/") or parts.query):
+        return HANDOFF_PRODUCT_PAGE
+    # A venue site, a bare provider host and a link the traveller typed are all
+    # places to start looking, not evidence that this product and rate continue.
+    return HANDOFF_SEARCH_PAGE
+
+
 def caps_for(plan: dict) -> dict[str, dict]:
     raw = plan.get("category_caps") or {}
     if not isinstance(raw, dict) or set(raw) - {"flights", "hotels", "tickets", "transport"}:
@@ -110,13 +169,8 @@ def _facts(raw: dict, plan: dict) -> dict:
         ),
         number(price.get("amount")),
     )
-    url = safe_url(
-        source.get("url")
-        or raw.get("booking_url")
-        or raw.get("provider_url")
-        or raw.get("url")
-        or raw.get("website")
-    )
+    url, url_origin = _url_with_origin(raw, source, manual=bool(intent))
+    handoff = handoff_level(url, url_origin, source)
     context = raw.get("search_context") or {}
     context_warning = ""
     if raw.get("checkin") or raw.get("departure_date"):
@@ -158,7 +212,8 @@ def _facts(raw: dict, plan: dict) -> dict:
         "complete_cost": composition.get("mandatory_costs_complete") is True
         or composition.get("all_in") is True,
         "url": url,
-        "handoff": "product_page" if url else "copy_details",
+        "handoff": handoff,
+        "handoff_label": HANDOFF_LABELS[handoff],
         "context_warning": context_warning,
         "details": {
             k: deepcopy(raw[k])

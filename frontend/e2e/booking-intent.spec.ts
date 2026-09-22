@@ -5,6 +5,7 @@ test("booking intent preview, keyboard confirmation and small-screen layout", as
     amount: 70000, currency: "INR", start_date: "2026-12-01", end_date: "2026-12-03", time: "",
     provider: "liteapi", checked_at: "2026-09-14T08:00:00Z", expires_at: "2026-09-14T08:15:00Z",
     complete_cost: true, url: "https://example.com/hotel", handoff: "product_page",
+    handoff_label: "Provider product page: the remaining checkout selection is visible. The researched price is not held.",
     details: { room_name: "Double", board_name: "Breakfast", search_context: { adults_per_room: 2, rooms: 1 } },
     decision_id: "stay-1", option_id: "rate-1", alternatives: [], booked: false, actual: null,
     intended: null, intent_state: "draft", evidence: "stale", disposition: "needs_booking", selected: true };

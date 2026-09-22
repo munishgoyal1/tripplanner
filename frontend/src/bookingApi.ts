@@ -1,6 +1,7 @@
 import { BASE, apiFetch, getUserId } from "./auth/authSession";
 
 export type Category = "flights" | "hotels" | "tickets" | "transport";
+export type HandoffLevel = "exact_offer" | "product_page" | "search_page" | "no_online_handoff";
 export interface Cap { amount: number; currency: string }
 export interface Actual {
   product: string; provider: string; amount: number | null; currency: string;
@@ -11,7 +12,7 @@ export interface Choice {
   id: string; name: string; amount: number | null; currency: string;
   start_date: string; end_date: string; time: string; provider: string;
   checked_at: string; expires_at: string; complete_cost: boolean;
-  url: string; handoff: string; details: Record<string, unknown>;
+  url: string; handoff: HandoffLevel; handoff_label: string; details: Record<string, unknown>;
   reason?: string; recommended?: boolean;
   context_warning?: string;
 }

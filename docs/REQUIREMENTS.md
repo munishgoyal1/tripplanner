@@ -130,7 +130,7 @@ re-describing the whole product.
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Implemented for persisted provider evidence; exact products compare only with complete mandatory costs and published FX, consented public benefit terms apply without card numbers, and finalized unbooked expired flight/stay quotes can be explicitly rechecked without replacing selections |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
-| BOOK-02 | Booking intent research, review, lock, export and external-booking reconciliation | Implemented on responsive web; LiteAPI flight/hotel search and manual ticket/ground research; live account and exact redirect validation remain separate |
+| BOOK-02 | Booking intent research, review, lock, export and external-booking reconciliation | Implemented on responsive web; LiteAPI flight/hotel search and manual ticket/ground research; handoff levels state their evidence and a dated access probe exists, but no live account run or exact redirect continuity is recorded yet |
 
 ## 1. Planning intelligence
 
@@ -670,6 +670,20 @@ implemented capability baseline.
 - Users can record researched ticket/transport variants and public HTTPS provider
   links manually. Product-page links make no exact checkout-continuity claim;
   absent links leave a copyable checklist usable with any provider or offline.
+- Every row carries one of four literal handoff levels — exact-offer checkout,
+  provider product page, provider or official page, or no online handoff — chosen
+  from what supplied the link rather than from its presence. Provider-offer links
+  with product context are product pages; venue sites, bare provider hosts and
+  traveller-typed links are provider pages whose price does not carry over.
+  Exact-offer requires a recorded continuity check (`Source.exact_offer_verified`),
+  which no provider or tool sets today. Page, packet and share surfaces render the
+  level's sentence, not its token.
+- `scripts/liteapi_access_probe.py` records dated technical access for hotel search
+  and flight search separately, including whether offers carry links, expiry and
+  complete mandatory costs. It refuses to run without a configured key, reports a
+  denial as evidence rather than retrying around it, and claims no vendor permission,
+  commercial approval or live-quote quality. Hotel access and flight production
+  entitlement stay separate facts.
 - Export booking intent list provides HTML, PDF, JSON, email and immutable public
   share snapshots. Each records trip revision, export time, selected/proposed items,
   alternatives, freshness, terms, gaps and provider mapping. Private confirmation
@@ -687,7 +701,8 @@ implemented capability baseline.
   checks and price multipliers share party counts that exclude children's ages.
 - No provider purchase, hold, payment or confirmation verification is performed.
   Live entitlement, Tiqets integration, document import, full dependency repair
-  and native Bookings UI parity remain tracked under #315.
+  and native Bookings UI parity remain tracked under #315. No live probe run is
+  recorded yet, so no exact-offer handoff exists in practice.
 
 ## 5. Native mobile clients
 

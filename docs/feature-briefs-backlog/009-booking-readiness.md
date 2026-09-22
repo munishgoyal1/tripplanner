@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Brief ID | `009` |
-| Status | Web intent workflow shipped in child #323; provider/dependency/native follow-ups remain |
+| Status | Web intent workflow shipped in child #323; handoff ladder and access probe landed; provider evidence, dependency/FX, Tiqets, document import and native follow-ups remain |
 | Owner | Munish Goyal |
 | Created / Updated | 2026-09-12 / 2026-09-13 |
 | Baseline | `origin/master` at `f07f96dd` |
@@ -290,20 +290,25 @@ it cannot manufacture amounts or provider facts.
 | --- | --- | --- |
 | Research | First-party sources and accurate access/claim labels | Refreshed 2026-09-13; live access untested |
 | Domain | Caps, party totals, unknown fees/FX, equivalence, grouping | Web milestone focused checks pass; richer FX/dependency optimization remains |
-| Provider | LiteAPI-only empty/error boundary; dated live coverage probes | Focused fallback checks in milestone #316; live access untested |
+| Provider | LiteAPI-only empty/error boundary; dated live coverage probes | Focused fallback checks in milestone #316; probe harness ready, live access still untested |
 | API/state | Revision conflict, atomic rollback, ownership, zero fetch on GET | Web milestone focused checks pass; existing authenticated request context reused |
 | Web | Compare, preview, apply, restore/recheck, lock, degraded handoff | Implemented; component and Chromium checks pass |
 | Accessibility | Keyboard/focus/errors; 320px and desktop | Chromium keyboard and overflow checks pass; screenshots inspected |
 | Shared/mobile | Contract compatibility and changed device surfaces | Pending; no parity claim |
-| Handoff | Browser continuity check through redirect; stop before purchase | Pending permitted provider access |
+| Handoff | Browser continuity check through redirect; stop before purchase | Four literal levels implemented and tested from saved evidence; exact-offer stays unreachable until a recorded continuity check sets it, which needs live access |
+| Provider access | Dated per-capability probe with real credentials | `scripts/liteapi_access_probe.py` exists and is tested against denial/empty/offer answers; no live run recorded yet |
 | Export/reconcile | Snapshot formats, privacy, partial/duplicate/conflicting actuals | HTML/PDF/JSON/email/share and manual actuals tested; document extraction remains |
 | Local/CI | Ruff, focused fallback/cache tests; existing CI typecheck/build | Recorded in milestone #316 |
 
 ## Next work and unresolved evidence
 
-1. Engineering/account owner: exercise search with available credentials and exact
-   trip context. Flight production enablement is separate from hotel access;
-   surface actual access failures without inventing live evidence.
+1. Account owner: run `scripts/liteapi_access_probe.py` with the configured
+   credentials and an exact trip context, then paste its dated block under the
+   verification boundary in the provider research catalog. Flight production
+   enablement is separate from hotel access; surface actual access failures
+   without inventing live evidence. Until that block exists, no row can claim an
+   exact-offer handoff, because only a recorded continuity check sets
+   `Source.exact_offer_verified`.
 2. Engineering: extend dependency-aware repair, sourced multi-currency category
    feasibility and exact seller/redirect continuity beyond the shipped web flow.
 3. Engineering: evaluate Tiqets Essential for attraction/experience variants,

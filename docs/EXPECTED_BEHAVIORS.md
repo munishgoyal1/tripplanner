@@ -401,6 +401,16 @@ an intention, or record a purchase made through any provider/offline.
 - Packet formats carry trip/revision, selected versus proposed items, alternatives,
   source/expiry and provider handoff gaps. Unknown links are copyable checklists;
   product-page links make no exact-rate guarantee. Exports omit private references.
+- Every row states one of four literal handoff levels, and states only what its
+  saved evidence supports: an exact-offer checkout whose continuity was recorded
+  by a check, a provider product page whose remaining checkout selection is
+  visible and whose price is not held, a provider or official page whose price
+  does not carry over, or no online handoff at all. A venue site, a bare provider
+  host and a link the traveller typed are provider pages, never product pages,
+  and LiteAPI flight/stay offers carry no link, so those rows stay copy-the-details.
+  Only a recorded continuity check promotes a link to exact-offer; nothing sets
+  that today, so no row claims rate continuity. Page, text, HTML, PDF and shared
+  packets all render the same sentence rather than an internal token.
 - Actual reports update existing units, preserve intended versus actual, accept
   unknown paid amounts without inventing zero, and reject duplicate confirmations.
   Old coordinates and product-specific terms cannot masquerade as the new product.
@@ -422,7 +432,10 @@ an intention, or record a purchase made through any provider/offline.
 - [`frontend/e2e/booking-intent.spec.ts`](../frontend/e2e/booking-intent.spec.ts)
 
 Live account/redirect continuity and native device parity are not established by
-mocked provider tests or Chromium mobile-width checks.
+mocked provider tests or Chromium mobile-width checks. The handoff ladder above
+states what evidence a link has; following a real redirect to confirm exact-offer
+continuity needs live account access and
+[`scripts/liteapi_access_probe.py`](../scripts/liteapi_access_probe.py) evidence.
 
 ### EB-DEAL-001 - Compare and recheck exact finalized-trip offers
 
