@@ -133,7 +133,12 @@ export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri
     authConfigCache = (async () => {
       try {
         const res = await fetch(`${BASE}/auth/config`);
-        return await res.json();
+        // A 4xx/5xx body still parses as JSON, so without this the error
+        // payload became the answer: `google` read as undefined and the
+        // "Sign in with Google" button stayed hidden for the life of the page.
+        if (!res.ok) throw new Error(`auth config status ${res.status}`);
+        const config = await res.json();
+        return { google: config?.google === true, redirect_uri: config?.redirect_uri };
       } catch {
         // Not cached as a result: a failed probe should be retried, not
         // remembered as "this deployment has no Google sign-in".

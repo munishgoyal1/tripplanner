@@ -12,7 +12,45 @@ from pydantic import BaseModel, Field
 from tripplanner import limits_config
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _primary_checkout_root(root: Path) -> Path | None:
+    """The checkout that owns the shared git directory, when ``root`` is a
+    linked worktree. ``None`` for a normal checkout or a non-repository.
+
+    A worktree's ``.git`` is a file holding ``gitdir: <primary>/.git/worktrees/<name>``,
+    so reading it locates the primary checkout without spawning git -- this runs
+    at import time, in every process, including ones that have no git on PATH.
+    """
+    pointer = root / ".git"
+    try:
+        if not pointer.is_file():
+            return None
+        marker = pointer.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    if not marker.startswith("gitdir:"):
+        return None
+    git_dir = Path(marker.partition(":")[2].strip())
+    if not git_dir.is_absolute():
+        git_dir = (root / git_dir).resolve()
+    for parent in git_dir.parents:
+        if parent.name == ".git":
+            return parent.parent
+    return None
+
+
+# The gitignored `.env` is the only home for secrets, and a linked worktree
+# never carries one -- so a stack started in a worktree ran with no secrets at
+# all, and the failure was silent: "Sign in with Google" simply disappeared,
+# because `oauth.is_enabled()` needs values only that file holds. The worktree's
+# own `.env` still wins where it has one; the primary checkout only fills what
+# that file does not define. `Import-DeploymentEnvironment` in
+# `infra/deployment-common.ps1` already does this for `.env.canary` / `.env.prod`.
 load_dotenv(_REPO_ROOT / ".env", override=False)
+_PRIMARY_CHECKOUT_ROOT = _primary_checkout_root(_REPO_ROOT)
+if _PRIMARY_CHECKOUT_ROOT is not None:
+    load_dotenv(_PRIMARY_CHECKOUT_ROOT / ".env", override=False)
 _environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
 load_dotenv(_REPO_ROOT / "config" / "environments" / f"{_environment}.env", override=False)
 

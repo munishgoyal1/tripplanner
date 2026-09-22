@@ -1142,6 +1142,24 @@ the same account and its persisted trips.
 
 - [`frontend/src/auth/authSession.test.ts`](../frontend/src/auth/authSession.test.ts)
 
+### EB-ACCOUNT-005 - Offer Google sign-in whenever the deployment provides it
+
+**Trigger:** Open Account settings while signed out, on a deployment whose
+backend reports `{"google": true}` from `/auth/config`.
+
+**Expected:** Profile and sign-in shows the Sign in with Google button. The
+button is hidden only when the backend actually reports the provider as
+unconfigured -- a deployment missing `OAUTH_GOOGLE_CLIENT_ID`,
+`OAUTH_GOOGLE_CLIENT_SECRET`, or `WEB_SESSION_SECRET`. A failed or throttled
+probe is not an answer: the error response is never cached as "this deployment
+has no Google sign-in", so the next component to ask re-probes rather than
+inheriting a wrong negative for the life of the page.
+
+**Executable proof:**
+
+- [`frontend/src/auth/authSession.test.ts`](../frontend/src/auth/authSession.test.ts)
+- [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx)
+
 ## UX Labs
 
 ### EB-LAB-001 - Preserve every Lab review and implementation
@@ -1345,3 +1363,17 @@ and verification remain separate from machine-tool detection.
 
 Executable proof: `tests/test_machine_setup.py`; actual Windows host validation
 is required in addition to the mocked PowerShell checks run on macOS.
+
+### EB-DEV-SETUP-002 - Carry the primary checkout's secrets into a worktree
+
+**Trigger:** Start the stack from a linked worktree under
+`..\tripplanner.worktrees\`, which never carries the gitignored `.env`.
+
+**Expected:** Secrets resolve from the primary checkout's `.env`, so a worktree
+lane runs with the same providers, storage, and sign-in as the primary tree. A
+worktree that has its own `.env` keeps it: its values win, and the primary file
+fills only the keys it does not define. Outside a worktree nothing changes.
+
+**Executable proof:**
+
+- [`tests/test_config.py`](../tests/test_config.py)

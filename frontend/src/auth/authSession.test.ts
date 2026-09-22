@@ -43,3 +43,63 @@ describe("syncAuth", () => {
     expect(getUserId()).toBe("google-owner");
   });
 });
+// The deployment's sign-in providers are probed once per page and cached, so a
+// bad answer is not a transient glitch: it hides "Sign in with Google" until
+// the user reloads. Only a real answer may be cached.
+describe("fetchAuthConfig", () => {
+  async function load() {
+    vi.resetModules();
+    return import("./authSession");
+  }
+
+  it("does not cache a failed probe, so the next caller re-asks", async () => {
+    const { fetchAuthConfig } = await load();
+    const fetchMock = vi
+      .fn()
+      // A JSON error body, as FastAPI returns: the old code cached this as the
+      // deployment's answer, so the button stayed hidden until a reload.
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ detail: "service unavailable" }), { status: 503 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ google: true }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    expect(await fetchAuthConfig()).toEqual({ google: false });
+    expect(await fetchAuthConfig()).toMatchObject({ google: true });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("never reads an error payload as the answer", async () => {
+    const { fetchAuthConfig } = await load();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ detail: "rate limited" }), { status: 429 }),
+      ),
+    );
+
+    expect(await fetchAuthConfig()).toEqual({ google: false });
+  });
+
+  it("caches a real answer so each page probes once", async () => {
+    const { fetchAuthConfig } = await load();
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ google: true, redirect_uri: "/api/auth/callback/google" }), {
+        status: 200,
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    expect(await fetchAuthConfig()).toEqual({
+      google: true,
+      redirect_uri: "/api/auth/callback/google",
+    });
+    expect(await fetchAuthConfig()).toEqual({
+      google: true,
+      redirect_uri: "/api/auth/callback/google",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});

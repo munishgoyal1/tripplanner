@@ -2471,3 +2471,28 @@ between the validator and renderer; unknown geography is not zero travel.
   A located extension is not evidence that it shipped built into the editor.
 - Bootstrap code must run in the launcher's fallback runtime: Windows PowerShell
   5.1 lacks `$IsWindows` and `Join-String`. Hand off to PowerShell 7 explicitly.
+
+## 2026-09-22 - Environment-gated features fail as absence, not as errors
+
+- "Sign in with Google is gone" was not a regression. `oauth.is_enabled()` needs
+  `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET`, and
+  `WEB_SESSION_SECRET`; the client id is checked in, the other two live only in
+  the ignored `.env`. A stack missing them reports `{"google": false}` and the
+  button correctly disappears. A deliberate graceful degradation and a broken
+  setup look identical to the user, so the first question is always which
+  environment the stack actually loaded, not which commit changed the UI.
+- A linked worktree never carries `.env`, and every agent lane runs from one.
+  `infra/deployment-common.ps1` had already learned this for `.env.canary` and
+  `.env.prod`; `config.py` had not, so a worktree stack silently ran with no
+  secrets at all. When one loader gains a fallback, check its siblings: the same
+  gap usually exists wherever the same file is read.
+- A probe that ignores `res.ok` treats an error body as an answer. A FastAPI
+  `{"detail": ...}` payload parsed fine, `google` read as `undefined`, and the
+  module cached that as the deployment's answer for the life of the page. The
+  `.json()`-throws path was already handled, which is exactly why the gap
+  survived: the test that covered it used a non-JSON error body and passed
+  against the broken code.
+- Local dev data is per machine. `COSMOS_DEV_BACKEND=emulator` keeps everything
+  in the `infra_tripplanner-cosmos-data` Docker volume on that laptop, so a new
+  machine starts empty even when the same Google account signs in. The identity
+  keys the record; the configured database decides which store holds it.

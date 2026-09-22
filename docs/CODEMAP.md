@@ -237,14 +237,18 @@ boundary. Checked-in `config/environments/local.env`, `canary.env`, and
 `prod.env` own complete non-secret runtime profiles with matching key sets.
 Ignored `.env`, `.env.canary`, and `.env.prod` files are secret overlays;
 `.env.example` documents that secret-only surface. Local runtime loads its
-profile plus `.env`; hosted deployment scripts load their profile plus matching
-secret overlay and pass non-secrets as Container Apps environment variables
-while secrets become secret references. `CACHE_TTL_SCALE` adjusts normal
-runtime cache lifetimes, and the named search/fare TTL settings provide precise
-overrides before that scale is applied. `CACHE_STABLE_FOREVER=1` bypasses both
-for Places facts, reviews, routes, country resolution, visa data, and other
-stable tool results. `CACHE_VOLATILE_FOREVER=1` independently does the same for
-prices, availability, weather, events, web search, FX, and provider caches.
+profile plus `.env`, and from a linked worktree -- which never carries that
+ignored file -- also the primary checkout's `.env`, located by reading the
+worktree's `.git` pointer rather than spawning git at import time; the
+worktree's own values win where it has them. Hosted deployment scripts load
+their profile plus matching secret overlay and pass non-secrets as Container
+Apps environment variables while secrets become secret references.
+`CACHE_TTL_SCALE` adjusts normal runtime cache lifetimes, and the named
+search/fare TTL settings provide precise overrides before that scale is
+applied. `CACHE_STABLE_FOREVER=1` bypasses both for Places facts, reviews,
+routes, country resolution, visa data, and other stable tool results.
+`CACHE_VOLATILE_FOREVER=1` independently does the same for prices,
+availability, weather, events, web search, FX, and provider caches.
 `CACHE_WARM_EVERYTHING=1` expands the Places warm manifest and durable payload
 to all available fields, photo references, and signed photo URLs; it changes
 surface only, so each entry still follows its stable or volatile TTL policy.

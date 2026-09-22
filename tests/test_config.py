@@ -3,7 +3,11 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-from tripplanner.config import DEFAULT_AZURE_OPENAI_API_VERSION, Settings
+from tripplanner.config import (
+    DEFAULT_AZURE_OPENAI_API_VERSION,
+    Settings,
+    _primary_checkout_root,
+)
 
 SECRET_KEYS = {
     "AMADEUS_API_KEY",
@@ -177,3 +181,50 @@ def test_env_example_is_only_the_secret_overlay_template() -> None:
 
     assert template.keys() == SECRET_KEYS
     assert not (template.keys() & _profile_values("local").keys())
+
+
+# ---------------------------------------------------------------------------
+# Worktree secret fallback. Every agent lane runs from a linked worktree, which
+# never carries the gitignored `.env`; without the fallback such a stack starts
+# with no secrets and degrades silently (no Google sign-in, no Cosmos).
+# ---------------------------------------------------------------------------
+def _fake_worktree(tmp_path: Path, gitdir: str) -> Path:
+    worktree = tmp_path / "tripplanner.worktrees" / "claude-slug"
+    worktree.mkdir(parents=True)
+    (worktree / ".git").write_text(gitdir, encoding="utf-8")
+    return worktree
+
+
+def test_primary_checkout_root_is_found_from_a_linked_worktree(tmp_path: Path) -> None:
+    primary = tmp_path / "tripplanner"
+    (primary / ".git" / "worktrees" / "claude-slug").mkdir(parents=True)
+    worktree = _fake_worktree(
+        tmp_path, f"gitdir: {primary / '.git' / 'worktrees' / 'claude-slug'}\n"
+    )
+
+    assert _primary_checkout_root(worktree) == primary
+
+
+def test_primary_checkout_root_resolves_a_relative_gitdir(tmp_path: Path) -> None:
+    primary = tmp_path / "tripplanner"
+    (primary / ".git" / "worktrees" / "claude-slug").mkdir(parents=True)
+    worktree = _fake_worktree(tmp_path, "gitdir: ../../tripplanner/.git/worktrees/claude-slug")
+
+    assert _primary_checkout_root(worktree) == primary
+
+
+def test_primary_checkout_root_is_none_for_a_normal_checkout(tmp_path: Path) -> None:
+    primary = tmp_path / "tripplanner"
+    (primary / ".git").mkdir(parents=True)
+
+    assert _primary_checkout_root(primary) is None
+
+
+def test_primary_checkout_root_is_none_outside_a_repository(tmp_path: Path) -> None:
+    assert _primary_checkout_root(tmp_path) is None
+
+
+def test_primary_checkout_root_is_none_for_an_unreadable_pointer(tmp_path: Path) -> None:
+    worktree = _fake_worktree(tmp_path, "not a gitdir pointer")
+
+    assert _primary_checkout_root(worktree) is None
