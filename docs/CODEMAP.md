@@ -587,6 +587,7 @@ snapshots. `graph_policy.py` enforces draft creation/persistence before refineme
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
 | `scripts/win/Setup-Tripplanner-Dev.cmd` | One-click full Windows developer environment setup |
 | `scripts/mac/Setup-Tripplanner-Dev.command` | One-click full macOS developer environment setup |
+| `scripts/dev/lib/setup-tool-detection.ps1` | Shared Windows install-location discovery and fail-closed winget installed-package checks |
 | `tests/` | Python unit and integration tests |
 | `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |
 

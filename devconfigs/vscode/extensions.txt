@@ -9,7 +9,6 @@ ms-azuretools.vscode-azure-mcp-server
 ms-azuretools.vscode-bicep
 ms-azuretools.vscode-containers
 ms-azuretools.vscode-cosmosdb
-ms-azuretools.vscode-docker
 ms-python.debugpy
 ms-python.python
 ms-python.vscode-pylance

@@ -1330,3 +1330,18 @@ uncertain failures and enforce the local judge cap across runs.
 
 **Proof:** `tests/test_itinerary_judge.py`; commands, provider/profile requirements,
 cost scope and limitations are in `docs/CODEMAP.md`.
+
+## Developer setup
+
+### EB-DEV-SETUP-001 - Reuse installed machine prerequisites
+
+The Windows and macOS setup launchers discover installed tools before invoking
+a package installer, including standard application locations outside PATH.
+Python must resolve to 3.13. Existing package registrations with unavailable
+CLIs stop with repair guidance. Setup never explicitly upgrades an existing
+prerequisite. Missing extensions alone are installed, including recognizing
+companions installed earlier in the same run. Application lockfile restoration
+and verification remain separate from machine-tool detection.
+
+Executable proof: `tests/test_machine_setup.py`; actual Windows host validation
+is required in addition to the mocked PowerShell checks run on macOS.

@@ -2461,3 +2461,13 @@ between the validator and renderer; unknown geography is not zero travel.
   trim. `commitSelectionStore` now takes a `GitRunner`; its unit tests assert the
   exact commands (pathspec on add and commit, push after commit) in milliseconds.
   Reserve real subprocesses for tests whose subject is the subprocess.
+
+## 2026-09-22 - Detect installed capabilities before package ownership
+
+- A package manifest is an inventory, not proof that an app is absent. Discover
+  vendor executables and normal application locations before invoking a package
+  manager; missing PATH entries should not trigger duplicate installations.
+- Refresh extension inventory after installations that can add dependencies.
+  A located extension is not evidence that it shipped built into the editor.
+- Bootstrap code must run in the launcher's fallback runtime: Windows PowerShell
+  5.1 lacks `$IsWindows` and `Join-String`. Hand off to PowerShell 7 explicitly.

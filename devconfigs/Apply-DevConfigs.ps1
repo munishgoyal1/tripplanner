@@ -100,15 +100,31 @@ function Install-DeclaredTools {
         throw "winget is unavailable. Install Windows App Installer, then rerun with -InstallTools."
     }
 
+    . (Join-Path $PSScriptRoot "../scripts/dev/lib/setup-tool-detection.ps1")
+    Add-SetupToolPaths
     $manifest = Import-PowerShellDataFile $ManifestPath
     foreach ($package in $manifest.Packages) {
-        if (Get-Command $package.Command -ErrorAction SilentlyContinue) {
+        $available = [bool](Get-Command $package.Command -ErrorAction SilentlyContinue)
+        if ($package.Id -eq "Python.Python.3.13") {
+            $available = $false
+            foreach ($candidate in @("python3.13", "python3", "python") + @(Get-SetupPythonPaths)) {
+                if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) { continue }
+                & $candidate -c "import sys; raise SystemExit(sys.version_info[:2] != (3, 13))" 2>$null
+                if ($LASTEXITCODE -eq 0) { $available = $true; break }
+            }
+            if (-not $available -and (Get-Command py -ErrorAction SilentlyContinue)) {
+                & py -3.13 -c "import sys; raise SystemExit(sys.version_info[:2] != (3, 13))" 2>$null
+                $available = $LASTEXITCODE -eq 0
+            }
+        }
+        if ($available) {
             Write-Host "[ok] $($package.Name)"
             continue
         }
         if ($PSCmdlet.ShouldProcess($package.Id, "Install $($package.Name) with winget")) {
+            Assert-SetupPackageMissing $package.Id
             & winget install --id $package.Id --exact --accept-package-agreements `
-                --accept-source-agreements --silent
+                --accept-source-agreements --silent --no-upgrade
             if ($LASTEXITCODE -ne 0) {
                 throw "winget could not install $($package.Name)."
             }
@@ -145,7 +161,7 @@ function Install-VsCodeExtensions {
         }
         if ($extensionLocation.Count -gt 0 -and
             -not [string]::IsNullOrWhiteSpace([string]$extensionLocation[0])) {
-            Write-Host "[ok] Built-in VS Code extension $extension"
+            Write-Host "[ok] Available VS Code extension $extension"
             continue
         }
         if ($PSCmdlet.ShouldProcess($extension, "Install VS Code extension")) {
@@ -154,6 +170,10 @@ function Install-VsCodeExtensions {
                 throw "VS Code could not install extension $extension."
             }
             Write-Host "[installed] VS Code extension $extension"
+            $installed = @(& $code --list-extensions)
+            if ($LASTEXITCODE -ne 0) {
+                throw "VS Code could not refresh installed extensions."
+            }
         }
     }
 }
@@ -175,7 +195,7 @@ Install-CopilotInstructions `
 
 if ($InstallTools) {
     if ($IsMacOS) {
-        throw "Use brew bundle --file devconfigs/macos/Brewfile to install macOS tools."
+        throw "Use scripts/setup-dev-machine-macos.sh to install missing macOS tools."
     }
     Install-DeclaredTools (Join-Path $PSScriptRoot "windows\packages.psd1")
 }
