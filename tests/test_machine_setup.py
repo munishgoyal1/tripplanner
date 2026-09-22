@@ -11,6 +11,8 @@ ROOT = Path(__file__).parents[1]
 
 
 def shell_probe(tmp_path, body, executables=None):
+    if os.name == "nt":
+        pytest.skip("macOS Bash installer probes require a POSIX host")
     source = (ROOT / 'scripts/setup-dev-machine-macos.sh').read_text()
     helpers = source[source.index('resolve_python313()'):source.index('ensure_tool azure-cli')]
     for name, script in (executables or {}).items():
