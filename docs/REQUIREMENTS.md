@@ -877,8 +877,10 @@ implemented capability baseline.
 
 ### OPS-01 - Development and release
 
-- One Windows setup command verifies tooling, restores locked dependencies, and
-  preserves existing secrets.
+- Windows and macOS setup commands reuse installed machine tools, install missing
+  prerequisites, restore locked dependencies, and preserve existing secrets.
+  Python 3.13 is required; existing packages with missing CLIs are reported for
+  repair rather than reinstalled. See `development/new-machine-setup.md`.
 - One local SPA command starts the persisted emulator/backend/frontend workflow,
   force-clears process trees from enabled API, SPA, and Labs ports, verifies
   release, and cleanly restarts each enabled service.

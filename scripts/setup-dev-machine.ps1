@@ -20,6 +20,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+if ($PSVersionTable.PSVersion.Major -lt 6) { $IsWindows = $true }
+. (Join-Path $PSScriptRoot "dev/lib/setup-tool-detection.ps1")
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 $pipIndexUrl = if ($env:PIP_INDEX_URL) { $env:PIP_INDEX_URL } else { "https://pypi.org/simple" }
@@ -57,10 +59,10 @@ function Refresh-ProcessPath {
     $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
     $separator = [IO.Path]::PathSeparator
-    $env:Path = @($machinePath, $userPath, $env:Path) |
+    $env:Path = (@($machinePath, $userPath, $env:Path) |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-        Select-Object -Unique |
-        Join-String -Separator $separator
+        Select-Object -Unique) -join $separator
+    Add-SetupToolPaths
 }
 
 function Install-MissingTool {
@@ -80,9 +82,10 @@ function Install-MissingTool {
         throw "$($Tool.Name) is missing and winget is unavailable. Install App Installer, then rerun."
     }
 
+    Assert-SetupPackageMissing $Tool.Package
     Write-Host "[install] $($Tool.Name)"
     winget install --id $Tool.Package --exact --accept-package-agreements `
-        --accept-source-agreements --silent
+        --accept-source-agreements --silent --no-upgrade
     if ($LASTEXITCODE -ne 0) {
         throw "winget could not install $($Tool.Name)."
     }
@@ -101,8 +104,15 @@ function Assert-LastCommandSucceeded {
 }
 
 Write-Host "`nTripplanner developer-machine setup`n"
+Refresh-ProcessPath
 foreach ($tool in $tools) {
     Install-MissingTool $tool
+}
+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Install-MissingTool @{ Name = "PowerShell"; Command = "pwsh"; Package = "Microsoft.PowerShell" }
+    & pwsh -NoProfile -File $PSCommandPath @PSBoundParameters
+    exit $LASTEXITCODE
 }
 
 if ($FullAgentEnvironment) {
@@ -132,7 +142,7 @@ function Resolve-Python313 {
             return $resolved.Trim()
         }
     }
-    foreach ($candidate in @("python3.13", "python3", "python")) {
+    foreach ($candidate in @("python3.13", "python3", "python") + @(Get-SetupPythonPaths)) {
         if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) { continue }
         $resolved = & $candidate -c "import sys; ok = sys.version_info[:2] == (3, 13); print(sys.executable) if ok else None; raise SystemExit(0 if ok else 1)" 2>$null
         if ($LASTEXITCODE -eq 0 -and $resolved) {
@@ -150,19 +160,17 @@ function Resolve-Python313 {
         throw "Python 3.13 is required and winget is unavailable. Install Python 3.13, then rerun."
     }
 
+    Assert-SetupPackageMissing "Python.Python.3.13"
     Write-Host "[install] Python 3.13"
     winget install --id Python.Python.3.13 --exact --accept-package-agreements `
-        --accept-source-agreements --silent
+        --accept-source-agreements --silent --no-upgrade
     if ($LASTEXITCODE -ne 0) {
         throw "winget could not install Python 3.13."
     }
     Refresh-ProcessPath
 
-    $resolved = & py -3.13 -c "import sys; print(sys.executable)" 2>$null
-    if ($LASTEXITCODE -ne 0 -or -not $resolved) {
-        throw "Python 3.13 installed but the Python launcher cannot resolve it. Restart PowerShell and rerun."
-    }
-    return $resolved.Trim()
+    $SkipToolInstall = $true
+    return Resolve-Python313
 }
 
 $python313 = Resolve-Python313

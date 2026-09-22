@@ -44,15 +44,33 @@ The existing application-only setup remains available as
 4. Complete the shared manual sign-ins and secrets in
    [Manual steps](#manual-steps).
 
-The script installs the declared `devconfigs/macos/Brewfile`, including Git,
-Node.js, Python 3.13, PowerShell 7, VS Code, Docker Desktop, Azure CLI, and GitHub
-CLI. Use the underlying script directly for a headless setup:
+The script checks Git, Node.js, Python 3.13, PowerShell 7, VS Code, Docker
+Desktop, Azure CLI, and GitHub CLI individually and installs only missing tools.
+It discovers Homebrew before trying to install it, including when it is absent
+from PATH. Vendor Python 3.13 and apps in `/Applications` or `~/Applications`
+are reused. Homebrew is needed only when a prerequisite is missing.
+`devconfigs/macos/Brewfile` remains a manual inventory, not the launcher install
+path: running `brew bundle` yourself can upgrade existing packages. Use the underlying script directly for a headless setup:
 
 ```bash
 ./scripts/setup-dev-machine-macos.sh --include-mobile
 ```
 
-Re-running the setup is supported.
+Re-running the setup is supported. Setup does not request upgrades for existing
+machine tools. Missing tools can still bring package-manager dependencies.
+Python must be 3.13: a different minor version does not satisfy the repo's venv
+contract. Windows checks normal user/system install locations and winget's
+installed-package records before installing. An existing package with an
+unresolvable CLI produces a repair message instead of a reinstall. A winget
+query failure also stops safely. The Windows launcher can bootstrap from
+Windows PowerShell 5.1 and continues configuration in PowerShell 7.
+
+Use `--skip-tool-install` on macOS or `-SkipToolInstall` on Windows to prohibit
+machine-tool installs. Locked application dependency restore remains separate:
+`npm ci` deliberately recreates node_modules. To skip pip/npm restore, supply
+`--skip-dependency-install` or `-SkipDependencyInstall`; an existing working
+venv and frontend dependencies are then required, and verification/build still
+runs. These switches do not suppress missing VS Code extensions or Copilot CLI.
 
 ## What the launcher configures
 
@@ -64,8 +82,7 @@ The full setup performs these operations:
 2. Merges the repository-owned settings from `devconfigs/vscode/settings.json`
    into the current VS Code user settings. Existing settings are backed up and
    unrelated settings are preserved.
-3. Installs the curated VS Code extensions, including GitHub Copilot, GitHub
-   Copilot Chat, Python/Pylance, PowerShell, ESLint, containers, Azure tools,
+3. Installs the curated VS Code extensions, including GitHub Copilot Chat, Python/Pylance, PowerShell, ESLint, containers, Azure tools,
    Bicep, and VS Code Speech.
 4. Copies the global Copilot instructions from `devconfigs/github-copilot/` into
    the current VS Code prompts folder and installs the GitHub Copilot CLI used
@@ -181,3 +198,31 @@ Sandboxes use server-free validation unless their isolated stack is needed.
 - Run `scripts/win/user/run/Run-Latest-Master.cmd` from the primary checkout before starting
    the canonical local stack. Use `Update-Sandbox` to bring an in-flight sandbox
    forward from `origin/master`.
+
+## VS Code extension audit (2026-09-22)
+
+Both launchers use `devconfigs/vscode/extensions.txt`. Installed extensions are
+skipped; after each install the list is refreshed so automatically installed
+Python companions are recognized. `--locate-extension` remains a fallback for
+bundled extensions, and its output is labelled “available,” since a located
+extension is not necessarily built in. No installed extensions are uninstalled.
+
+- Keep Python, Pylance, Debugpy, and Python Environments: their responsibilities
+  differ even when one installation brings the others along.
+- Keep Container Tools; remove the redundant `ms-azuretools.vscode-docker` pack
+  from future setup. [Microsoft's listing](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker)
+  confirms that it contains Container Tools.
+- Recommended addition: [Ruff](https://docs.astral.sh/ruff/editors/setup/) for the
+  repository's Python lint rules alongside Pylance. This audit leaves that new
+  editor choice for the owner rather than changing formatting settings.
+- Speech, Git Graph, spelling, and Azure/MCP/Bicep/Cosmos tools support optional
+  voice, navigation, and deployment workflows; retain the existing selection,
+  or disable unused entries per profile. ESLint, Prettier, EditorConfig, Markdown,
+  YAML, GitHub Actions, and PowerShell remain appropriate authoring tools.
+- The pasted `DEP0169` messages came from the VS Code extension-install process;
+  those commands reported success. They do not establish duplicate installs.
+  Do not suppress runtime warnings globally to hide them.
+
+Validation uses mocked installer/CLI decisions on macOS plus PowerShell parsing
+and execution under PowerShell 7. A real Windows 5.1/winget host smoke is still
+required before claiming host-level Windows parity.

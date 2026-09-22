@@ -44,49 +44,88 @@ assert_command() {
   fi
 }
 
-if ! command -v brew >/dev/null 2>&1; then
-  if [[ "$skip_tool_install" == true ]]; then
-    echo "Homebrew is required and --skip-tool-install was supplied." >&2
+# Discover existing vendor apps and Homebrew before deciding anything is missing.
+for bin_dir in /opt/homebrew/bin /opt/homebrew/sbin /usr/local/bin \
+  /Library/Frameworks/Python.framework/Versions/3.13/bin \
+  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" \
+  "$HOME/Applications/Visual Studio Code.app/Contents/Resources/app/bin" \
+  /Applications/Docker.app/Contents/Resources/bin \
+  "$HOME/Applications/Docker.app/Contents/Resources/bin" "$HOME/.docker/bin"; do
+  export PATH="$PATH:$bin_dir"
+done
+
+resolve_python313() {
+  local candidate
+  for candidate in python3.13 python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 &&
+      "$candidate" -c 'import sys; raise SystemExit(sys.version_info[:2] != (3, 13))' >/dev/null 2>&1; then
+      command -v "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+ensure_brew() {
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "[install] Homebrew"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+  assert_command brew Homebrew
+}
+
+ensure_tool() {
+  local package="$1" tool="$2" kind="$3"
+  if [[ "$package" == python@3.13 ]]; then
+    if python313="$(resolve_python313)"; then
+      echo "[ok] Python 3.13 ($python313)"
+      return
+    fi
+  elif command -v "$tool" >/dev/null 2>&1; then
+    echo "[ok] $package ($(command -v "$tool"))"
+    return
+  fi
+  # An existing app with a missing CLI needs repair, never a second installation.
+  local app=""
+  case "$package" in
+    docker-desktop) app="Docker.app" ;;
+    visual-studio-code) app="Visual Studio Code.app" ;;
+  esac
+  if [[ -n "$app" ]] && { [[ -d "/Applications/$app" ]] || [[ -d "$HOME/Applications/$app" ]]; }; then
+    echo "$app is installed but its CLI is unavailable. Repair the app's CLI and rerun." >&2
     exit 1
   fi
-  echo "[install] Homebrew"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-if [[ -x /opt/homebrew/bin/brew ]]; then
-  brew_prefix=/opt/homebrew
-elif [[ -x /usr/local/bin/brew ]]; then
-  brew_prefix=/usr/local
-else
-  brew_prefix=""
-fi
-
-if [[ -n "$brew_prefix" ]]; then
-  eval "$("$brew_prefix/bin/brew" shellenv)"
-  # `brew shellenv` prints nothing when it is already inside a brew command, and
-  # brew sanitizes PATH for its children, so the bin directory can still be absent.
-  case ":$PATH:" in
-    *":$brew_prefix/bin:"*) ;;
-    *) export PATH="$brew_prefix/bin:$brew_prefix/sbin:$PATH" ;;
-  esac
-fi
-
-if [[ "$skip_tool_install" == false ]]; then
-  if brew tap | grep -qx "powershell/tap"; then
+  if [[ "$skip_tool_install" == true ]]; then
+    echo "$package is missing and --skip-tool-install was supplied." >&2
+    exit 1
+  fi
+  ensure_brew
+  if brew list "--$kind" "$package" >/dev/null 2>&1; then
+    echo "$package is already installed with Homebrew but its required CLI is unavailable. Repair PATH and rerun." >&2
+    exit 1
+  fi
+  if [[ "$package" == powershell ]] && brew tap | grep -qx "powershell/tap"; then
     echo "[migrate] Archived PowerShell Homebrew tap"
     brew untap --force powershell/tap
   fi
-  echo "[install] Declared Homebrew tools"
-  brew bundle --file "$repo_root/devconfigs/macos/Brewfile"
-fi
+  echo "[install] $package"
+  HOMEBREW_NO_INSTALL_UPGRADE=1 brew install "--$kind" "$package"
+  if [[ "$package" == python@3.13 ]]; then
+    python313="$(resolve_python313)" || { echo "Python 3.13 could not be resolved." >&2; exit 1; }
+  else
+    assert_command "$tool" "$package"
+  fi
+}
 
-if ! command -v code >/dev/null 2>&1 && [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]]; then
-  export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
-fi
-
-for tool in git node npm python3.13 pwsh code docker gh az; do
-  assert_command "$tool" "$tool"
-done
+ensure_tool azure-cli az formula
+ensure_tool gh gh formula
+ensure_tool git git formula
+ensure_tool node node formula
+ensure_tool powershell pwsh formula
+ensure_tool python@3.13 python3.13 formula
+ensure_tool docker-desktop docker cask
+ensure_tool visual-studio-code code cask
+assert_command npm npm
 
 echo "Tripplanner macOS developer-machine setup"
 pwsh -NoProfile -File "$repo_root/devconfigs/Apply-DevConfigs.ps1" -InstallExtensions
@@ -114,11 +153,11 @@ setup_dependencies() {
   fi
 
   if [[ "$skip_dependency_install" == false ]]; then
-    if [[ -x "$python_path" ]] && [[ "$($python_path -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" != "3.13" ]]; then
+    if [[ -x "$python_path" ]] && [[ "$("$python_path" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" != "3.13" ]]; then
       rm -rf "$checkout_root/.venv"
     fi
     if [[ ! -x "$python_path" ]]; then
-      python3.13 -m venv "$checkout_root/.venv"
+      "$python313" -m venv "$checkout_root/.venv"
     fi
     PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --upgrade pip
     PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --progress-bar off \
