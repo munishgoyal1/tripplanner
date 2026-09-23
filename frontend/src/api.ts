@@ -305,6 +305,77 @@ export async function fetchOpsOverview(
   return response.json() as Promise<OpsOverview>;
 }
 
+export interface EvalAssessment {
+  dimension: string;
+  status: "scored" | "unverified" | "not_applicable";
+  score: number | null;
+  rationale: string;
+  evidence: { path: string; quote: string }[];
+}
+
+export interface EvalJudgedTrip {
+  slug: string;
+  destination: string;
+  days: number;
+  request: string;
+  status: string;
+  overall_score: number | null;
+  assessments: EvalAssessment[];
+}
+
+export interface EvalFinding {
+  id: string;
+  title: string;
+  severity: "critical" | "high" | "medium" | "low";
+  area: string;
+  evidence: string;
+  impact: string;
+  fix: string;
+  source: string;
+  prevalence?: string;
+}
+
+export interface EvalEfficiency {
+  id: string;
+  title: string;
+  value: string;
+  effort: string;
+  evidence: string;
+  plan: string;
+}
+
+export interface EvalsReport {
+  version: number;
+  generated_at: string | null;
+  judge: {
+    rubric: { version: string; dimensions: { key: string; criterion: string }[] };
+    judge_model: string;
+    method: string;
+    trips: EvalJudgedTrip[];
+    dimension_means: Record<string, number | null>;
+  } | null;
+  audit: {
+    generated_at?: string | null;
+    corpus: { size?: number; sources?: string[] };
+    observations: { label: string; value: string; detail: string }[];
+    rules: { code: string; title: string; statement: string; severity: string; hits: number; trips: number; evaluated?: number | null }[];
+    top_groups: { rule: string; symptom: string; count: number; example: string; accepted: boolean }[];
+  } | null;
+  probes?: {
+    corpus: string;
+    results: { key: string; title: string; trips: number; evaluated: number; hits: number; examples: string[] }[];
+    place_identity: { resolved: number; mismatched: number; examples: string[]; most_common: [string, number][] };
+  } | null;
+  findings: EvalFinding[];
+  efficiencies: EvalEfficiency[];
+}
+
+export async function fetchOpsEvals(signal?: AbortSignal): Promise<EvalsReport> {
+  const response = await apiFetch(`${BASE}/ops/evals`, { signal });
+  ensureOk(response, "Evaluation report unavailable");
+  return response.json() as Promise<EvalsReport>;
+}
+
 export async function streamChat(
   message: string,
   handlers: StreamHandlers,

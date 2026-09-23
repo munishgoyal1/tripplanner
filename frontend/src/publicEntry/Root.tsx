@@ -9,6 +9,7 @@ import { trackPageView } from "../analytics";
 const PublicEntry = lazy(() => import("./PublicEntry"));
 const App = lazy(() => import("../App"));
 const OpsDashboard = lazy(() => import("../ops/OpsDashboard"));
+const EvalsDashboard = lazy(() => import("../ops/EvalsDashboard"));
 const BookingPage = lazy(() => import("../components/BookingPage"));
 
 /** `/` owns the public entry, `/planner` owns the workspace, and `/welcome` redirects home. */
@@ -17,6 +18,7 @@ function Routes() {
   if (window.location.pathname === "/operations") {
     return <OpsDashboard />;
   }
+  if (window.location.pathname === "/evals") return <EvalsDashboard />;
 
   const [showEntry, setShowEntry] = useState(() => !isPlannerPath());
   const [initialRequest, setInitialRequest] = useState<string | null>(null);

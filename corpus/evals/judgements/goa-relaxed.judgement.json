@@ -1,0 +1,112 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 2,
+   "rationale": "The slow pace and beaches are honoured, but the explicit 'good food' ask gets only TBD meals, and a 'Nuitée Air' synthetic fare is selected.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "beaches and good food"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/2/name",
+     "quote": "Lunch (TBD)"
+    },
+    {
+     "path": "/plan/selected_flights/0/airline",
+     "quote": "Nuitée Air"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 3,
+   "rationale": "The beaches are Goan, but a Palolem day from an unspecified hotel ignores the North-South split.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/name",
+     "quote": "Palolem Beach"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 3,
+   "rationale": "A Fort Aguada sunset is the only signature moment.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/note",
+     "quote": "Sunset views"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Beach days flow, but the hotel is TBD and brunch runs to 14:00 before a 15:00 flight.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/time",
+     "quote": "12:30"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/3/time",
+     "quote": "15:00"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 1,
+   "rationale": "Every meal is a TBD placeholder despite the food focus.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/3/name",
+     "quote": "Beachside dining (TBD)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "Brunch (TBD)"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Long unhurried beach blocks and 'evening free time' fit a relaxed trip.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/summary",
+     "quote": "evening free time"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 5,
+   "rationale": "No repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/name",
+     "quote": "Anjuna Beach"
+    }
+   ]
+  }
+ ]
+}

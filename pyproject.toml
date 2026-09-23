@@ -60,4 +60,4 @@ filterwarnings = [
 ]
 
 [tool.setuptools.package-data]
-tripplanner = ["public_demo_runs.json"]
+tripplanner = ["public_demo_runs.json", "evals/owner_report.json"]

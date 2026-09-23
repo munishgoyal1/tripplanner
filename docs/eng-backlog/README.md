@@ -21,3 +21,4 @@ since an entry was recorded.
 | [Daily script reliability and friction](daily-script-reliability.md) | Owner-facing local workflow, runtimes, processes, logs, and portability | Deferred |
 | [Sandbox promotion reliability](sandbox-promotion-reliability.md) | Developer scripts and parallel-agent workflow | Deferred |
 | [Lane 3 script audit shortlist](lane-3-script-audit-shortlist.md) | Owner review shortlist derived from the script reliability entries | Awaiting signoff |
+| [Evaluation and planning efficiency](evaluation-and-planning-efficiency.md) | Audit harness cost, paid Places lookups, deterministic plan hygiene, corpus metadata | Deferred |

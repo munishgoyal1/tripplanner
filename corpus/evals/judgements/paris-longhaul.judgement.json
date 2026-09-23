@@ -1,0 +1,128 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 2,
+   "rationale": "The request asks to include the flights, but no flight is selected or priced, and the itinerary uses 'Central Paris Hotel' instead of the selected Hotel Le Littre.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "Include the flights and a central hotel"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/1/name",
+     "quote": "Central Paris Hotel"
+    },
+    {
+     "path": "/plan/selected_hotels/0/name",
+     "quote": "Hotel Le Littre"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 5,
+   "rationale": "Bistros, museums and neighbourhoods are specific to Paris.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/5/name",
+     "quote": "Le Procope"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/3/name",
+     "quote": "L'As du Fallafel"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Versailles, a Seine cruise and an Eiffel Tower evening are strong signature moments.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/name",
+     "quote": "Palace of Versailles"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/4/name",
+     "quote": "Seine River Cruise"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "On day 4 the Versailles Gardens come after the 16:30 train back to Paris, and the hotel then says 'Start from hotel' at 19:45.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/3/name",
+     "quote": "Train: Versailles to Paris"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/4/name",
+     "quote": "Versailles Gardens"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/5/note",
+     "quote": "Start from hotel"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 5,
+   "rationale": "Every day has named, varied, locally relevant meals.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/2/name",
+     "quote": "Le Consulat"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/1/name",
+     "quote": "Café de Flore"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Every full day is packed from 09:30 to dinner with no deliberate rest for a 'balanced' long-haul trip.",
+   "evidence": [
+    {
+     "path": "/plan/notes",
+     "quote": "balanced pace"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/5/name",
+     "quote": "Galeries Lafayette"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "No accidental repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/name",
+     "quote": "Île de la Cité"
+    }
+   ]
+  }
+ ]
+}

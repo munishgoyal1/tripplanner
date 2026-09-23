@@ -55,6 +55,7 @@ export default defineConfig({
         completedLabs: resolve(__dirname, "completed-labs.html"),
         destinationGuide: resolve(__dirname, "lab-13-destination-guide.html"),
         firstVisit: resolve(__dirname, "lab-21-first-visit.html"),
+        honestGaps: resolve(__dirname, "lab-32-honest-gaps.html"),
         intercityMap: resolve(__dirname, "lab-14-intercity-map.html"),
         livePlan: resolve(__dirname, "lab-22-live-plan.html"),
         itineraryCanvas: resolve(__dirname, "lab-17-itinerary-canvas.html"),

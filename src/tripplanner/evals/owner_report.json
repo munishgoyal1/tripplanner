@@ -1,0 +1,2445 @@
+{
+ "version": 1,
+ "generated_at": "2026-09-23T16:12:32+00:00",
+ "judge": {
+  "rubric": {
+   "version": "itinerary-v1",
+   "dimensions": [
+    {
+     "key": "scenario_preference_fidelity",
+     "criterion": "Does the plan honor the scenario's explicit party, pace, interests, food, mobility, lodging, transport, and other constraints?"
+    },
+    {
+     "key": "budget_evidence_completeness",
+     "criterion": "When the scenario requests a budget or ceiling, does the comparable total fit it and does the plan contain enough priced evidence to support that total?"
+    },
+    {
+     "key": "destination_specificity",
+     "criterion": "Could these choices and details belong only to this destination rather than a generic trip?"
+    },
+    {
+     "key": "memorable_moments",
+     "criterion": "Does the trip contain distinctive experiences likely to become trip-defining memories?"
+    },
+    {
+     "key": "narrative_coherence",
+     "criterion": "Do days have an intelligible theme and progression, and does the whole trip tell a story?"
+    },
+    {
+     "key": "meal_quality",
+     "criterion": "Are meals concrete, locally relevant, varied, and fitted to the day and traveller?"
+    },
+    {
+     "key": "intentional_free_time",
+     "criterion": "Is rest or unstructured time deliberately placed and appropriate to the requested pace?"
+    },
+    {
+     "key": "repetition",
+     "criterion": "Does the trip avoid accidental repetition while allowing a revisit with a clear purpose?"
+    }
+   ],
+   "anchors": {
+    "1": "Clear, substantial failure against the criterion",
+    "2": "Material weaknesses requiring revision",
+    "3": "Adequate with specific improvements needed",
+    "4": "Strong, with minor weaknesses",
+    "5": "Excellent, supported by concrete evidence"
+   }
+  },
+  "judge_model": "Claude Code operator session",
+  "method": "judged in-session; every citation validated by evals.judge.validate",
+  "trips": [
+   {
+    "slug": "capetown-accessible-solo-7d",
+    "destination": "Cape Town",
+    "days": 7,
+    "request": "Plan a 7 day Cape Town trip from Mumbai for 1 adult, 10 to 17 November 2027. One traveller cannot manage long walks or stairs.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Mobility needs are respected throughout with flat or step-free choices and assistance on flights. The flight is a synthetic 'Duffel Airways' test offer.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "cannot manage long walks or stairs"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/note",
+        "quote": "accessible boardwalk"
+       },
+       {
+        "path": "/plan/selected_flights/0/airline",
+        "quote": "Duffel Airways"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 5,
+      "rationale": "Table Mountain cableway, Boulders penguins and the Winelands are unmistakably Cape Town.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "Boulders Beach"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Penguins at Boulders and the Table Mountain cableway are strong moments.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/name",
+        "quote": "Table Mountain Cableway"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Themes progress well, but a 10:30 brunch before a 12:23 international flight leaves too little time.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/1/time",
+        "quote": "10:30"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/2/time",
+        "quote": "12:23"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 5,
+      "rationale": "Every day has a named, accessible, local meal.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/2/name",
+        "quote": "The Pot Luck Club"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/1/name",
+        "quote": "Hemelhuijs"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Hotel rest after each outing is deliberate for this traveller.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/5/note",
+        "quote": "Return to hotel, rest"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 5,
+      "rationale": "No repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/1/name",
+        "quote": "Robben Island Museum"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 4.43,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "goa-relaxed",
+    "destination": "Goa",
+    "days": 4,
+    "request": "Plan a relaxed 4 day trip to Goa from Bangalore for 2 adults, 10 to 14 March 2027. We want a slow pace, beaches and good food.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 2,
+      "rationale": "The slow pace and beaches are honoured, but the explicit 'good food' ask gets only TBD meals, and a 'Nuitée Air' synthetic fare is selected.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "beaches and good food"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/2/name",
+        "quote": "Lunch (TBD)"
+       },
+       {
+        "path": "/plan/selected_flights/0/airline",
+        "quote": "Nuitée Air"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "The beaches are Goan, but a Palolem day from an unspecified hotel ignores the North-South split.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/name",
+        "quote": "Palolem Beach"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "A Fort Aguada sunset is the only signature moment.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/note",
+        "quote": "Sunset views"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Beach days flow, but the hotel is TBD and brunch runs to 14:00 before a 15:00 flight.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/time",
+        "quote": "12:30"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/3/time",
+        "quote": "15:00"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 1,
+      "rationale": "Every meal is a TBD placeholder despite the food focus.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/3/name",
+        "quote": "Beachside dining (TBD)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "Brunch (TBD)"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Long unhurried beach blocks and 'evening free time' fit a relaxed trip.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/summary",
+        "quote": "evening free time"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 5,
+      "rationale": "No repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/name",
+        "quote": "Anjuna Beach"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.0,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "india-char-dham-pilgrimage-three-generation-8d",
+    "destination": "Haridwar, Rishikesh, Char Dham",
+    "days": 8,
+    "request": "Plan a 8 day trip to Haridwar, Rishikesh and the Char Dham route from Delhi for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 12 to 20 May 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Elderly-friendly notes are present, but a 'Char Dham' request covers only Yamunotri and Gangotri; Kedarnath and Badrinath are silently dropped.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "the Char Dham route"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "Yamunotri Temple"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/2/name",
+        "quote": "Gangotri Temple"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Har Ki Pauri aarti, Mansa Devi and the dham temples are specific to the region.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/2/name",
+        "quote": "Har Ki Pauri"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Ganga Aarti at Har Ki Pauri and the Yamunotri darshan are defining moments.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/2/note",
+        "quote": "Attend Ganga Aarti"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Stops follow the journey that already left them: the Haridwar hotel is at 14:45 on the Barkot drive day, and the return drive leaves before lunch at Janki Chatti.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/name",
+        "quote": "Hotel in Haridwar"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/time",
+        "quote": "14:45"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/4/time",
+        "quote": "12:00"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Meals are generic ('Dinner at hotel', 'Lunch en route'), and dinner is at 22:15 for grandparents and an 8-year-old.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/5/time",
+        "quote": "22:15"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/2/name",
+        "quote": "Lunch en route"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Midday rest for the elderly is deliberately scheduled.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/4/note",
+        "quote": "Rest for elderly"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "No accidental repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/7/stops/1/name",
+        "quote": "Parmarth Niketan Ashram"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.14,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "india-kerala-nature-young-family-7d",
+    "destination": "Kochi, Munnar, Alleppey",
+    "days": 7,
+    "request": "Plan a 7 day trip to Kochi, Munnar and Alleppey from Bangalore for 2 adults and 2 children aged 4 and 8, 1 to 8 December 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Scenery and wildlife are covered for the family, but no hotels are chosen and the flights have no times.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "Focus on scenery, wildlife"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/1/name",
+        "quote": "Hotel in Kochi"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/0/note",
+        "quote": "actual time TBC"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Eravikulam, Mattancherry and an Alleppey houseboat are specific to Kerala.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/name",
+        "quote": "Eravikulam National Park"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "An overnight houseboat is a trip-defining moment for children.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/2/name",
+        "quote": "Alleppey Houseboat"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Day 3 returns to the Kochi hotel at 15:30 after reaching Munnar, and day 7 lists the Kochi market at 13:00 before a drive that starts at 10:00.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/3/name",
+        "quote": "Hotel in Kochi"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/2/time",
+        "quote": "13:00"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/3/time",
+        "quote": "10:00"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 1,
+      "rationale": "No meal is named for a family with a 4-year-old; only 'Lunch nearby' appears in a note.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/note",
+        "quote": "Lunch nearby"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Afternoons are light, but no rest is deliberately placed for young children.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/summary",
+        "quote": "relax and explore"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Kochi Local Market recurs, plausibly for shopping.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/2/name",
+        "quote": "Kochi Local Market"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.0,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "india-outbound-bali-honeymoon-couple-7d",
+    "destination": "Bali",
+    "days": 7,
+    "request": "Plan a 7 day trip to Bali from Bangalore for 2 adults travelling as a couple on Indian passports, 2 to 9 June 2027. Prioritize romantic stays, privacy, downtime and one special experience. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 2,
+      "rationale": "The plan is romantic and private, but it ignores the explicit ask to verify entry requirements and advisories, and plans no flights.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "Verify current official entry requirements"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/summary",
+        "quote": "transfer to airport for flight home"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Tegallalang, Tanah Lot and Nusa Penida are specific to Bali.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/name",
+        "quote": "Tegallalang Rice Terraces"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/1/name",
+        "quote": "Tanah Lot Temple"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "A private Nusa Penida day is a clear special experience, as requested.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Private Tour: Nusa Penida"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Days alternate activity and rest coherently, but day 1 has no arrival and the last day has no departure leg.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/summary",
+        "quote": "Arrive in Bali"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Named, varied, romantic dinners.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/2/name",
+        "quote": "The Edge Bali"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/3/name",
+        "quote": "Swept Away Restaurant"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 5,
+      "rationale": "Day 4 is explicitly a downtime day, matching a honeymoon.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/title",
+        "quote": "Downtime & Cooking Class"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 5,
+      "rationale": "No repeats beyond the villa base.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/1/name",
+        "quote": "Seminyak Beach"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 4.0,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "mysore-budget-couple-5d",
+    "destination": "Mysore",
+    "days": 6,
+    "request": "Plan a 5 day Mysore trip from Bangalore for 2 adults, 10 to 15 September 2027. Keep the trip under INR 80000 in total.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "The budget ceiling and train-or-car preference are honoured, but day 6 puts the couple back at the Mysore hotel after they have driven home.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "Keep the trip under INR 80000"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/3/name",
+        "quote": "Drive: Mysore to Bangalore"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/0/note",
+        "quote": "Relax or check-out"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "scored",
+      "score": 4,
+      "rationale": "The INR 62,500 total fits the 80,000 ceiling, with a per-night hotel price; meals, transport and misc are unsourced estimates.",
+      "evidence": [
+       {
+        "path": "/plan/total_cost",
+        "quote": "62500"
+       },
+       {
+        "path": "/plan/selected_hotels/0/price_per_night",
+        "quote": "6500"
+       }
+      ]
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "The palace, Chamundi Hill, Srirangapatna and Devaraja Market are specific to Mysore.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "Devaraja Market"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Brindavan Gardens' fountain show is the one signature evening.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/summary",
+        "quote": "musical fountain show"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Day 3 lists the drive before 'Start from hotel', and day 6 invents a buffer day at the hotel after departure.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/note",
+        "quote": "Start from hotel"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/title",
+        "quote": "Buffer/Return"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Lunches are named, but three dinners are just 'Hotel Restaurant'.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/5/name",
+        "quote": "Hotel Restaurant"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/3/name",
+        "quote": "The Old House"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Day 4 ends with evening leisure; nothing else is deliberate.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/summary",
+        "quote": "evening leisure"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "No accidental repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Railway Museum Mysore"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.25,
+    "scored_dimensions": 8,
+    "advisory": true
+   },
+   {
+    "slug": "newyork-business",
+    "destination": "New York",
+    "days": 6,
+    "request": "Plan a 5 day New York trip from Delhi for 1 adult, 9 to 14 October 2027. I have meetings 9am to 2pm on the middle three days.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Meetings are blocked 09:00 for 300 minutes on the three middle days as asked, but no flight from Delhi is planned and the hotel is never chosen.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "meetings 9am to 2pm on the middle three days"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/1/name",
+        "quote": "Meetings (User's location)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/0/name",
+        "quote": "Hotel (TBD)"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Afternoons use recognisably New York places: Central Park, the Met, the 9/11 Memorial and Balthazar.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/2/name",
+        "quote": "The Metropolitan Museum of Art"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "9/11 Memorial & Museum"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Statue of Liberty and a Broadway evening are the right signature moments, but the show is still TBD.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Statue of Liberty Ferry"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/3/name",
+        "quote": "Broadway Show (TBD)"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Work days progress sensibly, but the last day departs for the airport at 09:00 and then lists the hotel at 11:00, and arrival day has no flight.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/0/name",
+        "quote": "Depart for airport"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/1/time",
+        "quote": "11:00"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Named dinners are well chosen, but there are no lunches on meeting days and none at all on arrival or the free day.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/name",
+        "quote": "Dinner at Carmine's Times Square"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/4/name",
+        "quote": "Dinner at Balthazar"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Evenings after meetings are left light, which suits a work trip, but no rest is explicitly scheduled.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/summary",
+        "quote": "evening at leisure"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "No sight repeats; only the placeholder hotel recurs.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/1/name",
+        "quote": "Explore Times Square"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.29,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "paris-longhaul",
+    "destination": "Paris",
+    "days": 7,
+    "request": "Plan a 7 day trip to Paris from Bangalore for 2 adults, 5 to 12 April 2027, flying economy. Include the flights and a central hotel.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 2,
+      "rationale": "The request asks to include the flights, but no flight is selected or priced, and the itinerary uses 'Central Paris Hotel' instead of the selected Hotel Le Littre.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "Include the flights and a central hotel"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/1/name",
+        "quote": "Central Paris Hotel"
+       },
+       {
+        "path": "/plan/selected_hotels/0/name",
+        "quote": "Hotel Le Littre"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 5,
+      "rationale": "Bistros, museums and neighbourhoods are specific to Paris.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/5/name",
+        "quote": "Le Procope"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/3/name",
+        "quote": "L'As du Fallafel"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Versailles, a Seine cruise and an Eiffel Tower evening are strong signature moments.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/name",
+        "quote": "Palace of Versailles"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/4/name",
+        "quote": "Seine River Cruise"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "On day 4 the Versailles Gardens come after the 16:30 train back to Paris, and the hotel then says 'Start from hotel' at 19:45.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/3/name",
+        "quote": "Train: Versailles to Paris"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/4/name",
+        "quote": "Versailles Gardens"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/5/note",
+        "quote": "Start from hotel"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 5,
+      "rationale": "Every day has named, varied, locally relevant meals.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/2/name",
+        "quote": "Le Consulat"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/1/name",
+        "quote": "Café de Flore"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Every full day is packed from 09:30 to dinner with no deliberate rest for a 'balanced' long-haul trip.",
+      "evidence": [
+       {
+        "path": "/plan/notes",
+        "quote": "balanced pace"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/5/name",
+        "quote": "Galeries Lafayette"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "No accidental repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/name",
+        "quote": "Île de la Cité"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.43,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "pet-friendly-lonavala",
+    "destination": "Lonavala",
+    "days": 4,
+    "request": "Plan a 3 day Lonavala trip from Mumbai for 2 adults with our dog, 20 to 23 January 2027. Pet friendly stays only.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "The stay is recorded as pet-friendly and every outing notes dog suitability.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "Pet friendly stays only"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/1/note",
+        "quote": "Verified pet-friendly"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Tiger Point, Bhushi Dam, Rajmachi and Ryewood Park are specific to Lonavala.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/3/name",
+        "quote": "Tiger Point"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/2/name",
+        "quote": "Bhushi Dam"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "A Rajmachi trek with the dog could be memorable; nothing else stands out.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/2/name",
+        "quote": "Rajmachi Fort"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Day summaries describe other days' stops: day 2 promises Bhushi Dam and Tiger Point, and day 3 promises Rajmachi, which is on day 2. Bhushi Dam is noted 'Morning visit' but is at 16:00.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/summary",
+        "quote": "Visit Bhushi Dam, Tiger Point"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/summary",
+        "quote": "Explore Rajmachi Fort"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/2/note",
+        "quote": "Morning visit"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 1,
+      "rationale": "The only meal is a TBD cafe with lunch at 16:00; no other meals are named.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/name",
+        "quote": "Pet-friendly Cafe (TBD)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/time",
+        "quote": "16:00"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Returning to the resort each late afternoon gives deliberate downtime for a dog trip.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/4/time",
+        "quote": "17:30"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "No sight repeats.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/name",
+        "quote": "Ryewood Park"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.14,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "rajasthan-multicity",
+    "destination": "Rajasthan",
+    "days": 9,
+    "request": "Plan an 8 day Rajasthan trip from Mumbai for 2 adults, 2 to 10 February 2027, covering Jaipur, Jodhpur and Udaipur by road.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Jaipur, Jodhpur and Udaipur are covered by road, but only Jaipur has a real hotel.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "covering Jaipur, Jodhpur and Udaipur by road"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/0/name",
+        "quote": "Hotel in Jodhpur"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 3,
+      "rationale": "The sights are specific, but every meal is a generic local restaurant.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Ranakpur Jain Temple"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/5/name",
+        "quote": "Local restaurant Jaipur"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Mehrangarh and a Lake Pichola boat ride are signature moments, but they are lost in long drives.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/name",
+        "quote": "Mehrangarh Fort"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/3/name",
+        "quote": "Lake Pichola Boat Ride"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 1,
+      "rationale": "Day 1 drives 1,160 km in 660 minutes, then shops at 18:00. Day 3 checks out of the Jaipur hotel at 18:00, after arriving in Jodhpur, with 'Lunch break' at 20:00.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/0/distance_km",
+        "quote": "1160"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/0/duration_min",
+        "quote": "660"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/6/time",
+        "quote": "18:00"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/7/note",
+        "quote": "Lunch break"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 1,
+      "rationale": "Every meal is a placeholder such as 'Local restaurant Udaipur'.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/3/name",
+        "quote": "Local restaurant Udaipur"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Only 'evening at leisure' after 5- to 12-hour drives; no real rest is placed.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/summary",
+        "quote": "Evening at leisure in Udaipur"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Bagore Ki Haveli returns on day 7 for its cultural show, which is an intentional revisit.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/6/stops/5/name",
+        "quote": "Bagore Ki Haveli Cultural Show"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 2.43,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "tokyo-rail",
+    "destination": "Japan (Tokyo & Kyoto)",
+    "days": 6,
+    "request": "Plan a 6 day trip to Japan from Delhi for 2 adults, 3 to 9 April 2027, covering Tokyo and Kyoto. We are happy to use trains between cities.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Tokyo and Kyoto are covered by Shinkansen as requested, with 3-star-plus hotels selected.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "covering Tokyo and Kyoto"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/0/name",
+        "quote": "Shinkansen: Tokyo to Kyoto"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Senso-ji, Fushimi Inari and Arashiyama are specific, though no cherry-blossom viewing is planned in early April.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Fushimi Inari Taisha"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/5/stops/1/name",
+        "quote": "Arashiyama Bamboo Grove"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Fushimi Inari and the bamboo grove are genuine signature moments.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/1/name",
+        "quote": "Fushimi Inari Taisha"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 3,
+      "rationale": "The move to Kyoto lists the Tokyo checkout at 12:10, after the 09:00 train has left.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/time",
+        "quote": "12:10"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/0/time",
+        "quote": "09:00"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Dinners are named but lean on chains (Uobei, Ichiran), and most days have no lunch.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/4/name",
+        "quote": "Uobei Shibuya"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/4/name",
+        "quote": "Ichiran Ramen Shibuya"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 3,
+      "rationale": "An arrival-day rest follows the red-eye, but no other downtime is placed.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/1/note",
+        "quote": "Check-in and rest"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Senso-ji at 09:00 and Asakusa at 14:00 are the same temple district visited twice with the Skytree in between.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/1/name",
+        "quote": "Senso-ji Temple"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/3/name",
+        "quote": "Asakusa"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 3.43,
+    "scored_dimensions": 7,
+    "advisory": true
+   },
+   {
+    "slug": "vegetarian-jain-gujarat",
+    "destination": "Gujarat",
+    "days": 6,
+    "request": "Plan a 5 day Gujarat trip from Mumbai for 2 adults, 7 to 12 December 2026, covering Ahmedabad and Kutch. We eat strictly Jain food.",
+    "rubric_version": "itinerary-v1",
+    "assessments": [
+     {
+      "dimension": "scenario_preference_fidelity",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Ahmedabad and Kutch are covered and every meal is labelled Jain, but the meals are generic placeholders and there is no journey from Mumbai on day 1.",
+      "evidence": [
+       {
+        "path": "/request",
+        "quote": "We eat strictly Jain food"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/stops/2/name",
+        "quote": "Jain Restaurant (Ahmedabad)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/0/summary",
+        "quote": "Arrive from Mumbai"
+       }
+      ]
+     },
+     {
+      "dimension": "budget_evidence_completeness",
+      "status": "not_applicable",
+      "score": null,
+      "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+      "evidence": []
+     },
+     {
+      "dimension": "destination_specificity",
+      "status": "scored",
+      "score": 4,
+      "rationale": "Adalaj Stepwell, the White Rann and Kalo Dungar are specific to this region.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/1/name",
+        "quote": "Adalaj Stepwell"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/name",
+        "quote": "White Rann of Kutch"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/2/name",
+        "quote": "Kalo Dungar"
+       }
+      ]
+     },
+     {
+      "dimension": "memorable_moments",
+      "status": "scored",
+      "score": 3,
+      "rationale": "The White Rann is the signature moment but is scheduled at 09:00 rather than at sunset.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/1/time",
+        "quote": "09:00"
+       }
+      ]
+     },
+     {
+      "dimension": "narrative_coherence",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Hotel checkout is timed at 14:30 after an 08:00 departure, and the last day lists lunch at 13:00 before a 900 km drive that starts at 08:00.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/1/time",
+        "quote": "14:30"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/2/name",
+        "quote": "Drive: Kutch to Mumbai"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/4/stops/2/distance_km",
+        "quote": "900"
+       }
+      ]
+     },
+     {
+      "dimension": "meal_quality",
+      "status": "scored",
+      "score": 2,
+      "rationale": "Only Manek Chowk is a real food place; the rest are generic 'Jain Restaurant' labels and there are no breakfasts.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/3/name",
+        "quote": "Jain Restaurant (Kutch)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/1/stops/4/name",
+        "quote": "Manek Chowk (Jain food stalls)"
+       }
+      ]
+     },
+     {
+      "dimension": "intentional_free_time",
+      "status": "scored",
+      "score": 3,
+      "rationale": "Days are moderate, but no rest time is deliberately placed around the 6-hour and 12-hour drives.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/0/duration_min",
+        "quote": "360"
+       }
+      ]
+     },
+     {
+      "dimension": "repetition",
+      "status": "scored",
+      "score": 3,
+      "rationale": "'Jain Restaurant (Kutch)' repeats three times, which reads as a missing choice rather than an intentional revisit.",
+      "evidence": [
+       {
+        "path": "/plan/day_wise_itinerary/2/stops/4/name",
+        "quote": "Jain Restaurant (Kutch)"
+       },
+       {
+        "path": "/plan/day_wise_itinerary/3/stops/5/name",
+        "quote": "Jain Restaurant (Kutch)"
+       }
+      ]
+     }
+    ],
+    "status": "complete",
+    "overall_score": 2.71,
+    "scored_dimensions": 7,
+    "advisory": true
+   }
+  ],
+  "dimension_means": {
+   "scenario_preference_fidelity": 2.83,
+   "budget_evidence_completeness": 4.0,
+   "destination_specificity": 4.0,
+   "memorable_moments": 3.5,
+   "narrative_coherence": 2.5,
+   "meal_quality": 2.58,
+   "intentional_free_time": 3.33,
+   "repetition": 4.08
+  }
+ },
+ "audit": {
+  "generated_at": "2026-09-23T16:11:42.752503+00:00",
+  "corpus": {
+   "size": 391,
+   "raw_size": 438,
+   "executive_size": 349,
+   "fingerprint": "44059a3b5a7a43a7",
+   "provenance": {
+    "revision": 36,
+    "real": 224,
+    "synthetic": 178
+   },
+   "cohorts": {
+    "generated-final": 327,
+    "owner-current": 22,
+    "revision": 36,
+    "partial": 18,
+    "clone": 33
+   },
+   "sources": [
+    "debug-store (72)",
+    "generated finals (178)",
+    "saved lanes (188)"
+   ],
+   "skipped": [
+    "emulator unreachable: HTTPSConnection(host='localhost', port=8081): Failed to establish a new connection: [Errno 111] Connection refused"
+   ]
+  },
+  "observations": [
+   {
+    "label": "Trips",
+    "value": "349",
+    "detail": "1902 planned days"
+   },
+   {
+    "label": "Trip length",
+    "value": "5 days",
+    "detail": "shortest 2, longest 14"
+   },
+   {
+    "label": "Places per day",
+    "value": "2",
+    "detail": "busiest day holds 6"
+   },
+   {
+    "label": "Days with a named meal",
+    "value": "59%",
+    "detail": "780 days name nowhere to eat"
+   },
+   {
+    "label": "Days with nothing planned",
+    "value": "11%",
+    "detail": "beyond the stay and any journey"
+   },
+   {
+    "label": "Arrival days with under two places",
+    "value": "51%",
+    "detail": "of 317 arrival days"
+   },
+   {
+    "label": "Stays per trip",
+    "value": "1",
+    "detail": "distinct hotels named across the trip"
+   },
+   {
+    "label": "How the journey is made",
+    "value": "Drive 564, Flight 457, Train 79, unnamed 125",
+    "detail": "legs by mode across every trip"
+   },
+   {
+    "label": "Travel scope",
+    "value": "destination_only 2, round_trip 34, unset 313",
+    "detail": "trips that say how the traveller gets there"
+   }
+  ],
+  "rules": [
+   {
+    "code": "gap",
+    "title": "Completion gap",
+    "statement": "A trip presented as planned must not still be missing its parts.",
+    "severity": "gate",
+    "hits": 1331,
+    "trips": 329,
+    "evaluated": 349
+   },
+   {
+    "code": "I5",
+    "title": "Departure buffer",
+    "statement": "At least two hours must stay free before an onward journey.",
+    "severity": "gate",
+    "hits": 211,
+    "trips": 137,
+    "evaluated": 349
+   },
+   {
+    "code": "R4",
+    "title": "Render",
+    "statement": "An itinerary stop must reach the map or say why it did not.",
+    "severity": "report",
+    "hits": 270,
+    "trips": 137,
+    "evaluated": 205
+   },
+   {
+    "code": "I6",
+    "title": "Stay coverage",
+    "statement": "Every night away from home has a stay.",
+    "severity": "report",
+    "hits": 471,
+    "trips": 113,
+    "evaluated": 349
+   },
+   {
+    "code": "I4",
+    "title": "Temporal feasibility",
+    "statement": "Visit plus travel must fit before the next stop starts.",
+    "severity": "report",
+    "hits": 127,
+    "trips": 76,
+    "evaluated": 205
+   },
+   {
+    "code": "I1",
+    "title": "Trip envelope",
+    "statement": "Nothing in the destination may be scheduled before you arrive or after you leave.",
+    "severity": "gate",
+    "hits": 60,
+    "trips": 46,
+    "evaluated": 349
+   },
+   {
+    "code": "I3",
+    "title": "Opening hours",
+    "statement": "A visit must start and end while the place is open.",
+    "severity": "report",
+    "hits": 59,
+    "trips": 46,
+    "evaluated": 205
+   },
+   {
+    "code": "I13",
+    "title": "Duplicate visit",
+    "statement": "The same sight must not be planned on two different days.",
+    "severity": "report",
+    "hits": 31,
+    "trips": 27,
+    "evaluated": 349
+   },
+   {
+    "code": "R1",
+    "title": "Render",
+    "statement": "A leg drawn as ground travel must be a distance you could drive.",
+    "severity": "report",
+    "hits": 23,
+    "trips": 15,
+    "evaluated": 205
+   },
+   {
+    "code": "I10",
+    "title": "Guard coverage",
+    "statement": "A plan must say where the trip starts, or the envelope invariants cannot run.",
+    "severity": "report",
+    "hits": 14,
+    "trips": 13,
+    "evaluated": 349
+   },
+   {
+    "code": "I11",
+    "title": "Closed day",
+    "statement": "A visit must fall on a day the place is actually open.",
+    "severity": "report",
+    "hits": 15,
+    "trips": 13,
+    "evaluated": 205
+   },
+   {
+    "code": "I7",
+    "title": "Return coverage",
+    "statement": "An outbound leg keeps its matching return leg.",
+    "severity": "report",
+    "hits": 11,
+    "trips": 11,
+    "evaluated": 349
+   },
+   {
+    "code": "M1",
+    "title": "Metamorphic",
+    "statement": "Making a trip worse must never make the report quieter.",
+    "severity": "report",
+    "hits": 8,
+    "trips": 8,
+    "evaluated": 349
+   },
+   {
+    "code": "I12",
+    "title": "Permanently closed",
+    "statement": "A place reported as shut down for good must not be planned at all.",
+    "severity": "report",
+    "hits": 7,
+    "trips": 7,
+    "evaluated": 349
+   },
+   {
+    "code": "R3",
+    "title": "Render",
+    "statement": "A flight or train between two points in the same place is not a journey.",
+    "severity": "report",
+    "hits": 9,
+    "trips": 5,
+    "evaluated": 205
+   },
+   {
+    "code": "I9",
+    "title": "Continuity",
+    "statement": "Every move between stops must be explained by a journey.",
+    "severity": "gate",
+    "hits": 3,
+    "trips": 3,
+    "evaluated": 205
+   },
+   {
+    "code": "I14",
+    "title": "Trip calendar",
+    "statement": "A day's own date must fall within this trip's booked departure and return dates.",
+    "severity": "gate",
+    "hits": 3,
+    "trips": 1,
+    "evaluated": 349
+   },
+   {
+    "code": "I2",
+    "title": "Presence",
+    "statement": "A stop must sit on the side of a journey where you are actually present.",
+    "severity": "gate",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "I8",
+    "title": "Blast radius",
+    "statement": "An operation may only change the entities it declared.",
+    "severity": "report",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "M2",
+    "title": "Metamorphic",
+    "statement": "Removing part of a trip must be noticed by some rule.",
+    "severity": "report",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "M3",
+    "title": "Metamorphic",
+    "statement": "An edit that changes nothing must change no finding.",
+    "severity": "report",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "QG1",
+    "title": "Scenario and preference fidelity",
+    "statement": "Does the plan honor the scenario's explicit party, pace, interests, food, mobility, lodging, transport, and other constraints.",
+    "severity": "gate",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "QG2",
+    "title": "Requested budget evidence completeness",
+    "statement": "When the scenario requests a budget or ceiling, does the comparable total fit it and does the plan contain enough priced evidence to support that total.",
+    "severity": "gate",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 349
+   },
+   {
+    "code": "R0",
+    "title": "Render",
+    "statement": "A stored trip must be renderable at all.",
+    "severity": "report",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 205
+   },
+   {
+    "code": "R2",
+    "title": "Render",
+    "statement": "No single leg of a day may take longer than a day.",
+    "severity": "report",
+    "hits": 0,
+    "trips": 0,
+    "evaluated": 205
+   }
+  ],
+  "top_groups": [
+   {
+    "rule": "I6",
+    "symptom": "Day N has no concrete, bookable stay for the night; replace <place>.",
+    "count": 459,
+    "example": "Day 1 has no concrete, bookable stay for the night; replace Hotel (TBD).",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Itinerary covers N of N requested days (N day missing). Save the remaining days before presenting the trip as planned.",
+    "count": 241,
+    "example": "Itinerary covers 7 of 8 requested days (1 day missing). Save the remaining days before presenting the trip as planned.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day N's long road journey has no adequately timed named restaurant meal break. Save meal times and durations within the journey, with no more than four hours of driving between meals.",
+    "count": 226,
+    "example": "Day 1's long road journey has no adequately timed named restaurant meal break. Save meal times and durations within the journey, with no more than four hours of driving between meals.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day N has multiple activities but no named restaurant stop.",
+    "count": 198,
+    "example": "Day 2 has multiple activities but no named restaurant stop.",
+    "accepted": false
+   },
+   {
+    "rule": "R4",
+    "symptom": "<place> on Day N never reached the map (no_match).",
+    "count": 189,
+    "example": "Ross Island on Day 2 never reached the map (no_match).",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "No concrete hotel is selected.",
+    "count": 139,
+    "example": "No concrete hotel is selected.",
+    "accepted": false
+   },
+   {
+    "rule": "I4",
+    "symptom": "<place> cannot reach <place> in time on Day N; short by N minutes.",
+    "count": 127,
+    "example": "Atlantis, The Palm cannot reach Rove Downtown in time on Day 2; short by 14 minutes.",
+    "accepted": false
+   },
+   {
+    "rule": "I5",
+    "symptom": "<place> leaves only N minutes before <place> on Day N; N are required.",
+    "count": 109,
+    "example": "Brunch (TBD) leaves only 60 minutes before Flight: Goa to Bangalore (TBD) on Day 4; 120 are required.",
+    "accepted": false
+   },
+   {
+    "rule": "I5",
+    "symptom": "<place> leaves only -N minutes before <place> on Day N; N are required.",
+    "count": 102,
+    "example": "Delhi leaves only -810 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day N has a meal placeholder instead of a named restaurant.",
+    "count": 97,
+    "example": "Day 1 has a meal placeholder instead of a named restaurant.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Departure day has no explicit flight, rail, ferry, road, or other journey from <place> back to <place> after checkout.",
+    "count": 66,
+    "example": "Departure day has no explicit flight, rail, ferry, road, or other journey from New York back to Delhi after checkout.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Hotel TBD: no matching hotel research is recorded for this city and date.",
+    "count": 59,
+    "example": "Hotel TBD: no matching hotel research is recorded for this city and date.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Sparse itinerary: Day N has about N planned minutes; this profile's useful-day threshold is N minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "count": 48,
+    "example": "Sparse itinerary: Day 3 has about 180 planned minutes; this profile's useful-day threshold is 198 minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "accepted": false
+   },
+   {
+    "rule": "I3",
+    "symptom": "<place> is open N:N-N:N; the Day N visit runs N:N–N:N.",
+    "count": 47,
+    "example": "Al Fahidi Historical Neighbourhood is open 07:00-20:00; the Day 3 visit runs 19:30–21:00.",
+    "accepted": false
+   },
+   {
+    "rule": "I1",
+    "symptom": "<place> runs to N:N on Day N, after <place> has left.",
+    "count": 46,
+    "example": "Hotel in Cherrapunji runs to 08:45 on Day 6, after Drive: Cherrapunji to Guwahati has left.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day N has no planned places beyond the hotel.",
+    "count": 45,
+    "example": "Day 9 has no planned places beyond the hotel.",
+    "accepted": false
+   },
+   {
+    "rule": "R4",
+    "symptom": "<place> on Day N never reached the map (no_location).",
+    "count": 43,
+    "example": "Spice Plantation Tour on Day 4 never reached the map (no_location).",
+    "accepted": false
+   },
+   {
+    "rule": "R4",
+    "symptom": "<place> on Day N never reached the map (wrong_location).",
+    "count": 36,
+    "example": "Camp/Hotel at Pangong Lake on Day 5 never reached the map (wrong_location).",
+    "accepted": false
+   },
+   {
+    "rule": "I13",
+    "symptom": "<place> is scheduled on Day N and again on Day N. Keep the better one and give the other day its own place.",
+    "count": 31,
+    "example": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Arrival day has no explicit flight, rail, ferry, road, or other journey from <place> to <place> before destination check-in.",
+    "count": 31,
+    "example": "Arrival day has no explicit flight, rail, ferry, road, or other journey from Delhi to New York before destination check-in.",
+    "accepted": false
+   },
+   {
+    "rule": "R1",
+    "symptom": "Day N draws <place> to <place> as Drive over N km.",
+    "count": 20,
+    "example": "Day 6 draws Deluxe Double Room at Hotel Valtin to Kolkata as Drive over 600 km.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Hotel placeholders remain on Day(s) N, N, N, N, N, N, N.",
+    "count": 19,
+    "example": "Hotel placeholders remain on Day(s) 1, 2, 3, 4, 5, 6, 7.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N, N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 18,
+    "example": "Day(s) 1, 2, 3, 4, 5, 6, 7 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 16,
+    "example": "Day(s) 4, 5, 6 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 16,
+    "example": "Day(s) 1, 2, 3, 4, 5 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Hotel placeholders remain on Day(s) N, N, N.",
+    "count": 15,
+    "example": "Hotel placeholders remain on Day(s) 1, 2, 3.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Sparse itinerary: Day N has about N planned minutes; this profile's useful-day threshold is N minutes; Day N has about N planned minutes; this profile's useful-day threshold is N minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "count": 15,
+    "example": "Sparse itinerary: Day 5 has about 180 planned minutes; this profile's useful-day threshold is 198 minutes; Day 7 has about 0 planned minutes; this profile's useful-day threshold is 90 minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "accepted": false
+   },
+   {
+    "rule": "I10",
+    "symptom": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there.",
+    "count": 14,
+    "example": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there.",
+    "accepted": false
+   },
+   {
+    "rule": "I1",
+    "symptom": "<place> starts at N:N on Day N, before <place> gets you there.",
+    "count": 14,
+    "example": "Petronas Towers starts at 10:30 on Day 1, before Flight: Chennai to Kuala Lumpur gets you there.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "The trip does not say where it starts from. Ask the traveller which city they are travelling from, or whether they are arranging their own way there, and save the answer as origin or travel_scope.",
+    "count": 14,
+    "example": "The trip does not say where it starts from. Ask the traveller which city they are travelling from, or whether they are arranging their own way there, and save the answer as origin or travel_scope.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Hotel placeholders remain on Day(s) N, N, N, N, N.",
+    "count": 13,
+    "example": "Hotel placeholders remain on Day(s) 1, 2, 3, 4, 5.",
+    "accepted": false
+   },
+   {
+    "rule": "I3",
+    "symptom": "<place> is open N:N-N:N, N:N-N:N; the Day N visit runs N:N–N:N.",
+    "count": 12,
+    "example": "Sri Mariamman Temple is open 06:00-12:00, 18:00-21:00; the Day 4 visit runs 11:30–12:30.",
+    "accepted": false
+   },
+   {
+    "rule": "I6",
+    "symptom": "Day N has no concrete lodging anchor for the night.",
+    "count": 12,
+    "example": "Day 1 has no concrete lodging anchor for the night.",
+    "accepted": false
+   },
+   {
+    "rule": "I7",
+    "symptom": "The return leg from <place> has no matching outbound from <place>.",
+    "count": 10,
+    "example": "The return leg from Gujarat has no matching outbound from Mumbai.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 9,
+    "example": "Day(s) 1, 2, 3, 4, 5, 6 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "accepted": false
+   },
+   {
+    "rule": "M1",
+    "symptom": "strand-a-stop made the trip worse, and the report went from N to N findings.",
+    "count": 8,
+    "example": "strand-a-stop made the trip worse, and the report went from 9 to 7 findings.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 8,
+    "example": "Day(s) 1, 2, 3, 4 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "accepted": false
+   },
+   {
+    "rule": "I12",
+    "symptom": "<place> is reported closed for business; Day N plans it anyway. Replace it with somewhere still operating.",
+    "count": 7,
+    "example": "The Company's Garden Restaurant is reported closed for business; Day 4 plans it anyway. Replace it with somewhere still operating.",
+    "accepted": false
+   },
+   {
+    "rule": "R3",
+    "symptom": "Day N draws an inter-city Train from <place> Railway Station to <place> Railway Station that covers no distance.",
+    "count": 7,
+    "example": "Day 1 draws an inter-city Train from Hyderabad Railway Station to Tirupati Railway Station that covers no distance.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Sparse itinerary: Day N has about N planned minutes; this profile's useful-day threshold is N minutes; Day N has about N planned minutes; this profile's useful-day threshold is N minutes; Day N has about N planned minutes; this profile's useful-day threshold is N minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "count": 7,
+    "example": "Sparse itinerary: Day 2 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes; Day 3 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes; Day 4 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
+    "accepted": false
+   }
+  ]
+ },
+ "probes": {
+  "corpus": "corpus/trips",
+  "results": [
+   {
+    "key": "placeholder_stops",
+    "title": "Placeholder stops presented as planned",
+    "trips": 75,
+    "evaluated": 178,
+    "hits": 544,
+    "examples": [
+     "amritsar-outdoors-three-generation-7d: Day 7: Lunch at hotel",
+     "bhutan-budget-three-generation-3d: Day 1: Hotel in Thimphu",
+     "bhutan-heritage-young-family-5d: Day 1: Hotel in Thimphu"
+    ]
+   },
+   {
+    "key": "unpriced",
+    "title": "Trip has no priced total",
+    "trips": 146,
+    "evaluated": 178,
+    "hits": 146,
+    "examples": [
+     "amritsar-accessible-couple-5d: total_cost is 0",
+     "amritsar-outdoors-three-generation-7d: total_cost is 0",
+     "amritsar-premium-couple-5d: total_cost is 0"
+    ]
+   },
+   {
+    "key": "out_of_order",
+    "title": "Stops listed out of time order",
+    "trips": 26,
+    "evaluated": 178,
+    "hits": 28,
+    "examples": [
+     "bhutan-budget-three-generation-3d: Day 3: Drive: Thimphu to Paro at 07:00 after Sonam Trophel Restaurant at 14:30",
+     "chikmagalur-accessible-three-generation-7d: Day 4: Drive: Belur to Chikmagalur at 15:00 after Anagha Grand at 15:15",
+     "chikmagalur-heritage-young-family-3d: Day 2: Drive: Halebidu to Chikmagalur at 15:00 after Hoysaleswara Temple, Halebidu at 15:30"
+    ]
+   },
+   {
+    "key": "stay_after_departure",
+    "title": "Hotel stop after the day's departing journey",
+    "trips": 47,
+    "evaluated": 178,
+    "hits": 64,
+    "examples": [
+     "andaman-ferry: Day 3: SeaShell Port Blair (Checkout) after Ferry: Port Blair to Havelock",
+     "bhutan-heritage-young-family-5d: Day 3: Hotel in Thimphu (Check-out) after Drive: Thimphu to Paro",
+     "bhutan-outdoors-solo-3d: Day 3: Terma Linca Resort & Spa (Check out) after Drive: Thimphu to Paro"
+    ]
+   },
+   {
+    "key": "summary_drift",
+    "title": "Day summary names another day's stop",
+    "trips": 10,
+    "evaluated": 178,
+    "hits": 26,
+    "examples": [
+     "chikmagalur-packed-solo-7d: Day 2 summary names Mullayanagiri, planned on Day 3",
+     "dubai-visa: Day 1 summary names Burj Khalifa, planned on Day 2",
+     "india-amritsar-pilgrimage-three-generation-3d: Day 2 summary names Golden Temple, planned on Day 1"
+    ]
+   },
+   {
+    "key": "unused_nights",
+    "title": "Stay checks out after the traveller has left",
+    "trips": 20,
+    "evaluated": 178,
+    "hits": 20,
+    "examples": [
+     "amritsar-packed-solo-5d: Ramada Amritsar checks out 2027-11-11 after leaving on 2027-11-10",
+     "amritsar-slow-friends-3d: Ramada by Wyndham Amritsar checks out 2027-11-14 after leaving on 2027-11-13",
+     "bali-honeymoon: Mulia Resort - Nusa Dua, Bali checks out 2027-11-19 after leaving on 2027-11-18"
+    ]
+   },
+   {
+    "key": "implausible_road_speed",
+    "title": "Long drive averaging over 75 km/h door to door",
+    "trips": 3,
+    "evaluated": 178,
+    "hits": 5,
+    "examples": [
+     "rajasthan-multicity: Day 1: Drive: Mumbai to Jaipur 1160 km in 660 min (105 km/h)",
+     "tirupati-accessible-couple-7d: Day 7: Drive: Tirupati to Hyderabad 550 km in 420 min (79 km/h)",
+     "tirupati-slow-couple-7d: Day 1: Drive: Hyderabad to Tirupati 550 km in 420 min (79 km/h)"
+    ]
+   },
+   {
+    "key": "synthetic_fares",
+    "title": "Provider test-mode fare saved as a real fare",
+    "trips": 9,
+    "evaluated": 178,
+    "hits": 9,
+    "examples": [
+     "bhutan-premium-couple-5d: Duffel Airways 1206.54 USD",
+     "capetown-accessible-solo-7d: Duffel Airways 596.75 USD",
+     "capetown-packed-three-generation-5d: Duffel Airways 2755.42 None"
+    ]
+   }
+  ],
+  "place_identity": {
+   "resolved": 3975,
+   "mismatched": 451,
+   "examples": [
+    "4 islands tour (phra nang, chicken, poda, tup) (thailand (bangkok & krabi)) -> Krabi Island Adventure",
+    "abbey falls (abbey falls) -> Abbi Waterfall",
+    "abbey falls (coffee plantations) -> Abbi Waterfall",
+    "abbey falls (coorg) -> Abbi Waterfall",
+    "accessible boat tour: 4 islands (thailand) -> Krabi Island Adventure",
+    "accessible island boat tour (thailand) -> Krabi Sunset Cruises",
+    "accessible korean restaurant (seoul) -> Jungsik Seoul",
+    "accessible pool (maldives) -> SAii Beach Club at Crossroads Maldives"
+   ],
+   "most_common": [
+    [
+     "Delhi Agra Jaipur Trip",
+     42
+    ],
+    [
+     "North Sikkim Tour",
+     8
+    ],
+    [
+     "Shree Ramjanmbhumi Temple Ayodhya",
+     7
+    ],
+    [
+     "Secret Paradise Maldives Tours",
+     6
+    ],
+    [
+     "Jagmandir Island Palace",
+     6
+    ]
+   ]
+  }
+ },
+ "findings": [
+  {
+   "id": "BL-01",
+   "severity": "critical",
+   "area": "Place resolution (paid Google Places)",
+   "title": "Activity labels, clock times and region phrases are sent to Google Places and the first result is accepted as the place",
+   "prevalence": "451 of 3,975 cached resolutions (11.3%) share no word with the stop name",
+   "evidence": "\"India Gate | delhi, agra, jaipur\" -> tour agency \"Delhi Agra Jaipur Trip\" (42 stops resolve to it); \"Meetings (User's location) | new york\" -> New York Inter-Group of AA; \"Harajuku\" -> a gyukatsu restaurant; \"Kamadgiri\" -> Kashi Vishwanath (wrong city); \"Ross Island\" -> Aberdeen Jetty; 17 clock times (\"08:00\") and prompt sentences (\"key details:\") were paid lookups. Today's filters (places_cache.is_lookupable_place_name and place_confidence.stop_place_tier) both still pass \"08:00\", \"Work meetings\", \"Lunch break\" and \"Sunset at beach\". Hand review of a random 40 of the mismatches: about 30 were a wrong place or a non-place label.",
+   "impact": "Confident map pins in the wrong place (sometimes the wrong city), wrong photos and ratings in the stop card, and paid Places calls that buy nothing.",
+   "fix": "One stop classifier shared by lookup gating and map tiering that rejects times, activity phrases and sentences; bias each lookup with the stop's own city rather than the whole destination phrase; and accept a result only when its name shares a token with the query or its type matches the stop kind, otherwise store it as approximate and never pin it.",
+   "source": "LLM judge (New York, Tokyo, Cape Town packets) then deterministic place_identity probe"
+  },
+  {
+   "id": "BL-02",
+   "severity": "high",
+   "area": "Flights and pricing",
+   "title": "Provider test-mode offers are saved as real, priced flights",
+   "prevalence": "9 of 178 corpus trips; 9 of the 13 trips that have any selected flight",
+   "evidence": "\"Duffel Airways\" (flight numbers ZZ…) in 6 trips, e.g. Cape Town $596.75, Bhutan $1,206.54; \"Nuitée Air\" from liteapi in 3 trips, e.g. Goa ₹29,582. tools/duffel_flights.py documents that duffel_test_ tokens return synthetic offers, but nothing marks them after selection.",
+   "impact": "A traveller or the booking handoff can present a fare that does not exist; budget totals include invented prices.",
+   "fix": "Mark every offer from a test-mode credential or known sandbox carrier as synthetic at the provider adapter; refuse to persist it in selected_flights or the booking handoff; if kept for development, label it \"Sample fare, not bookable\" in every view.",
+   "source": "LLM judge (Cape Town, Goa) then synthetic_fares probe"
+  },
+  {
+   "id": "BL-03",
+   "severity": "high",
+   "area": "Day scheduling",
+   "title": "Stops are listed after the journey that already left them",
+   "prevalence": "stay_after_departure in 47 of 178 trips (64 days); out_of_order in 26 trips (28 stops)",
+   "evidence": "Tokyo day 4: Shinkansen 09:00 then Sunroute checkout 12:10; Gujarat day 3: drive 08:00 then Ahmedabad checkout 14:30; Rajasthan day 3: Jaipur checkout 18:00 after reaching Jodhpur, \"Lunch break\" 20:00; Char Dham days 3-7 repeat the pattern; Andaman: Port Blair checkout after the Havelock ferry.",
+   "impact": "The itinerary, the map route and the day's travel totals describe an impossible order; audit rules I4/I9 fire on the symptom rather than the cause.",
+   "fix": "A deterministic normaliser on save: origin-hotel checkout precedes the first departing move, timed stops sort by time, and a stop whose time runs backwards is rejected back to the agent with the exact conflict instead of being saved.",
+   "source": "LLM judge (5 of 12 trips) then deterministic probes"
+  },
+  {
+   "id": "BL-04",
+   "severity": "high",
+   "area": "Stays and dates",
+   "title": "The selected hotel keeps a paid night after the traveller has flown or driven home",
+   "prevalence": "20 of 178 trips",
+   "evidence": "Paris: Hotel Le Littre to 12 Apr, flight home 11 Apr; Tokyo: Granvia Kyoto to 9 Apr, flight 8 Apr; Mysore: Radisson to 15 Sep, drive home 14 Sep and a 'Buffer/Return' day 6 at the hotel; Bali-honeymoon: Mulia to 19 Nov, leaves 18 Nov. Contributing cause: every generated request phrases an N-day trip across N+1 calendar dates (matrix._compose uses start + days), and checkout copies return_date. The deterministic audit reports \"Itinerary covers N of N+1 requested days\" 241 times across the corpus.",
+   "impact": "Budget totals include a night nobody uses, and the plan invents filler days at a hotel after departure.",
+   "fix": "Checkout equals the date of the departing journey; when the request's day count and date span disagree, ask once instead of silently choosing; generate corpus requests with an end date of start + days - 1.",
+   "source": "LLM judge (Paris, Tokyo, Mysore) then unused_nights probe"
+  },
+  {
+   "id": "BL-05",
+   "severity": "high",
+   "area": "Completion gate",
+   "title": "Plans are completed with placeholder hotels, meals and journeys",
+   "prevalence": "The audit's own completion-gap gate fails on 329 of 349 trips (1,331 hits); 75 of 178 corpus trips hold 544 placeholder stops; 88 of 178 carry no priced item at all",
+   "evidence": "Goa (\"We want … good food\") has five TBD meals; Rajasthan's every meal is \"Local restaurant <city>\"; Char Dham and Kerala have only \"Hotel in <city>\"; New York has \"Hotel (TBD)\" on every day. prompts.py forbids leaving TBD meals, but trip_validation only warns and the plan still completes. Paris uses \"Central Paris Hotel\" instead of the selected Hotel Le Littre (10 of 102 trips with a selected hotel do not name it in the itinerary). Audit I6 finds 459 nights with no concrete, bookable stay.",
+   "impact": "The traveller receives an itinerary that reads as decided but is not; judged meal quality averages 2.58/5, second lowest after narrative coherence (2.50).",
+   "fix": "Count placeholders deterministically at the completion gate and either fill them from research already in hand or return them as explicit open decisions (UX Lab 32); bind hotel stops to selected_hotels by id rather than by name.",
+   "source": "LLM judge (all 12 trips) then placeholder_stops probe"
+  },
+  {
+   "id": "BL-06",
+   "severity": "medium",
+   "area": "Request fidelity",
+   "title": "Explicit asks in the request are dropped without saying so",
+   "prevalence": "4 of 12 judged trips",
+   "evidence": "Paris: \"Include the flights\" -> no selected flight; Bali: \"Verify current official entry requirements\" -> no visa or advisory section; Char Dham: 2 of 4 dhams with no explanation; Goa: \"good food\" -> all meals TBD.",
+   "impact": "The plan looks complete to the traveller while missing the one thing they asked for.",
+   "fix": "Extract explicit asks into a request checklist at kickoff and have the completion gate require each to be Met or Dropped with a stated reason.",
+   "source": "LLM judge"
+  },
+  {
+   "id": "BL-07",
+   "severity": "medium",
+   "area": "Day narrative",
+   "title": "Day summaries promise stops that are on other days",
+   "prevalence": "10 of 178 trips (26 day summaries)",
+   "evidence": "Lonavala day 2 summary: \"Visit Bhushi Dam, Tiger Point\"; those are on days 3 and 1. Dubai day 1 names Burj Khalifa (day 2); Amritsar day 2 names the Golden Temple (day 1).",
+   "impact": "The day card contradicts itself, so the traveller cannot trust either the summary or the stops.",
+   "fix": "Rebuild the summary line from the day's stops after every edit, or validate that every place it names is on that day.",
+   "source": "LLM judge (Lonavala) then summary_drift probe"
+  },
+  {
+   "id": "BL-08",
+   "severity": "medium",
+   "area": "Travel time",
+   "title": "Long drives are scheduled at impossible average speeds",
+   "prevalence": "3 of 178 trips",
+   "evidence": "Rajasthan day 1: Mumbai to Jaipur 1,160 km in 660 minutes (105 km/h door to door), followed by an 18:00 bazaar stroll; Tirupati-Hyderabad 550 km in 7 hours.",
+   "impact": "A day that cannot be driven; the audit's temporal rules trust the stated duration.",
+   "fix": "Floor road durations by distance and region (for example 55 km/h door to door in India beyond 250 km plus breaks), and split or replace drives over about 9 hours with a train or flight.",
+   "source": "LLM judge (Rajasthan) then implausible_road_speed probe"
+  },
+  {
+   "id": "BL-09",
+   "severity": "medium",
+   "area": "Evaluation harness",
+   "title": "The existing model judge cannot run on any generated corpus trip",
+   "prevalence": "178 of 178 generated trips",
+   "evidence": "harness/audit.py passes the whole place cache (3,985 entries, about 13 MB) as places for every generated record, and evals/judge.evidence_for sends it; a judge profile's max_input_bytes is 100 KB. The manifest also stores no request text for any trip and scenario_expectations for only 34.",
+   "impact": "Milestone 3 judging is unusable on the corpus it was built for, so quality has never been measured at scale.",
+   "fix": "Send only the plan's own places (evals/trip_text.places_for, added here) and persist request, expectations and producer commit for every generated trip.",
+   "source": "Building this report"
+  },
+  {
+   "id": "BL-10",
+   "severity": "low",
+   "area": "Evaluation design",
+   "title": "The judge's overall score averages hard gates away",
+   "prevalence": "1 of 12 judged trips",
+   "evidence": "Bali scores 4.00 overall while failing preference fidelity (2/5): it ignored the explicit entry-requirement ask.",
+   "impact": "Ranking by overall score hides fidelity failures.",
+   "fix": "Withhold or cap the overall score when a hard gate scores 2 or lower, and report the gate result beside the taste mean.",
+   "source": "Building this report"
+  }
+ ],
+ "efficiencies": [
+  {
+   "id": "EE-01",
+   "value": "very high",
+   "effort": "S",
+   "title": "Stop attaching the whole 13 MB place cache to every corpus record",
+   "evidence": "A cProfile of the incremental audit (1,124 s before it was stopped) spent about 95% of its time on JSON encode (386 s), file reads (261 s), JSON decode (176 s) and SHA-256 (66 s) of the place cache, which harness/audit.py passes whole as each generated record's places and harness/incremental.py re-serialises about 13 times per record. The state directory reached 1.6 GB after 113 input snapshots, projecting about 7 GB for one full run. The same payload makes the judge unusable (BL-09). The same audit run through the uncached API path finished in 70 s for 391 records.",
+   "plan": "Give each record only the places its plan names (evals/trip_text.places_for, widened to the render's lookup keys), or store the cache once by digest and reference it. Expected: a full audit in minutes rather than the projected 30-plus, audit state in MB rather than GB, and a judge request within its 100 KB limit."
+  },
+  {
+   "id": "EE-02",
+   "value": "high",
+   "effort": "M",
+   "title": "One stop classifier and a post-lookup identity check before any paid Places call",
+   "evidence": "places_cache.is_lookupable_place_name (regex) and place_confidence.stop_place_tier (tokens) disagree, and both pass clock times and activity labels. 451 of 3,975 cached resolutions share no word with the stop name; 42 stops resolved to one tour agency, and 17 clock times were paid lookups.",
+   "plan": "Make place_confidence the single owner, call it from places_cache before lookup, bias each lookup with the day's city rather than the whole destination phrase, and store non-matching results as approximate. It saves Places spend and removes wrong pins in the same change (BL-01)."
+  },
+  {
+   "id": "EE-03",
+   "value": "high",
+   "effort": "M",
+   "title": "Move plan hygiene from prompt rules and repair turns into a deterministic save-time normaliser",
+   "evidence": "prompts.py holds about 40 KB of rules, yet 47 of 178 trips list a hotel after the day's departure, 26 are out of time order, 20 keep an unused night, and 75 carry 544 placeholders. Corpus generation measured a median of 5.4 minutes per accepted trip (p90 12.1) at a median ₹38.6, and the August audit's completion-gap gate fired on 236 trips.",
+   "plan": "Sort and anchor stops, set checkout to the departure date, rebuild day summaries from stops, and count placeholders in code on save. Return only the residual conflicts to the agent (the Lab 19 deterministic-engine direction). The bug class stops occurring instead of being detected, with fewer repair rounds, fewer tokens and less latency."
+  },
+  {
+   "id": "EE-04",
+   "value": "medium-high",
+   "effort": "S",
+   "title": "Make the paid corpus self-describing",
+   "evidence": "0 of 178 manifest entries store the request text and 34 store scenario expectations; this report had to reconstruct requests from hash-seeded generation matrices. Every generated request phrases an N-day trip across N+1 dates. The 178 trips cost ₹7,469 to produce.",
+   "plan": "Persist request, expectations, producer commit and model for every generated trip, and fix the date phrase. Fidelity judging and regression comparison can then reuse the corpus indefinitely without paid regeneration."
+  },
+  {
+   "id": "EE-05",
+   "value": "medium",
+   "effort": "S",
+   "title": "Run the probes on every pull request as a free quality signal",
+   "evidence": "The eight probes and the place-identity check run over all 178 corpus trips in under 0.5 s with no provider or model call, while the complete suites are suspended from the lane gates.",
+   "plan": "Promote the probes into the audit rule registry with an accepted baseline, and fail a PR only on a new occurrence on committed corpus trips or golden fixtures, so a behaviour-changing prompt or policy edit is caught before merge."
+  }
+ ]
+}

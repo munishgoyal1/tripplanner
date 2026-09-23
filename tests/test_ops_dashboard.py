@@ -324,3 +324,15 @@ def test_slow_ops_storage_does_not_block_health(monkeypatch):
         finally:
             release.set()
         assert pending.result(timeout=5).status_code == 200
+
+
+def test_ops_evals_report_is_owner_only_and_hidden_from_schema(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    owner = _client(monkeypatch, "owner@example.com")
+
+    response = owner.get("/ops/evals")
+
+    assert response.status_code == 200
+    assert {"version", "judge", "audit", "findings", "efficiencies"} <= response.json().keys()
+    assert "/ops/evals" not in owner.get("/openapi.json").json()["paths"]
+    assert _client(monkeypatch, "other@example.com").get("/ops/evals").status_code == 404
+    assert _client(monkeypatch).get("/ops/evals").status_code == 404

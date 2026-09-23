@@ -1,0 +1,116 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "The stay is recorded as pet-friendly and every outing notes dog suitability.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "Pet friendly stays only"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/1/note",
+     "quote": "Verified pet-friendly"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Tiger Point, Bhushi Dam, Rajmachi and Ryewood Park are specific to Lonavala.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/3/name",
+     "quote": "Tiger Point"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/2/name",
+     "quote": "Bhushi Dam"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 3,
+   "rationale": "A Rajmachi trek with the dog could be memorable; nothing else stands out.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/2/name",
+     "quote": "Rajmachi Fort"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Day summaries describe other days' stops: day 2 promises Bhushi Dam and Tiger Point, and day 3 promises Rajmachi, which is on day 2. Bhushi Dam is noted 'Morning visit' but is at 16:00.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/summary",
+     "quote": "Visit Bhushi Dam, Tiger Point"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/summary",
+     "quote": "Explore Rajmachi Fort"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/2/note",
+     "quote": "Morning visit"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 1,
+   "rationale": "The only meal is a TBD cafe with lunch at 16:00; no other meals are named.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/name",
+     "quote": "Pet-friendly Cafe (TBD)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/time",
+     "quote": "16:00"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Returning to the resort each late afternoon gives deliberate downtime for a dog trip.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/4/time",
+     "quote": "17:30"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "No sight repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/name",
+     "quote": "Ryewood Park"
+    }
+   ]
+  }
+ ]
+}

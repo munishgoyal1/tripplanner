@@ -22,6 +22,15 @@ contains historical assumptions; current implementation ownership is in
 5. **Judge routing and reports** — calibrated routine/deep/adjudication profiles,
    cost controls and comparable consolidated reports. Not started.
 
+2026-09-23 progress toward milestone 5 (reports only; routing not started): the
+owner-only `/evals` console publishes one comparable offline report — whole-corpus
+deterministic probes, the audit summary, and `itinerary-v1` judgements of 12 corpus
+trips produced in an operator model session and validated by `evals.judge.validate`.
+It exposed that the paid judge could not run on any generated trip (the whole 13 MB
+place cache was its evidence) and that no generated trip stored its request; packets
+now carry only the plan's own places and requests reconstructed from the matrices.
+Ownership and commands are in `docs/CODEMAP.md`.
+
 Milestone 1 acceptance/validation matrix:
 
 | Contract | Proof |

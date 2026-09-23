@@ -1,0 +1,128 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Ahmedabad and Kutch are covered and every meal is labelled Jain, but the meals are generic placeholders and there is no journey from Mumbai on day 1.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "We eat strictly Jain food"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/2/name",
+     "quote": "Jain Restaurant (Ahmedabad)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/summary",
+     "quote": "Arrive from Mumbai"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Adalaj Stepwell, the White Rann and Kalo Dungar are specific to this region.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/1/name",
+     "quote": "Adalaj Stepwell"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/name",
+     "quote": "White Rann of Kutch"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "Kalo Dungar"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 3,
+   "rationale": "The White Rann is the signature moment but is scheduled at 09:00 rather than at sunset.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/time",
+     "quote": "09:00"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Hotel checkout is timed at 14:30 after an 08:00 departure, and the last day lists lunch at 13:00 before a 900 km drive that starts at 08:00.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/time",
+     "quote": "14:30"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/2/name",
+     "quote": "Drive: Kutch to Mumbai"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/2/distance_km",
+     "quote": "900"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Only Manek Chowk is a real food place; the rest are generic 'Jain Restaurant' labels and there are no breakfasts.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/3/name",
+     "quote": "Jain Restaurant (Kutch)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/4/name",
+     "quote": "Manek Chowk (Jain food stalls)"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Days are moderate, but no rest time is deliberately placed around the 6-hour and 12-hour drives.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/0/duration_min",
+     "quote": "360"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 3,
+   "rationale": "'Jain Restaurant (Kutch)' repeats three times, which reads as a missing choice rather than an intentional revisit.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/4/name",
+     "quote": "Jain Restaurant (Kutch)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/5/name",
+     "quote": "Jain Restaurant (Kutch)"
+    }
+   ]
+  }
+ ]
+}

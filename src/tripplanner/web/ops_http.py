@@ -70,6 +70,26 @@ def ops_overview(
     return runtime
 
 
+@router.get("/ops/evals", include_in_schema=False)
+def ops_evals(request: Request) -> dict[str, Any]:
+    """Return the committed offline evaluation report to the owner only.
+
+    The report is produced by ``scripts/dev/owner_evals.py`` from committed
+    corpus trips; serving it reads one packaged file and never plans or calls
+    a provider.
+    """
+    require_owner(request)
+    import json
+    from importlib.resources import files
+
+    source = files("tripplanner.evals").joinpath("owner_report.json")
+    try:
+        return json.loads(source.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"version": 1, "generated_at": None, "judge": None, "audit": None, "probes": None,
+                "findings": [], "efficiencies": []}
+
+
 def _build_overview(user_id: str, days: int, start_date: date | None, end_date: date | None):
     set_user_id(user_id)
     from datetime import UTC, datetime, timedelta

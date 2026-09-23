@@ -1,0 +1,116 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Elderly-friendly notes are present, but a 'Char Dham' request covers only Yamunotri and Gangotri; Kedarnath and Badrinath are silently dropped.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "the Char Dham route"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "Yamunotri Temple"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/2/name",
+     "quote": "Gangotri Temple"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Har Ki Pauri aarti, Mansa Devi and the dham temples are specific to the region.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/2/name",
+     "quote": "Har Ki Pauri"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Ganga Aarti at Har Ki Pauri and the Yamunotri darshan are defining moments.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/2/note",
+     "quote": "Attend Ganga Aarti"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Stops follow the journey that already left them: the Haridwar hotel is at 14:45 on the Barkot drive day, and the return drive leaves before lunch at Janki Chatti.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/name",
+     "quote": "Hotel in Haridwar"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/time",
+     "quote": "14:45"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/4/time",
+     "quote": "12:00"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Meals are generic ('Dinner at hotel', 'Lunch en route'), and dinner is at 22:15 for grandparents and an 8-year-old.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/5/time",
+     "quote": "22:15"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/2/name",
+     "quote": "Lunch en route"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Midday rest for the elderly is deliberately scheduled.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/4/note",
+     "quote": "Rest for elderly"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "No accidental repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/7/stops/1/name",
+     "quote": "Parmarth Niketan Ashram"
+    }
+   ]
+  }
+ ]
+}

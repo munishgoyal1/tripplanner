@@ -10,6 +10,20 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "honest-gaps": {
+    changes: [
+      "How a stop the planner has not decided (a TBD hotel, a generic meal, an unpriced or missing journey) is drawn in the itinerary, so it can no longer pass for a chosen place",
+      "Where the trip's open decisions are counted and listed: a pinned inbox above the days, slots inside each day, a readiness checklist in Details, or a follow-up message from the Assistant",
+      "How one open decision is resolved: which suggestions appear, how many taps it takes, and what the plan shows afterwards",
+      "How a fare that cannot be booked (a provider sandbox offer) and a day summary that names stops the day does not hold are flagged",
+    ],
+    context: [
+      "The Goa trip fixture, which is the real corpus trip goa-relaxed with its placeholders unchanged; every option shows the same four days, stops and gaps",
+      "The workspace layout, toolbar, map, pane controls and the existing booking readiness meter",
+      "Planner behaviour: this Lab does not decide how the agent fills a gap, only how the gap is presented and how the traveller asks for it to be filled",
+      "Pricing, booking handoff, verification and repair contracts; a sandbox fare is only labelled here, never removed or re-priced",
+    ],
+  },
   "itinerary-pane-polish": {
     changes: [
       "The itinerary pane body: trip snapshot, plan checks, Day by day header with Add and Reduce a day, day headers, stop rows and travel-from-previous legs",

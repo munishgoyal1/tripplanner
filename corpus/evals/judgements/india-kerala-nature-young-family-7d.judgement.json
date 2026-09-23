@@ -1,0 +1,112 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Scenery and wildlife are covered for the family, but no hotels are chosen and the flights have no times.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "Focus on scenery, wildlife"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/1/name",
+     "quote": "Hotel in Kochi"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/0/note",
+     "quote": "actual time TBC"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Eravikulam, Mattancherry and an Alleppey houseboat are specific to Kerala.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/name",
+     "quote": "Eravikulam National Park"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "An overnight houseboat is a trip-defining moment for children.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/2/name",
+     "quote": "Alleppey Houseboat"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Day 3 returns to the Kochi hotel at 15:30 after reaching Munnar, and day 7 lists the Kochi market at 13:00 before a drive that starts at 10:00.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/3/name",
+     "quote": "Hotel in Kochi"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/2/time",
+     "quote": "13:00"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/3/time",
+     "quote": "10:00"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 1,
+   "rationale": "No meal is named for a family with a 4-year-old; only 'Lunch nearby' appears in a note.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/note",
+     "quote": "Lunch nearby"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Afternoons are light, but no rest is deliberately placed for young children.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/summary",
+     "quote": "relax and explore"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Kochi Local Market recurs, plausibly for shopping.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/2/name",
+     "quote": "Kochi Local Market"
+    }
+   ]
+  }
+ ]
+}

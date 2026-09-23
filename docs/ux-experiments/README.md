@@ -143,6 +143,19 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Honest Gaps Experiment (2026-09-23)
+
+The honest gaps lab is available at
+`http://127.0.0.1:5175/lab-32-honest-gaps.html`. It follows the 2026-09-23 offline
+evaluation (owner `/evals` console): every judged corpus trip still held placeholder
+hotels, meals or journeys that production draws exactly like chosen places, and 75 of
+178 corpus trips hold 544 of them. Using the real corpus trip `goa-relaxed` unchanged, it
+compares where those open decisions gather — a decision inbox above the days, inline
+slots inside each day, a readiness checklist in Details, or an Assistant follow-up — and
+how each closes in one tap, with undecided places never pinned on the map. A ranked list
+of six further improvements from the same review closes the page. No production code is
+changed by the Lab. See [`HONEST_GAPS.md`](HONEST_GAPS.md).
+
 ## Open Itinerary Pane Polish Experiment (2026-09-14)
 
 The itinerary pane polish lab is available at

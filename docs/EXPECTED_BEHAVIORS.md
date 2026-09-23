@@ -588,6 +588,29 @@ keys, secrets, connection strings, and transcript content are never included.
 - [`frontend/src/analytics.test.ts`](../frontend/src/analytics.test.ts)
 - [`frontend/src/ops/OpsDashboard.test.tsx`](../frontend/src/ops/OpsDashboard.test.tsx)
 
+### EB-OPS-003 - Review offline trip evaluations without spending on providers
+
+**Trigger:** The verified owner opens `/evals` directly or from the Evals link in the
+Operations header, then selects Findings, LLM judge, Deterministic audit or Efficiency.
+
+**Expected:** The page reads one committed report produced by
+`scripts/dev/owner_evals.py` and never plans a trip or calls Google, Azure or any other
+provider. Findings list ranked business-logic defects with evidence, impact, proposed
+fix and prevalence. LLM judge shows every judged corpus trip against rubric
+`itinerary-v1` as a score matrix, lowest overall first, and a selected row reveals the
+original request plus each dimension's rationale and cited evidence; every citation
+passed `evals.judge.validate` when the report was built. Deterministic audit shows
+whole-corpus business-logic probes, the place-resolution identity rate, and the audit's
+rules and largest finding groups when an audit was included. Anyone other than the
+owner receives the same 404 as Operations, and the route is absent from the OpenAPI
+schema. A missing or unreadable report renders empty sections, not an error.
+
+**Executable proof:**
+
+- [`tests/test_ops_dashboard.py`](../tests/test_ops_dashboard.py)
+- [`tests/test_eval_probes.py`](../tests/test_eval_probes.py)
+- [`frontend/src/ops/EvalsDashboard.test.tsx`](../frontend/src/ops/EvalsDashboard.test.tsx)
+
 ### EB-FEEDBACK-001 - Record lightweight trip feedback
 
 **Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,

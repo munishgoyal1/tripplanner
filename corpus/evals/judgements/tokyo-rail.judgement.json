@@ -1,0 +1,116 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Tokyo and Kyoto are covered by Shinkansen as requested, with 3-star-plus hotels selected.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "covering Tokyo and Kyoto"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/0/name",
+     "quote": "Shinkansen: Tokyo to Kyoto"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Senso-ji, Fushimi Inari and Arashiyama are specific, though no cherry-blossom viewing is planned in early April.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/1/name",
+     "quote": "Fushimi Inari Taisha"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/1/name",
+     "quote": "Arashiyama Bamboo Grove"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Fushimi Inari and the bamboo grove are genuine signature moments.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/1/name",
+     "quote": "Fushimi Inari Taisha"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 3,
+   "rationale": "The move to Kyoto lists the Tokyo checkout at 12:10, after the 09:00 train has left.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/1/time",
+     "quote": "12:10"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/0/time",
+     "quote": "09:00"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Dinners are named but lean on chains (Uobei, Ichiran), and most days have no lunch.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/4/name",
+     "quote": "Uobei Shibuya"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/4/name",
+     "quote": "Ichiran Ramen Shibuya"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 3,
+   "rationale": "An arrival-day rest follows the red-eye, but no other downtime is placed.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/1/note",
+     "quote": "Check-in and rest"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Senso-ji at 09:00 and Asakusa at 14:00 are the same temple district visited twice with the Skytree in between.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/1/name",
+     "quote": "Senso-ji Temple"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/name",
+     "quote": "Asakusa"
+    }
+   ]
+  }
+ ]
+}

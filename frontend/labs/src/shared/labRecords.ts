@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Star, UsersRound, Workflow } from "lucide-react";
+import { BookOpen, CircleDashed, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Star, UsersRound, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 31;
+export const LAST_ASSIGNED_LAB_NUMBER = 32;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 32,
+    id: "honest-gaps",
+    title: "Honest gaps: show what the plan has not decided",
+    category: "Plan trust and completeness",
+    description: "Every judged corpus trip still carried placeholder hotels, meals or journeys that read like real stops. Four ways to show those open decisions, the fares that cannot be booked and the facts that disagree, and to resolve each in one tap, followed by a ranked list of further UX improvements from the same review.",
+    createdAt: "2026-09-23",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-09-23",
+    decision: "Open · Recommended starting point: A · Decision inbox",
+    href: "./lab-32-honest-gaps.html",
+    icon: CircleDashed,
+  },
   {
     labNumber: 31,
     id: "itinerary-pane-polish",

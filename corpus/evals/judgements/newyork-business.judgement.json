@@ -1,0 +1,120 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Meetings are blocked 09:00 for 300 minutes on the three middle days as asked, but no flight from Delhi is planned and the hotel is never chosen.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "meetings 9am to 2pm on the middle three days"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/1/name",
+     "quote": "Meetings (User's location)"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/0/name",
+     "quote": "Hotel (TBD)"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Afternoons use recognisably New York places: Central Park, the Met, the 9/11 Memorial and Balthazar.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/2/name",
+     "quote": "The Metropolitan Museum of Art"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "9/11 Memorial & Museum"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Statue of Liberty and a Broadway evening are the right signature moments, but the show is still TBD.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/1/name",
+     "quote": "Statue of Liberty Ferry"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/3/name",
+     "quote": "Broadway Show (TBD)"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Work days progress sensibly, but the last day departs for the airport at 09:00 and then lists the hotel at 11:00, and arrival day has no flight.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/0/name",
+     "quote": "Depart for airport"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/1/time",
+     "quote": "11:00"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Named dinners are well chosen, but there are no lunches on meeting days and none at all on arrival or the free day.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/3/name",
+     "quote": "Dinner at Carmine's Times Square"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/4/name",
+     "quote": "Dinner at Balthazar"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Evenings after meetings are left light, which suits a work trip, but no rest is explicitly scheduled.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/summary",
+     "quote": "evening at leisure"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "No sight repeats; only the placeholder hotel recurs.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/1/name",
+     "quote": "Explore Times Square"
+    }
+   ]
+  }
+ ]
+}

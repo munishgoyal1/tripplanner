@@ -45,7 +45,7 @@ function acquisitionSource(): "direct" | "search" | "social" | "referral" {
 }
 
 function pageCategory(): "welcome" | "planner" | "operations" | "other" {
-  if (window.location.pathname === "/operations") return "operations";
+  if (window.location.pathname === "/operations" || window.location.pathname === "/evals") return "operations";
   if (window.location.pathname.startsWith("/planner")) return "planner";
   if (window.location.pathname === "/" || window.location.pathname.startsWith("/welcome")) return "welcome";
   return "other";

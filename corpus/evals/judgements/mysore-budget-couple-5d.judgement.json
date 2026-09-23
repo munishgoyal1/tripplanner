@@ -1,0 +1,121 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 3,
+   "rationale": "The budget ceiling and train-or-car preference are honoured, but day 6 puts the couple back at the Mysore hotel after they have driven home.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "Keep the trip under INR 80000"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/3/name",
+     "quote": "Drive: Mysore to Bangalore"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/0/note",
+     "quote": "Relax or check-out"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "scored",
+   "score": 4,
+   "rationale": "The INR 62,500 total fits the 80,000 ceiling, with a per-night hotel price; meals, transport and misc are unsourced estimates.",
+   "evidence": [
+    {
+     "path": "/plan/total_cost",
+     "quote": "62500"
+    },
+    {
+     "path": "/plan/selected_hotels/0/price_per_night",
+     "quote": "6500"
+    }
+   ]
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "The palace, Chamundi Hill, Srirangapatna and Devaraja Market are specific to Mysore.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "Devaraja Market"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Brindavan Gardens' fountain show is the one signature evening.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/summary",
+     "quote": "musical fountain show"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 2,
+   "rationale": "Day 3 lists the drive before 'Start from hotel', and day 6 invents a buffer day at the hotel after departure.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/note",
+     "quote": "Start from hotel"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/title",
+     "quote": "Buffer/Return"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Lunches are named, but three dinners are just 'Hotel Restaurant'.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/5/name",
+     "quote": "Hotel Restaurant"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/3/name",
+     "quote": "The Old House"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 3,
+   "rationale": "Day 4 ends with evening leisure; nothing else is deliberate.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/summary",
+     "quote": "evening leisure"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 4,
+   "rationale": "No accidental repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/1/name",
+     "quote": "Railway Museum Mysore"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Mobility needs are respected throughout with flat or step-free choices and assistance on flights. The flight is a synthetic 'Duffel Airways' test offer.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "cannot manage long walks or stairs"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/note",
+     "quote": "accessible boardwalk"
+    },
+    {
+     "path": "/plan/selected_flights/0/airline",
+     "quote": "Duffel Airways"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 5,
+   "rationale": "Table Mountain cableway, Boulders penguins and the Winelands are unmistakably Cape Town.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/stops/2/name",
+     "quote": "Boulders Beach"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Penguins at Boulders and the Table Mountain cableway are strong moments.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/name",
+     "quote": "Table Mountain Cableway"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Themes progress well, but a 10:30 brunch before a 12:23 international flight leaves too little time.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/1/time",
+     "quote": "10:30"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/2/time",
+     "quote": "12:23"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 5,
+   "rationale": "Every day has a named, accessible, local meal.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/stops/2/name",
+     "quote": "The Pot Luck Club"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/stops/1/name",
+     "quote": "Hemelhuijs"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Hotel rest after each outing is deliberate for this traveller.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/5/note",
+     "quote": "Return to hotel, rest"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 5,
+   "rationale": "No repeats.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/1/name",
+     "quote": "Robben Island Museum"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,108 @@
+{
+ "rubric_version": "itinerary-v1",
+ "assessments": [
+  {
+   "dimension": "scenario_preference_fidelity",
+   "status": "scored",
+   "score": 2,
+   "rationale": "The plan is romantic and private, but it ignores the explicit ask to verify entry requirements and advisories, and plans no flights.",
+   "evidence": [
+    {
+     "path": "/request",
+     "quote": "Verify current official entry requirements"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/6/summary",
+     "quote": "transfer to airport for flight home"
+    }
+   ]
+  },
+  {
+   "dimension": "budget_evidence_completeness",
+   "status": "not_applicable",
+   "score": null,
+   "rationale": "The request states no budget or spending ceiling, so budget evidence is not assessed.",
+   "evidence": []
+  },
+  {
+   "dimension": "destination_specificity",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Tegallalang, Tanah Lot and Nusa Penida are specific to Bali.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/1/name",
+     "quote": "Tegallalang Rice Terraces"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/1/name",
+     "quote": "Tanah Lot Temple"
+    }
+   ]
+  },
+  {
+   "dimension": "memorable_moments",
+   "status": "scored",
+   "score": 4,
+   "rationale": "A private Nusa Penida day is a clear special experience, as requested.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/4/stops/1/name",
+     "quote": "Private Tour: Nusa Penida"
+    }
+   ]
+  },
+  {
+   "dimension": "narrative_coherence",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Days alternate activity and rest coherently, but day 1 has no arrival and the last day has no departure leg.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/0/summary",
+     "quote": "Arrive in Bali"
+    }
+   ]
+  },
+  {
+   "dimension": "meal_quality",
+   "status": "scored",
+   "score": 4,
+   "rationale": "Named, varied, romantic dinners.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/5/stops/2/name",
+     "quote": "The Edge Bali"
+    },
+    {
+     "path": "/plan/day_wise_itinerary/2/stops/3/name",
+     "quote": "Swept Away Restaurant"
+    }
+   ]
+  },
+  {
+   "dimension": "intentional_free_time",
+   "status": "scored",
+   "score": 5,
+   "rationale": "Day 4 is explicitly a downtime day, matching a honeymoon.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/3/title",
+     "quote": "Downtime & Cooking Class"
+    }
+   ]
+  },
+  {
+   "dimension": "repetition",
+   "status": "scored",
+   "score": 5,
+   "rationale": "No repeats beyond the villa base.",
+   "evidence": [
+    {
+     "path": "/plan/day_wise_itinerary/1/stops/1/name",
+     "quote": "Seminyak Beach"
+    }
+   ]
+  }
+ ]
+}
