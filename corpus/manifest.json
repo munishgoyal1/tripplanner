@@ -10,7 +10,13 @@
       "spent_inr": 38.0,
       "seconds": 187.0,
       "user_id": "corpus-goa-relaxed",
-      "at": "2026-08-15T13:43:10.503219+00:00"
+      "at": "2026-08-15T13:43:10.503219+00:00",
+      "request": "Plan a relaxed 4 day trip to Goa from Bangalore for 2 adults, 10 to 14 March 2027. We want a slow pace, beaches and good food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "short domestic beach, relaxed pacing"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "goa-see-it-all",
@@ -21,7 +27,13 @@
       "spent_inr": 43.0,
       "seconds": 264.7,
       "user_id": "corpus-goa-see-it-all",
-      "at": "2026-08-15T13:47:35.321557+00:00"
+      "at": "2026-08-15T13:47:35.321557+00:00",
+      "request": "Plan a packed 4 day Goa trip from Bangalore for 2 adults, 10 to 14 March 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "same destination, opposite pacing"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "paris-longhaul",
@@ -32,7 +44,13 @@
       "spent_inr": 43.82,
       "seconds": 280.8,
       "user_id": "corpus-paris-longhaul",
-      "at": "2026-08-15T13:52:16.262765+00:00"
+      "at": "2026-08-15T13:52:16.262765+00:00",
+      "request": "Plan a 7 day trip to Paris from Bangalore for 2 adults, 5 to 12 April 2027, flying economy. Include the flights and a central hotel.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "international long haul with a connection"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tokyo-rail",
@@ -43,7 +61,13 @@
       "spent_inr": 39.08,
       "seconds": 232.6,
       "user_id": "corpus-tokyo-rail",
-      "at": "2026-08-15T13:56:09.013683+00:00"
+      "at": "2026-08-15T13:56:09.013683+00:00",
+      "request": "Plan a 6 day trip to Japan from Delhi for 2 adults, 3 to 9 April 2027, covering Tokyo and Kyoto. We are happy to use trains between cities.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "destination where rail should beat driving"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rajasthan-multicity",
@@ -54,7 +78,13 @@
       "spent_inr": 41.44,
       "seconds": 246.9,
       "user_id": "corpus-rajasthan-multicity",
-      "at": "2026-08-15T14:00:15.989364+00:00"
+      "at": "2026-08-15T14:00:15.989364+00:00",
+      "request": "Plan an 8 day Rajasthan trip from Mumbai for 2 adults, 2 to 10 February 2027, covering Jaipur, Jodhpur and Udaipur by road.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "regional multi-city circuit by road"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "kerala-family-kids",
@@ -65,7 +95,13 @@
       "spent_inr": 27.0,
       "seconds": 181.0,
       "user_id": "corpus-kerala-family-kids",
-      "at": "2026-08-15T14:03:17.063501+00:00"
+      "at": "2026-08-15T14:03:17.063501+00:00",
+      "request": "Plan a 6 day Kerala trip from Chennai for 2 adults and 2 children aged 4 and 7, 12 to 18 December 2026. Keep travel days short and include a houseboat.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "family with young children"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "ladakh-altitude",
@@ -76,7 +112,13 @@
       "spent_inr": 39.23,
       "seconds": 255.0,
       "user_id": "corpus-ladakh-altitude",
-      "at": "2026-08-15T14:12:04.123903+00:00"
+      "at": "2026-08-15T14:12:04.123903+00:00",
+      "request": "Plan a 7 day Leh Ladakh trip from Delhi for 2 adults, 1 to 8 July 2027, including acclimatisation days.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "altitude and acclimatisation constraints"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "dubai-visa",
@@ -87,7 +129,13 @@
       "spent_inr": 38.25,
       "seconds": 272.5,
       "user_id": "corpus-dubai-visa",
-      "at": "2026-08-15T14:16:36.749387+00:00"
+      "at": "2026-08-15T14:16:36.749387+00:00",
+      "request": "Plan a 4 day Dubai trip from Hyderabad for 2 adults on Indian passports, 20 to 24 November 2026, mid-range budget.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "visa-required short international"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "andaman-ferry",
@@ -98,7 +146,13 @@
       "spent_inr": 40.72,
       "seconds": 260.8,
       "user_id": "corpus-andaman-ferry",
-      "at": "2026-08-15T14:20:57.691017+00:00"
+      "at": "2026-08-15T14:20:57.691017+00:00",
+      "request": "Plan a 6 day Andaman trip from Kolkata for 2 adults, 8 to 14 January 2027, covering Port Blair and Havelock.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "island hopping where the leg is a ferry"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "varanasi-pilgrimage",
@@ -109,7 +163,13 @@
       "spent_inr": 39.23,
       "seconds": 224.1,
       "user_id": "corpus-varanasi-pilgrimage",
-      "at": "2026-08-15T14:24:41.910876+00:00"
+      "at": "2026-08-15T14:24:41.910876+00:00",
+      "request": "Plan a 5 day Varanasi and Ayodhya pilgrimage from Pune for 2 adults, 3 to 8 February 2027.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "religious circuit across nearby cities"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "coorg-monsoon",
@@ -120,7 +180,13 @@
       "spent_inr": 37.56,
       "seconds": 244.7,
       "user_id": "corpus-coorg-monsoon",
-      "at": "2026-08-15T14:28:46.677191+00:00"
+      "at": "2026-08-15T14:28:46.677191+00:00",
+      "request": "Plan a 4 day Coorg trip from Bangalore for 2 adults, 15 to 19 July 2027, during the monsoon.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "monsoon season, weather-sensitive"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "singapore-budget",
@@ -131,7 +197,13 @@
       "spent_inr": 34.42,
       "seconds": 240.3,
       "user_id": "corpus-singapore-budget",
-      "at": "2026-08-15T14:32:47.064904+00:00"
+      "at": "2026-08-15T14:32:47.064904+00:00",
+      "request": "Plan a 5 day Singapore trip from Chennai for 2 adults, 4 to 9 June 2027, on a tight budget of INR 90000 total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Stay within the INR 90,000 whole-trip ceiling."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "swiss-luxury",
@@ -142,7 +214,13 @@
       "spent_inr": 36.52,
       "seconds": 227.4,
       "user_id": "corpus-swiss-luxury",
-      "at": "2026-08-15T14:36:34.629688+00:00"
+      "at": "2026-08-15T14:36:34.629688+00:00",
+      "request": "Plan an 8 day Switzerland trip from Mumbai for 2 adults, 10 to 18 September 2027, premium hotels, scenic train journeys.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "high budget, scenic rail"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "manali-roadtrip",
@@ -153,7 +231,13 @@
       "spent_inr": 39.14,
       "seconds": 251.8,
       "user_id": "corpus-manali-roadtrip",
-      "at": "2026-08-15T14:40:46.558698+00:00"
+      "at": "2026-08-15T14:40:46.558698+00:00",
+      "request": "Plan a 6 day Manali road trip driving from Delhi for 4 adults, 1 to 7 October 2027, with stops on the way.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "self-drive road trip with stops en route"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bali-honeymoon",
@@ -164,7 +248,13 @@
       "spent_inr": 40.46,
       "seconds": 245.3,
       "user_id": "corpus-bali-honeymoon",
-      "at": "2026-08-15T14:44:51.925464+00:00"
+      "at": "2026-08-15T14:44:51.925464+00:00",
+      "request": "Plan a 7 day Bali honeymoon from Bangalore for 2 adults, 12 to 19 November 2027, romantic hotels and sunsets.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "couple, single destination, international"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "meghalaya-offbeat",
@@ -175,7 +265,13 @@
       "spent_inr": 27.79,
       "seconds": 173.4,
       "user_id": "corpus-meghalaya-offbeat",
-      "at": "2026-08-15T14:47:45.458668+00:00"
+      "at": "2026-08-15T14:47:45.458668+00:00",
+      "request": "Plan a 6 day Meghalaya trip from Guwahati for 2 adults, 2 to 8 November 2027, covering Shillong and Cherrapunji.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "offbeat destination, sparse provider data"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "weekend-pondicherry",
@@ -186,7 +282,13 @@
       "spent_inr": 23.62,
       "seconds": 165.3,
       "user_id": "corpus-weekend-pondicherry",
-      "at": "2026-08-15T14:50:30.869911+00:00"
+      "at": "2026-08-15T14:50:30.869911+00:00",
+      "request": "Plan a 2 day Pondicherry weekend from Chennai for 2 adults, 6 to 8 March 2027.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "very short trip, two days only"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "srilanka-multicountry",
@@ -197,7 +299,13 @@
       "spent_inr": 52.19,
       "seconds": 307.7,
       "user_id": "corpus-srilanka-multicountry",
-      "at": "2026-08-15T14:55:38.746769+00:00"
+      "at": "2026-08-15T14:55:38.746769+00:00",
+      "request": "Plan a 9 day Sri Lanka trip from Bangalore for 2 adults, 4 to 13 August 2027, covering Colombo, Kandy and Galle.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "international multi-city with internal flights"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vegetarian-jain-gujarat",
@@ -208,7 +316,13 @@
       "spent_inr": 36.71,
       "seconds": 231.2,
       "user_id": "corpus-vegetarian-jain-gujarat",
-      "at": "2026-08-15T15:02:32.615913+00:00"
+      "at": "2026-08-15T15:02:32.615913+00:00",
+      "request": "Plan a 5 day Gujarat trip from Mumbai for 2 adults, 7 to 12 December 2026, covering Ahmedabad and Kutch. We eat strictly Jain food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "strict dietary constraint"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "pet-friendly-lonavala",
@@ -219,7 +333,13 @@
       "spent_inr": 37.75,
       "seconds": 276.4,
       "user_id": "corpus-pet-friendly-lonavala",
-      "at": "2026-08-15T15:07:09.087649+00:00"
+      "at": "2026-08-15T15:07:09.087649+00:00",
+      "request": "Plan a 3 day Lonavala trip from Mumbai for 2 adults with our dog, 20 to 23 January 2027. Pet friendly stays only.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "travelling with a pet"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "solo-hampi",
@@ -230,7 +350,13 @@
       "spent_inr": 37.33,
       "seconds": 247.2,
       "user_id": "corpus-solo-hampi",
-      "at": "2026-08-15T15:11:16.389926+00:00"
+      "at": "2026-08-15T15:11:16.389926+00:00",
+      "request": "Plan a 4 day solo Hampi trip from Bangalore, 5 to 9 January 2027, on a modest budget.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "solo traveller, heritage"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "newyork-business",
@@ -241,7 +367,13 @@
       "spent_inr": 40.89,
       "seconds": 274.3,
       "user_id": "corpus-newyork-business",
-      "at": "2026-08-15T15:15:50.835076+00:00"
+      "at": "2026-08-15T15:15:50.835076+00:00",
+      "request": "Plan a 5 day New York trip from Delhi for 1 adult, 9 to 14 October 2027. I have meetings 9am to 2pm on the middle three days.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "long haul with fixed working hours"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "shimla-seniors",
@@ -256,7 +388,13 @@
       "emphasis": "",
       "party": "",
       "signature": "|mobility-constrained travellers||0",
-      "at": "2026-08-16T05:22:25.028274+00:00"
+      "at": "2026-08-16T05:22:25.028274+00:00",
+      "request": "Plan a 5 day Shimla trip from Delhi for 2 adults and my parents aged 72 and 68, 5 to 10 May 2027. My father uses a walking stick, so avoid long walks.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "mobility-constrained travellers"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "destination-only-udaipur",
@@ -271,7 +409,13 @@
       "emphasis": "",
       "party": "",
       "signature": "|traveller arranges their own arrival||0",
-      "at": "2026-08-16T10:18:04.035491+00:00"
+      "at": "2026-08-16T10:18:04.035491+00:00",
+      "request": "Plan a 3 day Udaipur itinerary for 2 adults, 14 to 17 February 2027. I will arrange my own travel to Udaipur, just plan what to do there.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "traveller arranges their own arrival"
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-premium-friends-3d",
@@ -286,7 +430,16 @@
       "emphasis": "premium",
       "party": "friends",
       "signature": "istanbul|premium|friends|3",
-      "at": "2026-08-16T13:50:12.708757+00:00"
+      "at": "2026-08-16T13:50:12.708757+00:00",
+      "request": "Plan a 3 day Istanbul trip from Delhi for 4 adults, 3 to 6 May 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 4 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-outdoors-friends-3d",
@@ -301,7 +454,16 @@
       "emphasis": "outdoors",
       "party": "friends",
       "signature": "tirupati|outdoors|friends|3",
-      "at": "2026-08-16T13:53:41.747567+00:00"
+      "at": "2026-08-16T13:53:41.747567+00:00",
+      "request": "Plan a 3 day Tirupati trip from Hyderabad for 4 adults, 1 to 4 August 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mysore-food-young-family-5d",
@@ -316,7 +478,16 @@
       "emphasis": "food",
       "party": "young-family",
       "signature": "mysore|food|young-family|5",
-      "at": "2026-08-16T14:33:57.784127+00:00"
+      "at": "2026-08-16T14:33:57.784127+00:00",
+      "request": "Plan a 5 day Mysore trip from Bangalore for 2 adults and 2 children aged 6 and 9, 10 to 15 September 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We care most about local food.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "chikmagalur-slow-solo-3d",
@@ -331,7 +502,16 @@
       "emphasis": "slow",
       "party": "solo",
       "signature": "chikmagalur|slow|solo|3",
-      "at": "2026-08-16T14:39:04.726994+00:00"
+      "at": "2026-08-16T14:39:04.726994+00:00",
+      "request": "Plan a 3 day Chikmagalur trip from Bangalore for 1 adult, 15 to 18 December 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "nepal-food-three-generation-3d",
@@ -346,7 +526,16 @@
       "emphasis": "food",
       "party": "three-generation",
       "signature": "nepal|food|three-generation|3",
-      "at": "2026-08-16T14:43:14.118612+00:00"
+      "at": "2026-08-16T14:43:14.118612+00:00",
+      "request": "Plan a 3 day Nepal covering Kathmandu and Pokhara trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 4 to 7 March 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Nepal covering Kathmandu and Pokhara as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We care most about local food.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "ooty-outdoors-couple-5d",
@@ -361,7 +550,16 @@
       "emphasis": "outdoors",
       "party": "couple",
       "signature": "ooty|outdoors|couple|5",
-      "at": "2026-08-16T14:48:13.689492+00:00"
+      "at": "2026-08-16T14:48:13.689492+00:00",
+      "request": "Plan a 5 day Ooty trip from Coimbatore for 2 adults, 18 to 23 April 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Ooty as the destination scope.",
+        "Plan for 2 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "malaysia-accessible-three-generation-5d",
@@ -376,7 +574,16 @@
       "emphasis": "accessible",
       "party": "three-generation",
       "signature": "malaysia|accessible|three-generation|5",
-      "at": "2026-08-16T14:51:52.610544+00:00"
+      "at": "2026-08-16T14:51:52.610544+00:00",
+      "request": "Plan a 5 day Malaysia covering Kuala Lumpur and Penang trip from Chennai for 4 adults and 1 child aged 8, including grandparents, 4 to 9 July 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Malaysia covering Kuala Lumpur and Penang as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "kaziranga-food-friends-7d",
@@ -391,7 +598,16 @@
       "emphasis": "food",
       "party": "friends",
       "signature": "kaziranga|food|friends|7",
-      "at": "2026-08-16T14:58:47.152828+00:00"
+      "at": "2026-08-16T14:58:47.152828+00:00",
+      "request": "Plan a 7 day Kaziranga trip from Guwahati for 4 adults, 11 to 18 February 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Kaziranga as the destination scope.",
+        "Plan for 4 adults.",
+        "We care most about local food.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bhutan-outdoors-solo-3d",
@@ -406,7 +622,16 @@
       "emphasis": "outdoors",
       "party": "solo",
       "signature": "bhutan|outdoors|solo|3",
-      "at": "2026-08-16T15:02:53.456633+00:00"
+      "at": "2026-08-16T15:02:53.456633+00:00",
+      "request": "Plan a 3 day Bhutan covering Thimphu and Paro trip from Delhi for 1 adult, 16 to 19 October 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Bhutan covering Thimphu and Paro as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rome-food-friends-7d",
@@ -421,7 +646,16 @@
       "emphasis": "food",
       "party": "friends",
       "signature": "rome|food|friends|7",
-      "at": "2026-08-16T15:05:20.510108+00:00"
+      "at": "2026-08-16T15:05:20.510108+00:00",
+      "request": "Plan a 7 day Rome and Florence trip from Mumbai for 4 adults, 7 to 14 September 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rome and Florence as the destination scope.",
+        "Plan for 4 adults.",
+        "We care most about local food.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "amritsar-premium-couple-5d",
@@ -436,7 +670,16 @@
       "emphasis": "premium",
       "party": "couple",
       "signature": "amritsar|premium|couple|5",
-      "at": "2026-08-16T15:10:09.759533+00:00"
+      "at": "2026-08-16T15:10:09.759533+00:00",
+      "request": "Plan a 5 day Amritsar trip from Delhi for 2 adults, 2 to 7 November 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Amritsar as the destination scope.",
+        "Plan for 2 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "thailand-outdoors-solo-7d",
@@ -451,7 +694,16 @@
       "emphasis": "outdoors",
       "party": "solo",
       "signature": "thailand|outdoors|solo|7",
-      "at": "2026-08-16T15:13:36.579679+00:00"
+      "at": "2026-08-16T15:13:36.579679+00:00",
+      "request": "Plan a 7 day Thailand covering Bangkok and Krabi trip from Chennai for 1 adult, 18 to 25 January 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Thailand covering Bangkok and Krabi as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gangtok-premium-young-family-3d",
@@ -466,7 +718,16 @@
       "emphasis": "premium",
       "party": "young-family",
       "signature": "gangtok|premium|young-family|3",
-      "at": "2026-08-16T15:20:35.994222+00:00"
+      "at": "2026-08-16T15:20:35.994222+00:00",
+      "request": "Plan a 3 day Gangtok and north Sikkim trip from Kolkata for 2 adults and 2 children aged 6 and 9, 4 to 7 October 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gangtok and north Sikkim as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "capetown-premium-friends-3d",
@@ -481,7 +742,16 @@
       "emphasis": "premium",
       "party": "friends",
       "signature": "capetown|premium|friends|3",
-      "at": "2026-08-16T15:23:42.549294+00:00"
+      "at": "2026-08-16T15:23:42.549294+00:00",
+      "request": "Plan a 3 day Cape Town trip from Mumbai for 4 adults, 9 to 12 November 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Cape Town as the destination scope.",
+        "Plan for 4 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "darjeeling-packed-solo-5d",
@@ -496,7 +766,16 @@
       "emphasis": "packed",
       "party": "solo",
       "signature": "darjeeling|packed|solo|5",
-      "at": "2026-08-16T15:25:21.612621+00:00"
+      "at": "2026-08-16T15:25:21.612621+00:00",
+      "request": "Plan a 5 day Darjeeling trip from Kolkata for 1 adult, 9 to 14 April 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Darjeeling as the destination scope.",
+        "Plan for 1 adult.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gokarna-slow-friends-7d",
@@ -511,7 +790,16 @@
       "emphasis": "slow",
       "party": "friends",
       "signature": "gokarna|slow|friends|7",
-      "at": "2026-08-17T13:09:39.826227+00:00"
+      "at": "2026-08-17T13:09:39.826227+00:00",
+      "request": "Plan a 7 day Gokarna trip from Bangalore for 4 adults, 14 to 21 January 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gokarna as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "spiti-accessible-three-generation-7d",
@@ -526,7 +814,16 @@
       "emphasis": "accessible",
       "party": "three-generation",
       "signature": "spiti|accessible|three-generation|7",
-      "at": "2026-08-17T13:12:08.432160+00:00"
+      "at": "2026-08-17T13:12:08.432160+00:00",
+      "request": "Plan a 7 day Spiti Valley trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 18 to 25 June 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Spiti Valley as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "seoul-premium-couple-7d",
@@ -541,7 +838,16 @@
       "emphasis": "premium",
       "party": "couple",
       "signature": "seoul|premium|couple|7",
-      "at": "2026-08-17T13:16:31.407826+00:00"
+      "at": "2026-08-17T13:16:31.407826+00:00",
+      "request": "Plan a 7 day Seoul trip from Delhi for 2 adults, 5 to 12 April 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Seoul as the destination scope.",
+        "Plan for 2 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "srinagar-food-three-generation-3d",
@@ -556,7 +862,16 @@
       "emphasis": "food",
       "party": "three-generation",
       "signature": "srinagar|food|three-generation|3",
-      "at": "2026-08-17T13:17:51.622961+00:00"
+      "at": "2026-08-17T13:17:51.622961+00:00",
+      "request": "Plan a 3 day Srinagar and Gulmarg trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 4 to 7 May 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Srinagar and Gulmarg as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We care most about local food.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "maldives-accessible-couple-7d",
@@ -571,7 +886,16 @@
       "emphasis": "accessible",
       "party": "couple",
       "signature": "maldives|accessible|couple|7",
-      "at": "2026-08-17T13:23:44.610564+00:00"
+      "at": "2026-08-17T13:23:44.610564+00:00",
+      "request": "Plan a 7 day the Maldives trip from Bangalore for 2 adults, 17 to 24 February 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use the Maldives as the destination scope.",
+        "Plan for 2 adults.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "muscat-budget-friends-7d",
@@ -586,7 +910,16 @@
       "emphasis": "budget",
       "party": "friends",
       "signature": "muscat|budget|friends|7",
-      "at": "2026-08-17T13:29:04.413117+00:00"
+      "at": "2026-08-17T13:29:04.413117+00:00",
+      "request": "Plan a 7 day Muscat trip from Hyderabad for 4 adults, 18 to 25 December 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Muscat as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "mahabalipuram-slow-couple-5d",
@@ -601,7 +934,16 @@
       "emphasis": "slow",
       "party": "couple",
       "signature": "mahabalipuram|slow|couple|5",
-      "at": "2026-08-17T13:33:04.727319+00:00"
+      "at": "2026-08-17T13:33:04.727319+00:00",
+      "request": "Plan a 5 day Mahabalipuram trip from Chennai for 2 adults, 10 to 15 December 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mahabalipuram as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mysore-slow-friends-5d",
@@ -616,7 +958,16 @@
       "emphasis": "slow",
       "party": "friends",
       "signature": "mysore|slow|friends|5",
-      "at": "2026-08-17T13:38:30.951606+00:00"
+      "at": "2026-08-17T13:38:30.951606+00:00",
+      "request": "Plan a 5 day Mysore trip from Bangalore for 4 adults, 4 to 9 September 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "chikmagalur-premium-young-family-3d",
@@ -631,7 +982,16 @@
       "emphasis": "premium",
       "party": "young-family",
       "signature": "chikmagalur|premium|young-family|3",
-      "at": "2026-08-17T13:42:31.612707+00:00"
+      "at": "2026-08-17T13:42:31.612707+00:00",
+      "request": "Plan a 3 day Chikmagalur trip from Bangalore for 2 adults and 2 children aged 6 and 9, 15 to 18 December 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-budget-young-family-5d",
@@ -646,7 +1006,16 @@
       "emphasis": "budget",
       "party": "young-family",
       "signature": "istanbul|budget|young-family|5",
-      "at": "2026-08-17T13:47:43.379583+00:00"
+      "at": "2026-08-17T13:47:43.379583+00:00",
+      "request": "Plan a 5 day Istanbul trip from Delhi for 2 adults and 2 children aged 6 and 9, 7 to 12 May 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "ooty-slow-couple-5d",
@@ -661,7 +1030,16 @@
       "emphasis": "slow",
       "party": "couple",
       "signature": "ooty|slow|couple|5",
-      "at": "2026-08-17T13:52:19.349557+00:00"
+      "at": "2026-08-17T13:52:19.349557+00:00",
+      "request": "Plan a 5 day Ooty trip from Coimbatore for 2 adults, 16 to 21 April 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Ooty as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-accessible-couple-7d",
@@ -676,7 +1054,16 @@
       "emphasis": "accessible",
       "party": "couple",
       "signature": "tirupati|accessible|couple|7",
-      "at": "2026-08-17T13:54:57.642327+00:00"
+      "at": "2026-08-17T13:54:57.642327+00:00",
+      "request": "Plan a 7 day Tirupati trip from Hyderabad for 2 adults, 9 to 16 August 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 2 adults.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "malaysia-slow-solo-3d",
@@ -691,7 +1078,16 @@
       "emphasis": "slow",
       "party": "solo",
       "signature": "malaysia|slow|solo|3",
-      "at": "2026-08-17T13:59:16.055586+00:00"
+      "at": "2026-08-17T13:59:16.055586+00:00",
+      "request": "Plan a 3 day Malaysia covering Kuala Lumpur and Penang trip from Chennai for 1 adult, 10 to 13 July 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Malaysia covering Kuala Lumpur and Penang as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rome-accessible-young-family-3d",
@@ -706,7 +1102,16 @@
       "emphasis": "accessible",
       "party": "young-family",
       "signature": "rome|accessible|young-family|3",
-      "at": "2026-08-17T14:02:39.200532+00:00"
+      "at": "2026-08-17T14:02:39.200532+00:00",
+      "request": "Plan a 3 day Rome and Florence trip from Mumbai for 2 adults and 2 children aged 6 and 9, 11 to 14 September 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rome and Florence as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "nepal-slow-three-generation-7d",
@@ -721,7 +1126,16 @@
       "emphasis": "slow",
       "party": "three-generation",
       "signature": "nepal|slow|three-generation|7",
-      "at": "2026-08-17T14:03:14.137123+00:00"
+      "at": "2026-08-17T14:03:14.137123+00:00",
+      "request": "Plan a 7 day Nepal covering Kathmandu and Pokhara trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 8 to 15 March 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Nepal covering Kathmandu and Pokhara as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "kaziranga-premium-three-generation-3d",
@@ -736,7 +1150,16 @@
       "emphasis": "premium",
       "party": "three-generation",
       "signature": "kaziranga|premium|three-generation|3",
-      "at": "2026-08-17T14:09:32.248600+00:00"
+      "at": "2026-08-17T14:09:32.248600+00:00",
+      "request": "Plan a 3 day Kaziranga trip from Guwahati for 4 adults and 1 child aged 8, including grandparents, 13 to 16 February 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Kaziranga as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "amritsar-slow-friends-3d",
@@ -751,7 +1174,16 @@
       "emphasis": "slow",
       "party": "friends",
       "signature": "amritsar|slow|friends|3",
-      "at": "2026-08-17T14:14:26.001455+00:00"
+      "at": "2026-08-17T14:14:26.001455+00:00",
+      "request": "Plan a 3 day Amritsar trip from Delhi for 4 adults, 11 to 14 November 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Amritsar as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "thailand-packed-three-generation-3d",
@@ -766,7 +1198,16 @@
       "emphasis": "packed",
       "party": "three-generation",
       "signature": "thailand|packed|three-generation|3",
-      "at": "2026-08-17T14:20:07.801505+00:00"
+      "at": "2026-08-17T14:20:07.801505+00:00",
+      "request": "Plan a 3 day Thailand covering Bangkok and Krabi trip from Chennai for 4 adults and 1 child aged 8, including grandparents, 13 to 16 January 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Thailand covering Bangkok and Krabi as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gangtok-accessible-young-family-5d",
@@ -781,7 +1222,16 @@
       "emphasis": "accessible",
       "party": "young-family",
       "signature": "gangtok|accessible|young-family|5",
-      "at": "2026-08-17T14:23:09.678519+00:00"
+      "at": "2026-08-17T14:23:09.678519+00:00",
+      "request": "Plan a 5 day Gangtok and north Sikkim trip from Kolkata for 2 adults and 2 children aged 6 and 9, 16 to 21 October 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gangtok and north Sikkim as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "capetown-packed-three-generation-5d",
@@ -796,7 +1246,16 @@
       "emphasis": "packed",
       "party": "three-generation",
       "signature": "capetown|packed|three-generation|5",
-      "at": "2026-08-17T14:28:47.164020+00:00"
+      "at": "2026-08-17T14:28:47.164020+00:00",
+      "request": "Plan a 5 day Cape Town trip from Mumbai for 4 adults and 1 child aged 8, including grandparents, 8 to 13 November 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Cape Town as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "darjeeling-heritage-solo-3d",
@@ -811,7 +1270,16 @@
       "emphasis": "heritage",
       "party": "solo",
       "signature": "darjeeling|heritage|solo|3",
-      "at": "2026-08-17T14:33:37.608482+00:00"
+      "at": "2026-08-17T14:33:37.608482+00:00",
+      "request": "Plan a 3 day Darjeeling trip from Kolkata for 1 adult, 5 to 8 April 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Darjeeling as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vietnam-budget-three-generation-5d",
@@ -826,7 +1294,16 @@
       "emphasis": "budget",
       "party": "three-generation",
       "signature": "vietnam|budget|three-generation|5",
-      "at": "2026-08-17T14:36:43.534319+00:00"
+      "at": "2026-08-17T14:36:43.534319+00:00",
+      "request": "Plan a 5 day Vietnam covering Hanoi and Ha Long Bay trip from Mumbai for 4 adults and 1 child aged 8, including grandparents, 6 to 11 November 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Vietnam covering Hanoi and Ha Long Bay as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "spiti-budget-couple-7d",
@@ -841,7 +1318,16 @@
       "emphasis": "budget",
       "party": "couple",
       "signature": "spiti|budget|couple|7",
-      "at": "2026-08-17T14:38:50.494338+00:00"
+      "at": "2026-08-17T14:38:50.494338+00:00",
+      "request": "Plan a 7 day Spiti Valley trip from Delhi for 2 adults, 4 to 11 June 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Spiti Valley as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "seoul-packed-young-family-5d",
@@ -856,7 +1342,16 @@
       "emphasis": "packed",
       "party": "young-family",
       "signature": "seoul|packed|young-family|5",
-      "at": "2026-08-17T14:44:07.382727+00:00"
+      "at": "2026-08-17T14:44:07.382727+00:00",
+      "request": "Plan a 5 day Seoul trip from Delhi for 2 adults and 2 children aged 6 and 9, 15 to 20 April 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Seoul as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "srinagar-premium-solo-7d",
@@ -871,7 +1366,16 @@
       "emphasis": "premium",
       "party": "solo",
       "signature": "srinagar|premium|solo|7",
-      "at": "2026-08-17T14:49:55.742521+00:00"
+      "at": "2026-08-17T14:49:55.742521+00:00",
+      "request": "Plan a 7 day Srinagar and Gulmarg trip from Delhi for 1 adult, 10 to 17 May 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Srinagar and Gulmarg as the destination scope.",
+        "Plan for 1 adult.",
+        "We want premium hotels throughout.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gokarna-heritage-friends-5d",
@@ -886,7 +1390,16 @@
       "emphasis": "heritage",
       "party": "friends",
       "signature": "gokarna|heritage|friends|5",
-      "at": "2026-08-17T14:53:23.758335+00:00"
+      "at": "2026-08-17T14:53:23.758335+00:00",
+      "request": "Plan a 5 day Gokarna trip from Bangalore for 4 adults, 17 to 22 January 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gokarna as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "muscat-heritage-three-generation-5d",
@@ -901,7 +1414,16 @@
       "emphasis": "heritage",
       "party": "three-generation",
       "signature": "muscat|heritage|three-generation|5",
-      "at": "2026-08-17T14:59:12.414569+00:00"
+      "at": "2026-08-17T14:59:12.414569+00:00",
+      "request": "Plan a 5 day Muscat trip from Hyderabad for 4 adults and 1 child aged 8, including grandparents, 11 to 16 December 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Muscat as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rishikesh-budget-friends-5d",
@@ -916,7 +1438,16 @@
       "emphasis": "budget",
       "party": "friends",
       "signature": "rishikesh|budget|friends|5",
-      "at": "2026-08-17T15:02:11.949633+00:00"
+      "at": "2026-08-17T15:02:11.949633+00:00",
+      "request": "Plan a 5 day Rishikesh trip from Delhi for 4 adults, 17 to 22 March 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rishikesh as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "mahabalipuram-accessible-friends-5d",
@@ -931,7 +1462,16 @@
       "emphasis": "accessible",
       "party": "friends",
       "signature": "mahabalipuram|accessible|friends|5",
-      "at": "2026-08-17T15:05:55.139570+00:00"
+      "at": "2026-08-17T15:05:55.139570+00:00",
+      "request": "Plan a 5 day Mahabalipuram trip from Chennai for 4 adults, 7 to 12 December 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mahabalipuram as the destination scope.",
+        "Plan for 4 adults.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bhutan-premium-couple-5d",
@@ -946,7 +1486,16 @@
       "emphasis": "premium",
       "party": "couple",
       "signature": "bhutan|premium|couple|5",
-      "at": "2026-08-18T11:12:37.516761+00:00"
+      "at": "2026-08-18T11:12:37.516761+00:00",
+      "request": "Plan a 5 day Bhutan covering Thimphu and Paro trip from Delhi for 2 adults, 18 to 23 October 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Bhutan covering Thimphu and Paro as the destination scope.",
+        "Plan for 2 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vietnam-food-three-generation-5d",
@@ -961,7 +1510,16 @@
       "emphasis": "food",
       "party": "three-generation",
       "signature": "vietnam|food|three-generation|5",
-      "at": "2026-08-18T11:14:26.988311+00:00"
+      "at": "2026-08-18T11:14:26.988311+00:00",
+      "request": "Plan a 5 day Vietnam covering Hanoi and Ha Long Bay trip from Mumbai for 4 adults and 1 child aged 8, including grandparents, 13 to 18 November 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Vietnam covering Hanoi and Ha Long Bay as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We care most about local food.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rishikesh-food-couple-7d",
@@ -976,7 +1534,16 @@
       "emphasis": "food",
       "party": "couple",
       "signature": "rishikesh|food|couple|7",
-      "at": "2026-08-18T11:19:46.215792+00:00"
+      "at": "2026-08-18T11:19:46.215792+00:00",
+      "request": "Plan a 7 day Rishikesh trip from Delhi for 2 adults, 6 to 13 March 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rishikesh as the destination scope.",
+        "Plan for 2 adults.",
+        "We care most about local food.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "maldives-food-young-family-7d",
@@ -991,7 +1558,16 @@
       "emphasis": "food",
       "party": "young-family",
       "signature": "maldives|food|young-family|7",
-      "at": "2026-08-18T11:20:25.375212+00:00"
+      "at": "2026-08-18T11:20:25.375212+00:00",
+      "request": "Plan a 7 day the Maldives trip from Bangalore for 2 adults and 2 children aged 6 and 9, 4 to 11 February 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use the Maldives as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We care most about local food.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mysore-heritage-couple-7d",
@@ -1006,7 +1582,16 @@
       "emphasis": "heritage",
       "party": "couple",
       "signature": "mysore|heritage|couple|7",
-      "at": "2026-08-18T11:23:35.581291+00:00"
+      "at": "2026-08-18T11:23:35.581291+00:00",
+      "request": "Plan a 7 day Mysore trip from Bangalore for 2 adults, 17 to 24 September 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 2 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "chikmagalur-heritage-young-family-3d",
@@ -1021,7 +1606,16 @@
       "emphasis": "heritage",
       "party": "young-family",
       "signature": "chikmagalur|heritage|young-family|3",
-      "at": "2026-08-18T11:28:16.625972+00:00"
+      "at": "2026-08-18T11:28:16.625972+00:00",
+      "request": "Plan a 3 day Chikmagalur trip from Bangalore for 2 adults and 2 children aged 6 and 9, 13 to 16 December 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-heritage-three-generation-7d",
@@ -1036,7 +1630,16 @@
       "emphasis": "heritage",
       "party": "three-generation",
       "signature": "istanbul|heritage|three-generation|7",
-      "at": "2026-08-18T11:32:40.134371+00:00"
+      "at": "2026-08-18T11:32:40.134371+00:00",
+      "request": "Plan a 7 day Istanbul trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 1 to 8 May 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-heritage-three-generation-7d",
@@ -1051,7 +1654,16 @@
       "emphasis": "heritage",
       "party": "three-generation",
       "signature": "tirupati|heritage|three-generation|7",
-      "at": "2026-08-18T11:36:44.417021+00:00"
+      "at": "2026-08-18T11:36:44.417021+00:00",
+      "request": "Plan a 7 day Tirupati trip from Hyderabad for 4 adults and 1 child aged 8, including grandparents, 7 to 14 August 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "ooty-food-three-generation-3d",
@@ -1066,7 +1678,16 @@
       "emphasis": "food",
       "party": "three-generation",
       "signature": "ooty|food|three-generation|3",
-      "at": "2026-08-18T11:39:50.010633+00:00"
+      "at": "2026-08-18T11:39:50.010633+00:00",
+      "request": "Plan a 3 day Ooty trip from Coimbatore for 4 adults and 1 child aged 8, including grandparents, 18 to 21 April 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Ooty as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We care most about local food.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rome-outdoors-friends-3d",
@@ -1081,7 +1702,16 @@
       "emphasis": "outdoors",
       "party": "friends",
       "signature": "rome|outdoors|friends|3",
-      "at": "2026-08-18T11:46:18.483429+00:00"
+      "at": "2026-08-18T11:46:18.483429+00:00",
+      "request": "Plan a 3 day Rome and Florence trip from Mumbai for 4 adults, 1 to 4 September 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rome and Florence as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "kaziranga-outdoors-friends-3d",
@@ -1096,7 +1726,16 @@
       "emphasis": "outdoors",
       "party": "friends",
       "signature": "kaziranga|outdoors|friends|3",
-      "at": "2026-08-18T11:50:32.526953+00:00"
+      "at": "2026-08-18T11:50:32.526953+00:00",
+      "request": "Plan a 3 day Kaziranga trip from Guwahati for 4 adults, 6 to 9 February 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Kaziranga as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "malaysia-packed-couple-3d",
@@ -1111,7 +1750,16 @@
       "emphasis": "packed",
       "party": "couple",
       "signature": "malaysia|packed|couple|3",
-      "at": "2026-08-18T11:52:12.514371+00:00"
+      "at": "2026-08-18T11:52:12.514371+00:00",
+      "request": "Plan a 3 day Malaysia covering Kuala Lumpur and Penang trip from Chennai for 2 adults, 17 to 20 July 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Malaysia covering Kuala Lumpur and Penang as the destination scope.",
+        "Plan for 2 adults.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "capetown-slow-young-family-5d",
@@ -1126,7 +1774,16 @@
       "emphasis": "slow",
       "party": "young-family",
       "signature": "capetown|slow|young-family|5",
-      "at": "2026-08-18T11:57:11.922744+00:00"
+      "at": "2026-08-18T11:57:11.922744+00:00",
+      "request": "Plan a 5 day Cape Town trip from Mumbai for 2 adults and 2 children aged 6 and 9, 1 to 6 November 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Cape Town as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "amritsar-accessible-couple-5d",
@@ -1141,7 +1798,16 @@
       "emphasis": "accessible",
       "party": "couple",
       "signature": "amritsar|accessible|couple|5",
-      "at": "2026-08-18T12:03:43.437425+00:00"
+      "at": "2026-08-18T12:03:43.437425+00:00",
+      "request": "Plan a 5 day Amritsar trip from Delhi for 2 adults, 13 to 18 November 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Amritsar as the destination scope.",
+        "Plan for 2 adults.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "thailand-premium-three-generation-7d",
@@ -1156,7 +1822,16 @@
       "emphasis": "premium",
       "party": "three-generation",
       "signature": "thailand|premium|three-generation|7",
-      "at": "2026-08-18T12:06:51.366965+00:00"
+      "at": "2026-08-18T12:06:51.366965+00:00",
+      "request": "Plan a 7 day Thailand covering Bangkok and Krabi trip from Chennai for 4 adults and 1 child aged 8, including grandparents, 7 to 14 January 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Thailand covering Bangkok and Krabi as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want premium hotels throughout.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gangtok-budget-couple-3d",
@@ -1171,7 +1846,16 @@
       "emphasis": "budget",
       "party": "couple",
       "signature": "gangtok|budget|couple|3",
-      "at": "2026-08-18T12:10:28.486529+00:00"
+      "at": "2026-08-18T12:10:28.486529+00:00",
+      "request": "Plan a 3 day Gangtok and north Sikkim trip from Kolkata for 2 adults, 16 to 19 October 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gangtok and north Sikkim as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "spiti-food-friends-7d",
@@ -1186,7 +1870,16 @@
       "emphasis": "food",
       "party": "friends",
       "signature": "spiti|food|friends|7",
-      "at": "2026-08-18T12:16:57.959211+00:00"
+      "at": "2026-08-18T12:16:57.959211+00:00",
+      "request": "Plan a 7 day Spiti Valley trip from Delhi for 4 adults, 1 to 8 June 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Spiti Valley as the destination scope.",
+        "Plan for 4 adults.",
+        "We care most about local food.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "darjeeling-food-solo-5d",
@@ -1201,7 +1894,16 @@
       "emphasis": "food",
       "party": "solo",
       "signature": "darjeeling|food|solo|5",
-      "at": "2026-08-18T12:19:59.205676+00:00"
+      "at": "2026-08-18T12:19:59.205676+00:00",
+      "request": "Plan a 5 day Darjeeling trip from Kolkata for 1 adult, 10 to 15 April 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Darjeeling as the destination scope.",
+        "Plan for 1 adult.",
+        "We care most about local food.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "seoul-slow-three-generation-7d",
@@ -1216,7 +1918,16 @@
       "emphasis": "slow",
       "party": "three-generation",
       "signature": "seoul|slow|three-generation|7",
-      "at": "2026-08-18T12:24:22.956523+00:00"
+      "at": "2026-08-18T12:24:22.956523+00:00",
+      "request": "Plan a 7 day Seoul trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 18 to 25 April 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Seoul as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gokarna-budget-young-family-3d",
@@ -1231,7 +1942,16 @@
       "emphasis": "budget",
       "party": "young-family",
       "signature": "gokarna|budget|young-family|3",
-      "at": "2026-08-18T12:27:49.678034+00:00"
+      "at": "2026-08-18T12:27:49.678034+00:00",
+      "request": "Plan a 3 day Gokarna trip from Bangalore for 2 adults and 2 children aged 6 and 9, 1 to 4 January 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gokarna as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "srinagar-packed-solo-5d",
@@ -1246,7 +1966,16 @@
       "emphasis": "packed",
       "party": "solo",
       "signature": "srinagar|packed|solo|5",
-      "at": "2026-08-18T12:34:58.824479+00:00"
+      "at": "2026-08-18T12:34:58.824479+00:00",
+      "request": "Plan a 5 day Srinagar and Gulmarg trip from Delhi for 1 adult, 4 to 9 May 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Srinagar and Gulmarg as the destination scope.",
+        "Plan for 1 adult.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "muscat-accessible-three-generation-5d",
@@ -1261,7 +1990,16 @@
       "emphasis": "accessible",
       "party": "three-generation",
       "signature": "muscat|accessible|three-generation|5",
-      "at": "2026-08-18T12:39:38.866562+00:00"
+      "at": "2026-08-18T12:39:38.866562+00:00",
+      "request": "Plan a 5 day Muscat trip from Hyderabad for 4 adults and 1 child aged 8, including grandparents, 8 to 13 December 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Muscat as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vietnam-packed-couple-7d",
@@ -1276,7 +2014,16 @@
       "emphasis": "packed",
       "party": "couple",
       "signature": "vietnam|packed|couple|7",
-      "at": "2026-08-18T12:43:34.449375+00:00"
+      "at": "2026-08-18T12:43:34.449375+00:00",
+      "request": "Plan a 7 day Vietnam covering Hanoi and Ha Long Bay trip from Mumbai for 2 adults, 17 to 24 November 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Vietnam covering Hanoi and Ha Long Bay as the destination scope.",
+        "Plan for 2 adults.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mahabalipuram-premium-young-family-3d",
@@ -1291,7 +2038,16 @@
       "emphasis": "premium",
       "party": "young-family",
       "signature": "mahabalipuram|premium|young-family|3",
-      "at": "2026-08-18T12:54:12.917415+00:00"
+      "at": "2026-08-18T12:54:12.917415+00:00",
+      "request": "Plan a 3 day Mahabalipuram trip from Chennai for 2 adults and 2 children aged 6 and 9, 2 to 5 December 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mahabalipuram as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bhutan-heritage-young-family-5d",
@@ -1306,7 +2062,16 @@
       "emphasis": "heritage",
       "party": "young-family",
       "signature": "bhutan|heritage|young-family|5",
-      "at": "2026-08-18T12:55:18.035427+00:00"
+      "at": "2026-08-18T12:55:18.035427+00:00",
+      "request": "Plan a 5 day Bhutan covering Thimphu and Paro trip from Delhi for 2 adults and 2 children aged 6 and 9, 15 to 20 October 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Bhutan covering Thimphu and Paro as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "maldives-slow-solo-3d",
@@ -1321,7 +2086,16 @@
       "emphasis": "slow",
       "party": "solo",
       "signature": "maldives|slow|solo|3",
-      "at": "2026-08-18T13:01:22.683493+00:00"
+      "at": "2026-08-18T13:01:22.683493+00:00",
+      "request": "Plan a 3 day the Maldives trip from Bangalore for 1 adult, 7 to 10 February 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use the Maldives as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rishikesh-packed-couple-3d",
@@ -1336,7 +2110,16 @@
       "emphasis": "packed",
       "party": "couple",
       "signature": "rishikesh|packed|couple|3",
-      "at": "2026-08-18T13:07:19.389643+00:00"
+      "at": "2026-08-18T13:07:19.389643+00:00",
+      "request": "Plan a 3 day Rishikesh trip from Delhi for 2 adults, 2 to 5 March 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rishikesh as the destination scope.",
+        "Plan for 2 adults.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mysore-budget-couple-5d",
@@ -1351,7 +2134,16 @@
       "emphasis": "budget",
       "party": "couple",
       "signature": "mysore|budget|couple|5",
-      "at": "2026-08-18T13:10:25.076673+00:00"
+      "at": "2026-08-18T13:10:25.076673+00:00",
+      "request": "Plan a 5 day Mysore trip from Bangalore for 2 adults, 10 to 15 September 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "chikmagalur-outdoors-solo-7d",
@@ -1366,7 +2158,16 @@
       "emphasis": "outdoors",
       "party": "solo",
       "signature": "chikmagalur|outdoors|solo|7",
-      "at": "2026-08-18T13:12:47.736828+00:00"
+      "at": "2026-08-18T13:12:47.736828+00:00",
+      "request": "Plan a 7 day Chikmagalur trip from Bangalore for 1 adult, 6 to 13 December 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-food-three-generation-5d",
@@ -1381,7 +2182,16 @@
       "emphasis": "food",
       "party": "three-generation",
       "signature": "istanbul|food|three-generation|5",
-      "at": "2026-08-18T13:20:47.202329+00:00"
+      "at": "2026-08-18T13:20:47.202329+00:00",
+      "request": "Plan a 5 day Istanbul trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 13 to 18 May 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We care most about local food.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-slow-couple-7d",
@@ -1396,7 +2206,16 @@
       "emphasis": "slow",
       "party": "couple",
       "signature": "tirupati|slow|couple|7",
-      "at": "2026-08-18T13:24:56.338040+00:00"
+      "at": "2026-08-18T13:24:56.338040+00:00",
+      "request": "Plan a 7 day Tirupati trip from Hyderabad for 2 adults, 17 to 24 August 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "nepal-accessible-solo-3d",
@@ -1411,7 +2230,16 @@
       "emphasis": "accessible",
       "party": "solo",
       "signature": "nepal|accessible|solo|3",
-      "at": "2026-08-18T13:31:52.349777+00:00"
+      "at": "2026-08-18T13:31:52.349777+00:00",
+      "request": "Plan a 3 day Nepal covering Kathmandu and Pokhara trip from Delhi for 1 adult, 16 to 19 March 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Nepal covering Kathmandu and Pokhara as the destination scope.",
+        "Plan for 1 adult.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "malaysia-packed-couple-5d",
@@ -1426,7 +2254,16 @@
       "emphasis": "packed",
       "party": "couple",
       "signature": "malaysia|packed|couple|5",
-      "at": "2026-08-18T13:35:16.562764+00:00"
+      "at": "2026-08-18T13:35:16.562764+00:00",
+      "request": "Plan a 5 day Malaysia covering Kuala Lumpur and Penang trip from Chennai for 2 adults, 14 to 19 July 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Malaysia covering Kuala Lumpur and Penang as the destination scope.",
+        "Plan for 2 adults.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rome-outdoors-solo-7d",
@@ -1441,7 +2278,16 @@
       "emphasis": "outdoors",
       "party": "solo",
       "signature": "rome|outdoors|solo|7",
-      "at": "2026-08-18T13:42:03.127618+00:00"
+      "at": "2026-08-18T13:42:03.127618+00:00",
+      "request": "Plan a 7 day Rome and Florence trip from Mumbai for 1 adult, 16 to 23 September 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rome and Florence as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "kaziranga-budget-couple-7d",
@@ -1456,7 +2302,16 @@
       "emphasis": "budget",
       "party": "couple",
       "signature": "kaziranga|budget|couple|7",
-      "at": "2026-08-18T13:47:26.689336+00:00"
+      "at": "2026-08-18T13:47:26.689336+00:00",
+      "request": "Plan a 7 day Kaziranga trip from Guwahati for 2 adults, 13 to 20 February 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Kaziranga as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "capetown-heritage-friends-5d",
@@ -1471,7 +2326,16 @@
       "emphasis": "heritage",
       "party": "friends",
       "signature": "capetown|heritage|friends|5",
-      "at": "2026-08-18T13:55:36.297803+00:00"
+      "at": "2026-08-18T13:55:36.297803+00:00",
+      "request": "Plan a 5 day Cape Town trip from Mumbai for 4 adults, 12 to 17 November 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Cape Town as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "amritsar-packed-solo-5d",
@@ -1486,7 +2350,16 @@
       "emphasis": "packed",
       "party": "solo",
       "signature": "amritsar|packed|solo|5",
-      "at": "2026-08-18T14:03:25.047162+00:00"
+      "at": "2026-08-18T14:03:25.047162+00:00",
+      "request": "Plan a 5 day Amritsar trip from Delhi for 1 adult, 6 to 11 November 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Amritsar as the destination scope.",
+        "Plan for 1 adult.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "thailand-accessible-young-family-7d",
@@ -1501,7 +2374,16 @@
       "emphasis": "accessible",
       "party": "young-family",
       "signature": "thailand|accessible|young-family|7",
-      "at": "2026-08-18T14:05:30.444068+00:00"
+      "at": "2026-08-18T14:05:30.444068+00:00",
+      "request": "Plan a 7 day Thailand covering Bangkok and Krabi trip from Chennai for 2 adults and 2 children aged 6 and 9, 4 to 11 January 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Thailand covering Bangkok and Krabi as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "darjeeling-accessible-solo-5d",
@@ -1516,7 +2398,16 @@
       "emphasis": "accessible",
       "party": "solo",
       "signature": "darjeeling|accessible|solo|5",
-      "at": "2026-08-18T14:08:54.739660+00:00"
+      "at": "2026-08-18T14:08:54.739660+00:00",
+      "request": "Plan a 5 day Darjeeling trip from Kolkata for 1 adult, 2 to 7 April 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Darjeeling as the destination scope.",
+        "Plan for 1 adult.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gangtok-outdoors-couple-3d",
@@ -1531,7 +2422,16 @@
       "emphasis": "outdoors",
       "party": "couple",
       "signature": "gangtok|outdoors|couple|3",
-      "at": "2026-08-18T14:12:57.076951+00:00"
+      "at": "2026-08-18T14:12:57.076951+00:00",
+      "request": "Plan a 3 day Gangtok and north Sikkim trip from Kolkata for 2 adults, 2 to 5 October 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gangtok and north Sikkim as the destination scope.",
+        "Plan for 2 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gokarna-budget-solo-7d",
@@ -1546,7 +2446,16 @@
       "emphasis": "budget",
       "party": "solo",
       "signature": "gokarna|budget|solo|7",
-      "at": "2026-08-18T14:19:49.434795+00:00"
+      "at": "2026-08-18T14:19:49.434795+00:00",
+      "request": "Plan a 7 day Gokarna trip from Bangalore for 1 adult, 14 to 21 January 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gokarna as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "spiti-heritage-friends-5d",
@@ -1561,7 +2470,16 @@
       "emphasis": "heritage",
       "party": "friends",
       "signature": "spiti|heritage|friends|5",
-      "at": "2026-08-18T14:22:51.227907+00:00"
+      "at": "2026-08-18T14:22:51.227907+00:00",
+      "request": "Plan a 5 day Spiti Valley trip from Delhi for 4 adults, 11 to 16 June 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Spiti Valley as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "seoul-slow-friends-7d",
@@ -1576,7 +2494,16 @@
       "emphasis": "slow",
       "party": "friends",
       "signature": "seoul|slow|friends|7",
-      "at": "2026-08-18T14:27:01.102694+00:00"
+      "at": "2026-08-18T14:27:01.102694+00:00",
+      "request": "Plan a 7 day Seoul trip from Delhi for 4 adults, 15 to 22 April 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Seoul as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "srinagar-slow-solo-5d",
@@ -1591,7 +2518,16 @@
       "emphasis": "slow",
       "party": "solo",
       "signature": "srinagar|slow|solo|5",
-      "at": "2026-08-18T14:29:25.661726+00:00"
+      "at": "2026-08-18T14:29:25.661726+00:00",
+      "request": "Plan a 5 day Srinagar and Gulmarg trip from Delhi for 1 adult, 3 to 8 May 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Srinagar and Gulmarg as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "muscat-accessible-solo-7d",
@@ -1606,7 +2542,16 @@
       "emphasis": "accessible",
       "party": "solo",
       "signature": "muscat|accessible|solo|7",
-      "at": "2026-08-18T14:33:02.440434+00:00"
+      "at": "2026-08-18T14:33:02.440434+00:00",
+      "request": "Plan a 7 day Muscat trip from Hyderabad for 1 adult, 11 to 18 December 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Muscat as the destination scope.",
+        "Plan for 1 adult.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mahabalipuram-heritage-friends-3d",
@@ -1621,7 +2566,16 @@
       "emphasis": "heritage",
       "party": "friends",
       "signature": "mahabalipuram|heritage|friends|3",
-      "at": "2026-08-18T14:34:34.911737+00:00"
+      "at": "2026-08-18T14:34:34.911737+00:00",
+      "request": "Plan a 3 day Mahabalipuram trip from Chennai for 4 adults, 10 to 13 December 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mahabalipuram as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bhutan-premium-solo-7d",
@@ -1636,7 +2590,16 @@
       "emphasis": "premium",
       "party": "solo",
       "signature": "bhutan|premium|solo|7",
-      "at": "2026-08-18T14:40:25.035497+00:00"
+      "at": "2026-08-18T14:40:25.035497+00:00",
+      "request": "Plan a 7 day Bhutan covering Thimphu and Paro trip from Delhi for 1 adult, 16 to 23 October 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Bhutan covering Thimphu and Paro as the destination scope.",
+        "Plan for 1 adult.",
+        "We want premium hotels throughout.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vietnam-packed-three-generation-3d",
@@ -1651,7 +2614,16 @@
       "emphasis": "packed",
       "party": "three-generation",
       "signature": "vietnam|packed|three-generation|3",
-      "at": "2026-08-18T14:44:45.295379+00:00"
+      "at": "2026-08-18T14:44:45.295379+00:00",
+      "request": "Plan a 3 day Vietnam covering Hanoi and Ha Long Bay trip from Mumbai for 4 adults and 1 child aged 8, including grandparents, 12 to 15 November 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Vietnam covering Hanoi and Ha Long Bay as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "maldives-budget-solo-7d",
@@ -1666,7 +2638,16 @@
       "emphasis": "budget",
       "party": "solo",
       "signature": "maldives|budget|solo|7",
-      "at": "2026-08-18T14:47:08.957434+00:00"
+      "at": "2026-08-18T14:47:08.957434+00:00",
+      "request": "Plan a 7 day the Maldives trip from Bangalore for 1 adult, 10 to 17 February 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use the Maldives as the destination scope.",
+        "Plan for 1 adult.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "rishikesh-heritage-young-family-3d",
@@ -1681,7 +2662,16 @@
       "emphasis": "heritage",
       "party": "young-family",
       "signature": "rishikesh|heritage|young-family|3",
-      "at": "2026-08-18T14:55:37.584294+00:00"
+      "at": "2026-08-18T14:55:37.584294+00:00",
+      "request": "Plan a 3 day Rishikesh trip from Delhi for 2 adults and 2 children aged 6 and 9, 12 to 15 March 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rishikesh as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "mysore-outdoors-couple-5d",
@@ -1696,7 +2686,16 @@
       "emphasis": "outdoors",
       "party": "couple",
       "signature": "mysore|outdoors|couple|5",
-      "at": "2026-08-18T14:56:41.740520+00:00"
+      "at": "2026-08-18T14:56:41.740520+00:00",
+      "request": "Plan a 5 day Mysore trip from Bangalore for 2 adults, 3 to 8 September 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 2 adults.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "chikmagalur-packed-solo-7d",
@@ -1711,7 +2710,16 @@
       "emphasis": "packed",
       "party": "solo",
       "signature": "chikmagalur|packed|solo|7",
-      "at": "2026-08-18T15:02:18.861703+00:00"
+      "at": "2026-08-18T15:02:18.861703+00:00",
+      "request": "Plan a 7 day Chikmagalur trip from Bangalore for 1 adult, 2 to 9 December 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 1 adult.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-slow-three-generation-3d",
@@ -1726,7 +2734,16 @@
       "emphasis": "slow",
       "party": "three-generation",
       "signature": "istanbul|slow|three-generation|3",
-      "at": "2026-08-18T15:06:26.136628+00:00"
+      "at": "2026-08-18T15:06:26.136628+00:00",
+      "request": "Plan a 3 day Istanbul trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 10 to 13 May 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "ooty-premium-three-generation-3d",
@@ -1741,7 +2758,16 @@
       "emphasis": "premium",
       "party": "three-generation",
       "signature": "ooty|premium|three-generation|3",
-      "at": "2026-08-18T15:10:54.359076+00:00"
+      "at": "2026-08-18T15:10:54.359076+00:00",
+      "request": "Plan a 3 day Ooty trip from Coimbatore for 4 adults and 1 child aged 8, including grandparents, 17 to 20 April 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Ooty as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-budget-three-generation-3d",
@@ -1756,7 +2782,16 @@
       "emphasis": "budget",
       "party": "three-generation",
       "signature": "tirupati|budget|three-generation|3",
-      "at": "2026-08-18T15:16:23.813608+00:00"
+      "at": "2026-08-18T15:16:23.813608+00:00",
+      "request": "Plan a 3 day Tirupati trip from Hyderabad for 4 adults and 1 child aged 8, including grandparents, 17 to 20 August 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "nepal-heritage-solo-3d",
@@ -1771,7 +2806,16 @@
       "emphasis": "heritage",
       "party": "solo",
       "signature": "nepal|heritage|solo|3",
-      "at": "2026-08-18T15:18:05.463612+00:00"
+      "at": "2026-08-18T15:18:05.463612+00:00",
+      "request": "Plan a 3 day Nepal covering Kathmandu and Pokhara trip from Delhi for 1 adult, 14 to 17 March 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Nepal covering Kathmandu and Pokhara as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rome-budget-couple-7d",
@@ -1786,7 +2830,16 @@
       "emphasis": "budget",
       "party": "couple",
       "signature": "rome|budget|couple|7",
-      "at": "2026-08-18T15:24:04.838637+00:00"
+      "at": "2026-08-18T15:24:04.838637+00:00",
+      "request": "Plan a 7 day Rome and Florence trip from Mumbai for 2 adults, 4 to 11 September 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rome and Florence as the destination scope.",
+        "Plan for 2 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "malaysia-food-couple-5d",
@@ -1801,7 +2854,16 @@
       "emphasis": "food",
       "party": "couple",
       "signature": "malaysia|food|couple|5",
-      "at": "2026-08-18T15:28:47.546488+00:00"
+      "at": "2026-08-18T15:28:47.546488+00:00",
+      "request": "Plan a 5 day Malaysia covering Kuala Lumpur and Penang trip from Chennai for 2 adults, 16 to 21 July 2027. We care most about local food.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Malaysia covering Kuala Lumpur and Penang as the destination scope.",
+        "Plan for 2 adults.",
+        "We care most about local food.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "capetown-accessible-solo-7d",
@@ -1816,7 +2878,16 @@
       "emphasis": "accessible",
       "party": "solo",
       "signature": "capetown|accessible|solo|7",
-      "at": "2026-08-18T15:35:30.953700+00:00"
+      "at": "2026-08-18T15:35:30.953700+00:00",
+      "request": "Plan a 7 day Cape Town trip from Mumbai for 1 adult, 10 to 17 November 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Cape Town as the destination scope.",
+        "Plan for 1 adult.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "amritsar-outdoors-three-generation-7d",
@@ -1831,7 +2902,16 @@
       "emphasis": "outdoors",
       "party": "three-generation",
       "signature": "amritsar|outdoors|three-generation|7",
-      "at": "2026-08-18T15:39:02.571154+00:00"
+      "at": "2026-08-18T15:39:02.571154+00:00",
+      "request": "Plan a 7 day Amritsar trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 6 to 13 November 2027. Focus on the outdoors and nature.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Amritsar as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Focus on the outdoors and nature.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "thailand-heritage-solo-3d",
@@ -1846,7 +2926,16 @@
       "emphasis": "heritage",
       "party": "solo",
       "signature": "thailand|heritage|solo|3",
-      "at": "2026-08-18T15:41:44.127152+00:00"
+      "at": "2026-08-18T15:41:44.127152+00:00",
+      "request": "Plan a 3 day Thailand covering Bangkok and Krabi trip from Chennai for 1 adult, 9 to 12 January 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Thailand covering Bangkok and Krabi as the destination scope.",
+        "Plan for 1 adult.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gangtok-slow-three-generation-5d",
@@ -1861,7 +2950,16 @@
       "emphasis": "slow",
       "party": "three-generation",
       "signature": "gangtok|slow|three-generation|5",
-      "at": "2026-08-18T15:45:36.628319+00:00"
+      "at": "2026-08-18T15:45:36.628319+00:00",
+      "request": "Plan a 5 day Gangtok and north Sikkim trip from Kolkata for 4 adults and 1 child aged 8, including grandparents, 13 to 18 October 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gangtok and north Sikkim as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "spiti-heritage-couple-3d",
@@ -1876,7 +2974,16 @@
       "emphasis": "heritage",
       "party": "couple",
       "signature": "spiti|heritage|couple|3",
-      "at": "2026-08-18T15:49:28.689893+00:00"
+      "at": "2026-08-18T15:49:28.689893+00:00",
+      "request": "Plan a 3 day Spiti Valley trip from Delhi for 2 adults, 12 to 15 June 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Spiti Valley as the destination scope.",
+        "Plan for 2 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "gokarna-accessible-couple-3d",
@@ -1891,7 +2998,16 @@
       "emphasis": "accessible",
       "party": "couple",
       "signature": "gokarna|accessible|couple|3",
-      "at": "2026-08-18T15:57:51.228492+00:00"
+      "at": "2026-08-18T15:57:51.228492+00:00",
+      "request": "Plan a 3 day Gokarna trip from Bangalore for 2 adults, 10 to 13 January 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Gokarna as the destination scope.",
+        "Plan for 2 adults.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "seoul-accessible-solo-3d",
@@ -1906,7 +3022,16 @@
       "emphasis": "accessible",
       "party": "solo",
       "signature": "seoul|accessible|solo|3",
-      "at": "2026-08-18T16:03:15.087579+00:00"
+      "at": "2026-08-18T16:03:15.087579+00:00",
+      "request": "Plan a 3 day Seoul trip from Delhi for 1 adult, 10 to 13 April 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Seoul as the destination scope.",
+        "Plan for 1 adult.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "srinagar-budget-friends-3d",
@@ -1921,7 +3046,16 @@
       "emphasis": "budget",
       "party": "friends",
       "signature": "srinagar|budget|friends|3",
-      "at": "2026-08-18T16:08:38.864137+00:00"
+      "at": "2026-08-18T16:08:38.864137+00:00",
+      "request": "Plan a 3 day Srinagar and Gulmarg trip from Delhi for 4 adults, 13 to 16 May 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Srinagar and Gulmarg as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "muscat-slow-friends-5d",
@@ -1936,7 +3070,16 @@
       "emphasis": "slow",
       "party": "friends",
       "signature": "muscat|slow|friends|5",
-      "at": "2026-08-18T16:10:29.637379+00:00"
+      "at": "2026-08-18T16:10:29.637379+00:00",
+      "request": "Plan a 5 day Muscat trip from Hyderabad for 4 adults, 14 to 19 December 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Muscat as the destination scope.",
+        "Plan for 4 adults.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "vietnam-slow-young-family-5d",
@@ -1951,7 +3094,16 @@
       "emphasis": "slow",
       "party": "young-family",
       "signature": "vietnam|slow|young-family|5",
-      "at": "2026-08-18T16:18:03.710162+00:00"
+      "at": "2026-08-18T16:18:03.710162+00:00",
+      "request": "Plan a 5 day Vietnam covering Hanoi and Ha Long Bay trip from Mumbai for 2 adults and 2 children aged 6 and 9, 1 to 6 November 2027. Keep the pace slow with free afternoons.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Vietnam covering Hanoi and Ha Long Bay as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "Keep the pace slow with free afternoons.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "bhutan-budget-three-generation-3d",
@@ -1966,7 +3118,16 @@
       "emphasis": "budget",
       "party": "three-generation",
       "signature": "bhutan|budget|three-generation|3",
-      "at": "2026-08-18T16:23:28.949847+00:00"
+      "at": "2026-08-18T16:23:28.949847+00:00",
+      "request": "Plan a 3 day Bhutan covering Thimphu and Paro trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 8 to 11 October 2027. Keep the trip under INR 80000 in total.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Bhutan covering Thimphu and Paro as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "Keep the trip under INR 80000 in total.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": true
     },
     {
       "slug": "mysore-premium-solo-3d",
@@ -1981,7 +3142,16 @@
       "emphasis": "premium",
       "party": "solo",
       "signature": "mysore|premium|solo|3",
-      "at": "2026-08-18T16:29:45.984135+00:00"
+      "at": "2026-08-18T16:29:45.984135+00:00",
+      "request": "Plan a 3 day Mysore trip from Bangalore for 1 adult, 11 to 14 September 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Mysore as the destination scope.",
+        "Plan for 1 adult.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "chikmagalur-accessible-three-generation-7d",
@@ -1996,7 +3166,16 @@
       "emphasis": "accessible",
       "party": "three-generation",
       "signature": "chikmagalur|accessible|three-generation|7",
-      "at": "2026-08-18T16:34:21.639204+00:00"
+      "at": "2026-08-18T16:34:21.639204+00:00",
+      "request": "Plan a 7 day Chikmagalur trip from Bangalore for 4 adults and 1 child aged 8, including grandparents, 5 to 12 December 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Chikmagalur as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "rishikesh-premium-young-family-5d",
@@ -2011,7 +3190,16 @@
       "emphasis": "premium",
       "party": "young-family",
       "signature": "rishikesh|premium|young-family|5",
-      "at": "2026-08-18T16:44:29.985386+00:00"
+      "at": "2026-08-18T16:44:29.985386+00:00",
+      "request": "Plan a 5 day Rishikesh trip from Delhi for 2 adults and 2 children aged 6 and 9, 2 to 7 March 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Rishikesh as the destination scope.",
+        "Plan for 2 adults and 2 children aged 6 and 9.",
+        "We want premium hotels throughout.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "istanbul-packed-three-generation-5d",
@@ -2026,7 +3214,16 @@
       "emphasis": "packed",
       "party": "three-generation",
       "signature": "istanbul|packed|three-generation|5",
-      "at": "2026-08-18T16:49:03.729467+00:00"
+      "at": "2026-08-18T16:49:03.729467+00:00",
+      "request": "Plan a 5 day Istanbul trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 14 to 19 May 2027. We want to see as much as possible, early starts are fine.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Istanbul as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "We want to see as much as possible, early starts are fine.",
+        "Keep the requested 5-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "tirupati-heritage-friends-3d",
@@ -2041,7 +3238,16 @@
       "emphasis": "heritage",
       "party": "friends",
       "signature": "tirupati|heritage|friends|3",
-      "at": "2026-08-18T16:51:01.019713+00:00"
+      "at": "2026-08-18T16:51:01.019713+00:00",
+      "request": "Plan a 3 day Tirupati trip from Hyderabad for 4 adults, 13 to 16 August 2027. Focus on history and heritage sites.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Tirupati as the destination scope.",
+        "Plan for 4 adults.",
+        "Focus on history and heritage sites.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "ooty-premium-couple-3d",
@@ -2056,7 +3262,16 @@
       "emphasis": "premium",
       "party": "couple",
       "signature": "ooty|premium|couple|3",
-      "at": "2026-08-18T16:57:28.312315+00:00"
+      "at": "2026-08-18T16:57:28.312315+00:00",
+      "request": "Plan a 3 day Ooty trip from Coimbatore for 2 adults, 15 to 18 April 2027. We want premium hotels throughout.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Ooty as the destination scope.",
+        "Plan for 2 adults.",
+        "We want premium hotels throughout.",
+        "Keep the requested 3-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "nepal-accessible-three-generation-7d",
@@ -2071,7 +3286,16 @@
       "emphasis": "accessible",
       "party": "three-generation",
       "signature": "nepal|accessible|three-generation|7",
-      "at": "2026-08-18T16:59:08.054061+00:00"
+      "at": "2026-08-18T16:59:08.054061+00:00",
+      "request": "Plan a 7 day Nepal covering Kathmandu and Pokhara trip from Delhi for 4 adults and 1 child aged 8, including grandparents, 15 to 22 March 2027. One traveller cannot manage long walks or stairs.",
+      "request_reconstructed": true,
+      "scenario_expectations": [
+        "Use Nepal covering Kathmandu and Pokhara as the destination scope.",
+        "Plan for 4 adults and 1 child aged 8, including grandparents.",
+        "One traveller cannot manage long walks or stairs.",
+        "Keep the requested 7-day duration."
+      ],
+      "budget_evidence_required": false
     },
     {
       "slug": "india-outbound-bali-honeymoon-couple-7d",
@@ -2098,7 +3322,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-24T16:36:30.735932+00:00",
       "generation_run_id": "2026-08-24T162247.964552Z",
-      "generated_by_commit": "ffc3e13c50bca19d989261f9354183b390d7affe"
+      "generated_by_commit": "ffc3e13c50bca19d989261f9354183b390d7affe",
+      "request": "Plan a 7 day trip to Bali from Bangalore for 2 adults travelling as a couple on Indian passports, 2 to 9 June 2027. Prioritize romantic stays, privacy, downtime and one special experience. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-golden-triangle-heritage-young-family-5d",
@@ -2124,7 +3350,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T12:52:15.807456+00:00",
       "generation_run_id": "2026-08-25T124215.727244Z",
-      "generated_by_commit": "97b572dcf8cad104d6e9b216e5d78529c52b997e"
+      "generated_by_commit": "97b572dcf8cad104d6e9b216e5d78529c52b997e",
+      "request": "Plan a 5 day trip to Delhi, Agra and Jaipur from Bangalore for 2 adults and 2 children aged 4 and 8, 5 to 10 February 2027. Focus on history, architecture, museums and local culture. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-golden-triangle-heritage-couple-5d",
@@ -2150,7 +3378,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:01:20.328301+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Delhi, Agra and Jaipur from Bangalore for 2 adults travelling as a couple, 15 to 20 February 2027. Focus on history, architecture, museums and local culture. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-uae-family-young-family-5d",
@@ -2177,7 +3407,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:06:15.777175+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Dubai with an optional Abu Dhabi day from Mumbai for 2 adults and 2 children aged 6 and 10 on Indian passports, 11 to 16 January 2027. Use child-friendly attractions, practical meals and one main area per day. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-varanasi-pilgrimage-three-generation-4d",
@@ -2203,7 +3435,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:11:15.908156+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 4 day trip to Varanasi and Ayodhya from Delhi for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 12 to 16 February 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-thailand-food-friends-6d",
@@ -2230,7 +3464,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:16:51.647179+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Bangkok and Phuket or Krabi from Delhi for 4 adult friends travelling on Indian passports, 16 to 22 January 2027. Make regional food and local culture central to the itinerary. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-kashmir-nature-young-family-6d",
@@ -2256,7 +3492,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:21:13.793088+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Srinagar, Gulmarg and Pahalgam from Delhi for 2 adults and 2 children aged 4 and 8, 14 to 20 May 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-bali-honeymoon-couple-6d",
@@ -2283,7 +3521,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:25:12.864157+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Bali from Bangalore for 2 adults travelling as a couple on Indian passports, 4 to 10 June 2027. Prioritize romantic stays, privacy, downtime and one special experience. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-rajasthan-heritage-couple-7d",
@@ -2309,7 +3549,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:29:54.563403+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Jaipur, Jodhpur and Udaipur from Mumbai for 2 adults travelling as a couple, 16 to 23 February 2027. Focus on history, architecture, museums and local culture. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-schengen-classic-heritage-young-family-11d",
@@ -2336,7 +3578,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:35:37.672939+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 11 day trip to Paris, Switzerland and northern Italy from Mumbai for 2 adults and 2 children aged 6 and 10 on Indian passports, 11 to 22 May 2027. Focus on history, architecture, museums and local culture. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-goa-celebration-friends-4d",
@@ -2362,7 +3606,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:39:11.772934+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 4 day trip to Goa from Bangalore for 4 adult friends, 5 to 9 February 2027. Include lively evenings and one special celebration experience where suitable. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-vietnam-food-couple-7d",
@@ -2389,7 +3635,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:43:48.634139+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Hanoi, Ha Long Bay and central Vietnam from Kolkata for 2 adults travelling as a couple on Indian passports, 14 to 21 February 2027. Make regional food and local culture central to the itinerary. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-kerala-nature-young-family-7d",
@@ -2415,7 +3663,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:48:33.877042+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Kochi, Munnar and Alleppey from Bangalore for 2 adults and 2 children aged 4 and 8, 1 to 8 December 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-singapore-family-young-family-5d",
@@ -2442,7 +3692,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:53:36.751467+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Singapore from Chennai for 2 adults and 2 children aged 6 and 10 on Indian passports, 11 to 16 June 2027. Use child-friendly attractions, practical meals and one main area per day. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-tirupati-pilgrimage-three-generation-3d",
@@ -2468,7 +3720,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T15:57:36.912297+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 3 day trip to Tirupati with an optional Chennai stop from Hyderabad for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 4 to 7 August 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-maldives-honeymoon-couple-5d",
@@ -2495,7 +3749,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:02:51.009719+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to the Maldives from Bangalore for 2 adults travelling as a couple on Indian passports, 3 to 8 February 2027. Prioritize romantic stays, privacy, downtime and one special experience. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-malaysia-family-young-family-6d",
@@ -2522,7 +3778,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:19:51.560905+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Kuala Lumpur, Genting and Penang from Chennai for 2 adults and 2 children aged 6 and 10 on Indian passports, 4 to 10 July 2027. Use child-friendly attractions, practical meals and one main area per day. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-tamil-nadu-pilgrimage-three-generation-5d",
@@ -2548,7 +3806,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:25:09.648648+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Madurai, Rameswaram and Thanjavur from Chennai for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 15 to 20 January 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-amritsar-pilgrimage-three-generation-3d",
@@ -2574,7 +3834,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:37:10.411566+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 3 day trip to Amritsar from Delhi for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 7 to 10 November 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-sri-lanka-heritage-young-family-7d",
@@ -2601,7 +3863,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:41:38.463700+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Colombo, Kandy and the south coast from Chennai for 2 adults and 2 children aged 6 and 10 on Indian passports, 14 to 21 February 2027. Focus on history, architecture, museums and local culture. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-ladakh-nature-friends-8d",
@@ -2627,7 +3891,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:46:01.057010+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 8 day trip to Leh, Nubra Valley and Pangong from Delhi for 4 adult friends, 2 to 10 July 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-nepal-pilgrimage-three-generation-6d",
@@ -2654,7 +3920,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:51:12.019323+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Kathmandu and Pokhara from Delhi for 4 adults and 1 child aged 8 on Indian passports, including grandparents, 16 to 22 October 2027. Prioritize ritual dates, permits, health needs and accessible group movement. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-char-dham-pilgrimage-three-generation-8d",
@@ -2680,7 +3948,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T16:56:04.324533+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 8 day trip to Haridwar, Rishikesh and the Char Dham route from Delhi for 4 adults and 1 child aged 8, including grandparents aged 68 and 72, 12 to 20 May 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-japan-heritage-couple-8d",
@@ -2707,7 +3977,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T17:01:06.279639+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 8 day trip to Tokyo, Kyoto and Osaka from Delhi for 2 adults travelling as a couple on Indian passports, 18 to 26 April 2027. Focus on history, architecture, museums and local culture. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-uttarakhand-nature-friends-5d",
@@ -2733,7 +4005,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T17:07:09.559550+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Rishikesh and Mussoorie from Delhi for 4 adult friends, 7 to 12 March 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-usa-vfr-three-generation-14d",
@@ -2760,7 +4034,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T18:33:15.432642+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 14 day trip to New York with one practical United States extension from Delhi for 4 adults and 1 child aged 8 on Indian passports, including grandparents, 9 to 23 June 2027. Keep flexible family time and add only geographically practical sightseeing. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-bihar-buddhist-pilgrimage-senior-couple-4d",
@@ -2786,7 +4062,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-25T19:45:42.854120+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 4 day trip to Bodh Gaya, Nalanda and Rajgir from Kolkata for 2 adults aged 64 and 70, 17 to 21 January 2027. Prioritize worship timings, temple access, modest pacing and practical meals. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-turkey-heritage-couple-8d",
@@ -2813,7 +4091,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:35:01.210562+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 8 day trip to Istanbul and Cappadocia from Delhi for 2 adults travelling as a couple on Indian passports, 10 to 18 May 2027. Focus on history, architecture, museums and local culture. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-andaman-premium-couple-7d",
@@ -2839,7 +4119,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:38:58.039914+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Port Blair, Havelock and Neil Island from Kolkata for 2 adults travelling as a couple, 7 to 14 January 2027. Prioritize excellent premium stays, comfort and low-friction transfers. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-mauritius-honeymoon-couple-7d",
@@ -2866,7 +4148,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:43:09.505763+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Mauritius from Mumbai for 2 adults travelling as a couple on Indian passports, 14 to 21 July 2027. Prioritize romantic stays, privacy, downtime and one special experience. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-sikkim-nature-couple-7d",
@@ -2892,7 +4176,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:48:04.796357+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Gangtok and north Sikkim from Kolkata for 2 adults travelling as a couple, 6 to 13 October 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-outbound-bhutan-heritage-couple-7d",
@@ -2919,7 +4205,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:52:32.797534+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 7 day trip to Thimphu, Punakha and Paro from Kolkata for 2 adults travelling as a couple on Indian passports, 2 to 9 October 2027. Focus on history, architecture, museums and local culture. Verify current official entry requirements and Indian government travel advisories before treating the plan as bookable.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-lakshadweep-premium-couple-6d",
@@ -2945,7 +4233,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T01:56:44.375148+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 6 day trip to Lakshadweep from Kochi for 2 adults travelling as a couple, 3 to 9 February 2027. Prioritize excellent premium stays, comfort and low-friction transfers. This is a domestic trip within India.",
+      "request_reconstructed": true
     },
     {
       "slug": "india-assam-nature-young-family-5d",
@@ -2971,7 +4261,9 @@
       "budget_evidence_required": false,
       "at": "2026-08-26T02:01:58.895036+00:00",
       "generation_run_id": "2026-08-25T145817.525404Z",
-      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882"
+      "generated_by_commit": "6bbb6ecc33d60213dd0907eed0f7cfd6d2d77882",
+      "request": "Plan a 5 day trip to Guwahati and Kaziranga from Kolkata for 2 adults and 2 children aged 4 and 8, 6 to 11 February 2027. Focus on scenery, wildlife and practical outdoor experiences. This is a domestic trip within India.",
+      "request_reconstructed": true
     }
   ]
 }

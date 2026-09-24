@@ -38,6 +38,17 @@ _SKIP_KEYS = frozenset(
     }
 )
 _MAX_VALUE = 400
+#: Place facts a judge can cite; reviews and photo references are bulk, not evidence.
+_JUDGED_FIELDS = (
+    "name",
+    "address",
+    "rating",
+    "review_count",
+    "price_level",
+    "business_status",
+    "editorial_summary",
+    "weekday_descriptions",
+)
 
 
 def _escape(key: str) -> str:
@@ -68,13 +79,26 @@ def places_for(plan: dict[str, Any], places: dict[str, Any]) -> dict[str, Any]:
         if isinstance(stop, dict)
     }
     names.discard("")
-    destination = str(plan.get("destination") or "").strip().casefold()
+    # Lookups are keyed by the destination or by one day's own locality.
+    contexts = {str(plan.get("destination") or "").strip().casefold()}
+    for day in plan.get("day_wise_itinerary") or []:
+        if isinstance(day, dict):
+            contexts |= {
+                str(day.get(field) or "").strip().casefold()
+                for field in ("city", "location", "title")
+            }
     picked = {}
     for key, value in places.items():
         name, _, city = str(key).partition("|")
         city = city.strip().casefold()
-        if name.strip().casefold() in names and (not city or city == destination):
-            picked[key] = value
+        if name.strip().casefold() in names and (
+            not city or any(city in context for context in contexts if context)
+        ):
+            picked[key] = (
+                {field: value[field] for field in _JUDGED_FIELDS if field in value}
+                if isinstance(value, dict)
+                else value
+            )
     return picked
 
 

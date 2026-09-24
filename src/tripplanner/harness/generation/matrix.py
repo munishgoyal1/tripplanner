@@ -306,7 +306,7 @@ def _compose(
 ) -> TripRequest:
     slug = f"{destination.key}-{emphasis.key}-{party.key}-{days}d"
     start = date(year, destination.month, 1) + timedelta(days=_stable(slug) % 18)
-    dates = _date_phrase(start, start + timedelta(days=days))
+    dates = _date_phrase(start, start + timedelta(days=days - 1))
     return TripRequest(
         slug=slug,
         shape=f"{destination.phrase}, {emphasis.shape}, {party.key}",

@@ -11,6 +11,8 @@ from tripplanner.evals.contracts import CorpusRecord
 from tripplanner.evals.human import HARD_GATES, TASTE_DIMENSIONS
 
 RUBRIC_VERSION = "itinerary-v1"
+#: A hard-gate score at or below this caps the overall score at that score.
+FAILED_GATE_SCORE = 2
 DIMENSIONS = (*HARD_GATES, *TASTE_DIMENSIONS)
 KEYS = tuple(item.key for item in DIMENSIONS)
 ANCHORS = {
@@ -68,12 +70,16 @@ def rubric() -> dict[str, Any]:
 
 def evidence_for(record: CorpusRecord) -> dict[str, Any]:
     # Dedicated generation metadata and human ratings are not scoring inputs.
+    # Only the places this plan names: corpus records carry the whole shared
+    # place cache (about 13 MB), far past any judge profile's input limit.
+    from tripplanner.evals.trip_text import places_for
+
     return {
         "request": record.request,
         "preferences": record.preferences,
         "plan": record.plan,
         "final_reply": record.final_reply,
-        "places": record.places,
+        "places": places_for(record.plan, record.places or {}),
     }
 
 
@@ -133,10 +139,24 @@ def validate(payload: Any, evidence: dict[str, Any]) -> dict[str, Any]:
                 raise ValueError("Evidence quote is not present at its pointer")
     scores = [item.score for item in judgement.assessments if item.status == "scored"]
     complete = all(item.status != "unverified" for item in judgement.assessments)
+    gate_keys = {gate.key for gate in HARD_GATES}
+    failed_gates = [
+        item.score
+        for item in judgement.assessments
+        if item.dimension in gate_keys
+        and item.status == "scored"
+        and item.score is not None
+        and item.score <= FAILED_GATE_SCORE
+    ]
+    overall = round(sum(scores) / len(scores), 2) if complete and scores else None
+    if overall is not None and failed_gates:
+        # A trip that ignores what was asked cannot rank as good on taste alone.
+        overall = min(overall, float(min(failed_gates)))
     return {
         **judgement.model_dump(),
         "status": "complete" if complete else "insufficient_evidence",
-        "overall_score": round(sum(scores) / len(scores), 2) if complete and scores else None,
+        "overall_score": overall,
+        "hard_gate_failed": bool(failed_gates),
         "scored_dimensions": len(scores),
         "advisory": True,
     }

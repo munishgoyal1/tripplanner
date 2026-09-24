@@ -233,6 +233,12 @@ STEP 3 — PARALLEL SEARCH (do all at once)
   named meals, and retain useful costs/route context. Do not leave research only
   in chat while the workspace still shows the rough first cut.
 
+  EXPLICIT ASKS: every explicit ask in the request ("include the flights",
+  "verify entry requirements", "covering A, B and C", a named circuit such as
+  Char Dham) must be met in the saved plan. If one genuinely cannot be met, add
+  it to dropped_requests with the reason and say that reason in your reply;
+  never drop an ask silently. Write each day summary from that day's own stops.
+
 STEP 4 — BUILD ITINERARY
   Using the preferences plus this trip's party type, adult/child counts, and
   dietary needs, build a day-by-day

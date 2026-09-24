@@ -388,3 +388,18 @@ def test_missing_credentials_fail_before_reserving_money(engine, monkeypatch, tm
     with pytest.raises(ValueError, match="credential environment"):
         run(allow_spend=True, budget_inr=10)
     assert not calls and not (tmp_path / "judge/judge-spend.json").exists()
+
+
+def test_a_failed_hard_gate_caps_the_overall_score():
+    data = payload(score=5)
+    for item in data["assessments"]:
+        if item["dimension"] == "scenario_preference_fidelity":
+            item["score"] = 2
+
+    result = judge.validate(data, judge.evidence_for(record()))
+
+    assert result["hard_gate_failed"] is True
+    assert result["overall_score"] == 2.0
+
+    passing = judge.validate(payload(score=4), judge.evidence_for(record()))
+    assert (passing["hard_gate_failed"], passing["overall_score"]) == (False, 4.0)

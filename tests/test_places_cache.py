@@ -1174,3 +1174,73 @@ def test_top_places_does_not_cache_a_failed_lookup(_isolate, monkeypatch):
     assert pc.top_places("Goa", "hotel") == []
 
     assert len(attempts) == 2  # retried, not remembered as an answer
+
+
+def test_activity_labels_and_clock_times_are_not_bought(_isolate, monkeypatch):
+    """BL-01: each of these reached a paid lookup and pinned an unrelated business."""
+    monkeypatch.setattr(
+        pc, "_lookup_place", lambda *_a, **_k: pytest.fail("should not reach a paid lookup")
+    )
+
+    for name in (
+        "08:00",
+        "Meetings (User's location)",
+        "Work meetings",
+        "Lunch break",
+        "Sunset at beach",
+        "Key details:",
+        "Restaurant and activity slots are based on local favorites and your interests, "
+        "but can be adjusted.",
+    ):
+        assert not pc.is_lookupable_place_name(name), name
+        assert pc.get_details(name, "New York") is None
+
+    for name in ("Sunset Point", "India Gate", "Kempegowda International Airport"):
+        assert pc.is_lookupable_place_name(name), name
+
+
+def test_lookup_prefers_the_candidate_named_like_the_stop(_isolate, _authorized, monkeypatch):
+    request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
+    sent = {}
+
+    def fake_post(*args, **kwargs):
+        sent.update(kwargs["json"])
+        return httpx.Response(200, request=request, json={"places": [
+            {"id": "agency", "displayName": {"text": "Delhi Agra Jaipur Trip"},
+             "location": {"latitude": 26.9, "longitude": 75.8}},
+            {"id": "gate", "displayName": {"text": "India Gate"},
+             "location": {"latitude": 28.6, "longitude": 77.2}},
+        ]})
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    result = _REAL_LOOKUP_PLACE("India Gate", "Delhi, Agra, Jaipur")
+
+    assert result and result["place_id"] == "gate"
+    assert sent["pageSize"] > 1  # still one billed request
+
+
+def test_a_result_sharing_no_word_with_the_stop_is_kept_but_never_shown(_isolate, monkeypatch):
+    calls = {"count": 0}
+
+    def fake_lookup(name, city):
+        calls["count"] += 1
+        return {"place_id": "agency", "name": "Delhi Agra Jaipur Trip", "lat": 26.9, "lng": 75.8}
+
+    monkeypatch.setattr(pc, "_lookup_place", fake_lookup)
+
+    assert pc.get_details("Kamadgiri Parikrama", "Varanasi and Ayodhya") is None
+    assert pc.place_coords("Kamadgiri Parikrama", "Varanasi and Ayodhya") is None
+    assert calls["count"] == 1  # cached, so nobody pays for the wrong answer twice
+
+
+def test_map_tiering_agrees_that_times_and_activities_are_labels():
+    from tripplanner.place_facts import names_overlap
+    from tripplanner.web.place_confidence import LABEL, PLACE, stop_place_tier
+
+    assert stop_place_tier("08:00", "attraction") == LABEL
+    assert stop_place_tier("Meetings (User's location)", "other") == LABEL
+    assert stop_place_tier("Hotel (TBD)", "hotel") != LABEL  # anchors stay anchors
+    assert stop_place_tier("Sunset Point", "attraction") == PLACE
+    assert names_overlap("Mysore Palace", "Mysuru Palace")
+    assert not names_overlap("India Gate", "Delhi Agra Jaipur Trip")

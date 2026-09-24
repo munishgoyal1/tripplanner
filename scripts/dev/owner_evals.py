@@ -1,8 +1,9 @@
 """Build the owner /evals report from offline audit output and judge verdicts.
 
-Never plans a trip and never calls Google: it reads committed corpus trips,
-reconstructs each trip's original request from the deterministic generation
-matrices, and renders judge packets. Judge verdicts are produced out of band
+Never plans a trip and never calls Google: it reads committed corpus trips and
+each trip's request from ``corpus/manifest.json`` (reconstructed from the
+deterministic generation matrices for trips that predate request capture), and
+renders judge packets. Judge verdicts are produced out of band
 (by an operator's model session or ``trip_audit.py --judge-profile``) and are
 validated here by the same ``evals.judge.validate`` the paid judge uses.
 
@@ -17,6 +18,7 @@ import argparse
 import json
 import sys
 from collections import Counter
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -26,26 +28,12 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from tripplanner.evals import judge, probes, trip_text  # noqa: E402
 from tripplanner.harness import corpus as corpus_module  # noqa: E402
-from tripplanner.harness.generation import (  # noqa: E402
-    india_heuristic_matrix,
-    india_outbound_matrix,
-    matrix,
-)
-from tripplanner.harness.generation.catalog import Catalog  # noqa: E402
+from tripplanner.harness.generation import matrix  # noqa: E402
 from tripplanner.harness.sources import place_cache  # noqa: E402
 
 CORPUS = ROOT / "corpus"
 REPORT = ROOT / "src" / "tripplanner" / "evals" / "owner_report.json"
 REPORT_VERSION = 1
-
-
-def _requests() -> dict[str, matrix.TripRequest]:
-    empty = Catalog()
-    requests = {request.slug: request for request in matrix.REQUESTS}
-    for module in (matrix, india_heuristic_matrix, india_outbound_matrix):
-        for request in module.candidates(empty, limit=0):
-            requests.setdefault(request.slug, request)
-    return requests
 
 
 def _sample(slugs: list[str], size: int) -> list[str]:
@@ -61,7 +49,8 @@ def _sample(slugs: list[str], size: int) -> list[str]:
 
 
 def packets(out: Path, slugs: list[str], sample: int) -> int:
-    requests = _requests()
+    manifest = json.loads((CORPUS / "manifest.json").read_text("utf-8"))
+    entries = {entry["slug"]: entry for entry in manifest.get("produced", [])}
     places = place_cache.load(place_cache.cache_path(CORPUS))
     records = {
         record.id.removeprefix("generated:"): record
@@ -71,10 +60,9 @@ def packets(out: Path, slugs: list[str], sample: int) -> int:
     out.mkdir(parents=True, exist_ok=True)
     for slug in chosen:
         record = records[slug]
-        request = requests.get(slug)
-        evidence = judge.evidence_for(record)
-        evidence["request"] = request.message if request else ""
-        evidence["places"] = trip_text.places_for(record.plan, places)
+        entry = entries.get(slug, {})
+        # The request comes from the manifest; evidence_for keeps only named places.
+        evidence = judge.evidence_for(replace(record, places=places))
         (out / f"{slug}.evidence.json").write_text(
             json.dumps(evidence, ensure_ascii=False, indent=1), encoding="utf-8"
         )
@@ -83,8 +71,9 @@ def packets(out: Path, slugs: list[str], sample: int) -> int:
             json.dumps(
                 {
                     "slug": slug,
-                    "scenario_expectations": list(request.scenario_expectations) if request else [],
-                    "budget_evidence_required": bool(request and request.budget_evidence_required),
+                    "scenario_expectations": list(entry.get("scenario_expectations") or []),
+                    "budget_evidence_required": bool(entry.get("budget_evidence_required")),
+                    "request_reconstructed": bool(entry.get("request_reconstructed")),
                 },
                 indent=1,
             ),

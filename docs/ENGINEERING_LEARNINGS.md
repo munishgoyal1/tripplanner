@@ -2471,3 +2471,23 @@ between the validator and renderer; unknown geography is not zero travel.
   A located extension is not evidence that it shipped built into the editor.
 - Bootstrap code must run in the launcher's fallback runtime: Windows PowerShell
   5.1 lacks `$IsWindows` and `Join-String`. Hand off to PowerShell 7 explicitly.
+
+## 2026-09-24 - Verify what a lookup answered, not only whether it answered
+
+- Google Places answers every text query with something. Appending a multi-city
+  destination ("India Gate Delhi, Agra, Jaipur") made a tour agency named after the
+  cities the top result for 42 stops, and "08:00" resolved to the same agency. A paid
+  lookup needs an identity check on the result (shared name words, several candidates
+  from the same billed request), and two classifiers for "is this a place" drift
+  apart; `places_cache` now defers to `place_confidence`.
+- Sorting a day by its times looks like the fix for out-of-order stops but produces a
+  different wrong order when the times themselves are wrong (Kerala: backwaters after
+  the car left). Repair only what follows from the journeys (a stay being left goes
+  before the departure) and hand genuine time conflicts back to the agent.
+- A prompt rule is not a guarantee: the planner prompt forbade silent omissions, yet
+  "Include the flights" and "verify entry requirements" were dropped in 18 corpus
+  trips. Deterministic detection of unambiguous asks plus an explicit
+  `dropped_requests` escape turns a silent miss into a visible decision.
+- An evaluation input must be scoped to its subject: each corpus record carried the
+  whole 13 MB place cache, so the judge could never run and the incremental audit
+  spent about 95% of its time hashing it. Measure the payload before tuning the loop.

@@ -162,6 +162,21 @@ def names_match(requested: str, returned: str) -> bool:
     return asked == got
 
 
+def names_overlap(requested: str, returned: str) -> bool:
+    """Whether a lookup result could be the place that was asked for at all.
+
+    Looser than ``names_match``: a map pin only needs the result to share one
+    meaningful word with the stop ("Mysore Palace" -> "Mysuru Palace"). A result
+    sharing none ("India Gate" -> "Delhi Agra Jaipur Trip", a tour agency) is
+    a different place, and pinning it sends the traveller somewhere else.
+    """
+    asked = {token for token in _identity_tokens(requested) if len(token) > 2}
+    got = {token for token in _identity_tokens(returned) if len(token) > 2}
+    if not asked or not got:
+        return True  # nothing to compare is not evidence of a mismatch
+    return bool(asked & got)
+
+
 @dataclass(frozen=True)
 class PlaceFacts:
     """What is known about one place, with unknown kept distinct from false."""

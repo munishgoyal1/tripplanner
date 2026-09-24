@@ -12,7 +12,9 @@
    "evidence": "\"India Gate | delhi, agra, jaipur\" -> tour agency \"Delhi Agra Jaipur Trip\" (42 stops resolve to it); \"Meetings (User's location) | new york\" -> New York Inter-Group of AA; \"Harajuku\" -> a gyukatsu restaurant; \"Kamadgiri\" -> Kashi Vishwanath (wrong city); \"Ross Island\" -> Aberdeen Jetty; 17 clock times (\"08:00\") and prompt sentences (\"key details:\") were paid lookups. Today's filters (places_cache.is_lookupable_place_name and place_confidence.stop_place_tier) both still pass \"08:00\", \"Work meetings\", \"Lunch break\" and \"Sunset at beach\". Hand review of a random 40 of the mismatches: about 30 were a wrong place or a non-place label.",
    "impact": "Confident map pins in the wrong place (sometimes the wrong city), wrong photos and ratings in the stop card, and paid Places calls that buy nothing.",
    "fix": "One stop classifier shared by lookup gating and map tiering that rejects times, activity phrases and sentences; bias each lookup with the stop's own city rather than the whole destination phrase; and accept a result only when its name shares a token with the query or its type matches the stop kind, otherwise store it as approximate and never pin it.",
-   "source": "LLM judge (New York, Tokyo, Cape Town packets) then deterministic place_identity probe"
+   "source": "LLM judge (New York, Tokyo, Cape Town packets) then deterministic place_identity probe",
+   "status": "fixed",
+   "resolution": "places_cache now declines clock times, sentences and activity labels (via place_confidence, which learned the missing words), requests five candidates in the same single billed search and keeps the one named like the stop, and never shows or pins a cached result that shares no word with it. On the committed cache: 272 distinct non-place names would no longer be bought, and 322 wrong results are hidden. City bias still uses the caller's context. Tests: tests/test_places_cache.py."
   },
   {
    "id": "BL-02",
@@ -23,18 +25,22 @@
    "evidence": "\"Duffel Airways\" (flight numbers ZZ…) in 6 trips, e.g. Cape Town $596.75, Bhutan $1,206.54; \"Nuitée Air\" from liteapi in 3 trips, e.g. Goa ₹29,582. tools/duffel_flights.py documents that duffel_test_ tokens return synthetic offers, but nothing marks them after selection.",
    "impact": "A traveller or the booking handoff can present a fare that does not exist; budget totals include invented prices.",
    "fix": "Mark every offer from a test-mode credential or known sandbox carrier as synthetic at the provider adapter; refuse to persist it in selected_flights or the booking handoff; if kept for development, label it \"Sample fare, not bookable\" in every view.",
-   "source": "LLM judge (Cape Town, Goa) then synthetic_fares probe"
+   "source": "LLM judge (Cape Town, Goa) then synthetic_fares probe",
+   "status": "deferred",
+   "resolution": "Not approved in this round."
   },
   {
    "id": "BL-03",
    "severity": "high",
    "area": "Day scheduling",
    "title": "Stops are listed after the journey that already left them",
-   "prevalence": "stay_after_departure in 47 of 178 trips (64 days); out_of_order in 26 trips (28 stops)",
+   "prevalence": "A stay listed after the day's departure in 95 of 178 trips (143 stays); out-of-order times in 26 trips (28 stops)",
    "evidence": "Tokyo day 4: Shinkansen 09:00 then Sunroute checkout 12:10; Gujarat day 3: drive 08:00 then Ahmedabad checkout 14:30; Rajasthan day 3: Jaipur checkout 18:00 after reaching Jodhpur, \"Lunch break\" 20:00; Char Dham days 3-7 repeat the pattern; Andaman: Port Blair checkout after the Havelock ferry.",
    "impact": "The itinerary, the map route and the day's travel totals describe an impossible order; audit rules I4/I9 fire on the symptom rather than the cause.",
    "fix": "A deterministic normaliser on save: origin-hotel checkout precedes the first departing move, timed stops sort by time, and a stop whose time runs backwards is rejected back to the agent with the exact conflict instead of being saved.",
-   "source": "LLM judge (5 of 12 trips) then deterministic probes"
+   "source": "LLM judge (5 of 12 trips) then deterministic probes",
+   "status": "fixed",
+   "resolution": "tools/day_order.py runs on every save: a stay that is being left (a check-out, a 'start from hotel', or the previous night's hotel before any return journey) moves to just before the day's first departure and loses an impossible time. Out-of-order times were already rejected by the chronology check merged on 2026-09-12; all 26 corpus cases predate it. On the corpus, simulated saves take misplaced stays from 95 trips to 0. Tests: tests/test_day_order.py."
   },
   {
    "id": "BL-04",
@@ -45,7 +51,9 @@
    "evidence": "Paris: Hotel Le Littre to 12 Apr, flight home 11 Apr; Tokyo: Granvia Kyoto to 9 Apr, flight 8 Apr; Mysore: Radisson to 15 Sep, drive home 14 Sep and a 'Buffer/Return' day 6 at the hotel; Bali-honeymoon: Mulia to 19 Nov, leaves 18 Nov. Contributing cause: every generated request phrases an N-day trip across N+1 calendar dates (matrix._compose uses start + days), and checkout copies return_date. The deterministic audit reports \"Itinerary covers N of N+1 requested days\" 241 times across the corpus.",
    "impact": "Budget totals include a night nobody uses, and the plan invents filler days at a hotel after departure.",
    "fix": "Checkout equals the date of the departing journey; when the request's day count and date span disagree, ask once instead of silently choosing; generate corpus requests with an end date of start + days - 1.",
-   "source": "LLM judge (Paris, Tokyo, Mysore) then unused_nights probe"
+   "source": "LLM judge (Paris, Tokyo, Mysore) then unused_nights probe",
+   "status": "fixed",
+   "resolution": "The same save-time step checks out on the day the trip ends with the journey home and re-prices the stay from its nightly rate (20 corpus trips to 0 when re-saved). The generation matrices now phrase an N-day trip as N calendar days; the manifest keeps the original requests of the 178 existing trips."
   },
   {
    "id": "BL-05",
@@ -56,7 +64,9 @@
    "evidence": "Goa (\"We want … good food\") has five TBD meals; Rajasthan's every meal is \"Local restaurant <city>\"; Char Dham and Kerala have only \"Hotel in <city>\"; New York has \"Hotel (TBD)\" on every day. prompts.py forbids leaving TBD meals, but trip_validation only warns and the plan still completes. Paris uses \"Central Paris Hotel\" instead of the selected Hotel Le Littre (10 of 102 trips with a selected hotel do not name it in the itinerary). Audit I6 finds 459 nights with no concrete, bookable stay.",
    "impact": "The traveller receives an itinerary that reads as decided but is not; judged meal quality averages 2.58/5, second lowest after narrative coherence (2.50).",
    "fix": "Count placeholders deterministically at the completion gate and either fill them from research already in hand or return them as explicit open decisions (UX Lab 32); bind hotel stops to selected_hotels by id rather than by name.",
-   "source": "LLM judge (all 12 trips) then placeholder_stops probe"
+   "source": "LLM judge (all 12 trips) then placeholder_stops probe",
+   "status": "deferred",
+   "resolution": "Not approved in this round; UX Lab 32 covers the presentation side."
   },
   {
    "id": "BL-06",
@@ -67,7 +77,9 @@
    "evidence": "Paris: \"Include the flights\" -> no selected flight; Bali: \"Verify current official entry requirements\" -> no visa or advisory section; Char Dham: 2 of 4 dhams with no explanation; Goa: \"good food\" -> all meals TBD.",
    "impact": "The plan looks complete to the traveller while missing the one thing they asked for.",
    "fix": "Extract explicit asks into a request checklist at kickoff and have the completion gate require each to be Met or Dropped with a stated reason.",
-   "source": "LLM judge"
+   "source": "LLM judge",
+   "status": "fixed",
+   "resolution": "tools/request_asks.py reads the traveller's words from the turn that created the trip. 'Include the flights', 'verify entry requirements' and 'covering A, B and C' (with named circuits such as Char Dham) become first-turn completion gaps unless met or recorded in the new dropped_requests field with a reason the agent must also say. On the corpus it flags 18 trips: 16 missing entry checks, Paris flights and Char Dham. Tests: tests/test_request_asks.py."
   },
   {
    "id": "BL-07",
@@ -78,7 +90,9 @@
    "evidence": "Lonavala day 2 summary: \"Visit Bhushi Dam, Tiger Point\"; those are on days 3 and 1. Dubai day 1 names Burj Khalifa (day 2); Amritsar day 2 names the Golden Temple (day 1).",
    "impact": "The day card contradicts itself, so the traveller cannot trust either the summary or the stops.",
    "fix": "Rebuild the summary line from the day's stops after every edit, or validate that every place it names is on that day.",
-   "source": "LLM judge (Lonavala) then summary_drift probe"
+   "source": "LLM judge (Lonavala) then summary_drift probe",
+   "status": "fixed",
+   "resolution": "trip_validation.summary_drift_warnings is a first-turn completion gap: a summary naming another day's stop must be rewritten from that day's stops (10 corpus trips)."
   },
   {
    "id": "BL-08",
@@ -89,7 +103,9 @@
    "evidence": "Rajasthan day 1: Mumbai to Jaipur 1,160 km in 660 minutes (105 km/h door to door), followed by an 18:00 bazaar stroll; Tirupati-Hyderabad 550 km in 7 hours.",
    "impact": "A day that cannot be driven; the audit's temporal rules trust the stated duration.",
    "fix": "Floor road durations by distance and region (for example 55 km/h door to door in India beyond 250 km plus breaks), and split or replace drives over about 9 hours with a train or flight.",
-   "source": "LLM judge (Rajasthan) then implausible_road_speed probe"
+   "source": "LLM judge (Rajasthan) then implausible_road_speed probe",
+   "status": "fixed",
+   "resolution": "trip_validation.implausible_drive_warnings is a first-turn completion gap for drives of 250 km or more averaging over 75 km/h door to door; it asks for a realistic duration or, beyond nine realistic hours, a train, flight or overnight split (3 corpus trips)."
   },
   {
    "id": "BL-09",
@@ -100,7 +116,9 @@
    "evidence": "harness/audit.py passes the whole place cache (3,985 entries, about 13 MB) as places for every generated record, and evals/judge.evidence_for sends it; a judge profile's max_input_bytes is 100 KB. The manifest also stores no request text for any trip and scenario_expectations for only 34.",
    "impact": "Milestone 3 judging is unusable on the corpus it was built for, so quality has never been measured at scale.",
    "fix": "Send only the plan's own places (evals/trip_text.places_for, added here) and persist request, expectations and producer commit for every generated trip.",
-   "source": "Building this report"
+   "source": "Building this report",
+   "status": "fixed",
+   "resolution": "judge.evidence_for sends only the places the plan names, with judge-relevant fields: every corpus judge input is now under 50 KB (median 20 KB, previously about 13 MB). All 178 manifest entries now carry their request (reconstructed and marked request_reconstructed) and expectations; owner_evals reads them from the manifest."
   },
   {
    "id": "BL-10",
@@ -111,7 +129,9 @@
    "evidence": "Bali scores 4.00 overall while failing preference fidelity (2/5): it ignored the explicit entry-requirement ask.",
    "impact": "Ranking by overall score hides fidelity failures.",
    "fix": "Withhold or cap the overall score when a hard gate scores 2 or lower, and report the gate result beside the taste mean.",
-   "source": "Building this report"
+   "source": "Building this report",
+   "status": "fixed",
+   "resolution": "judge.validate caps the overall score at a failed hard gate's score (2 or lower) and reports hard_gate_failed; Bali now ranks 2.00 instead of 4.00. Test: tests/test_itinerary_judge.py."
   }
  ],
  "efficiencies": [
@@ -136,7 +156,7 @@
    "value": "high",
    "effort": "M",
    "title": "Move plan hygiene from prompt rules and repair turns into a deterministic save-time normaliser",
-   "evidence": "prompts.py holds about 40 KB of rules, yet 47 of 178 trips list a hotel after the day's departure, 26 are out of time order, 20 keep an unused night, and 75 carry 544 placeholders. Corpus generation measured a median of 5.4 minutes per accepted trip (p90 12.1) at a median ₹38.6, and the August audit's completion-gap gate fired on 236 trips.",
+   "evidence": "prompts.py holds about 40 KB of rules, yet 95 of 178 trips list a hotel after the day's departure, 26 are out of time order, 20 keep an unused night, and 75 carry 544 placeholders. Corpus generation measured a median of 5.4 minutes per accepted trip (p90 12.1) at a median ₹38.6, and the August audit's completion-gap gate fired on 236 trips.",
    "plan": "Sort and anchor stops, set checkout to the departure date, rebuild day summaries from stops, and count placeholders in code on save. Return only the residual conflicts to the agent (the Lab 19 deterministic-engine direction). The bug class stops occurring instead of being detected, with fewer repair rounds, fewer tokens and less latency."
   },
   {

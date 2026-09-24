@@ -10,8 +10,9 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from datetime import date
 from typing import Any
+
+from tripplanner.tools import day_order, trip_validation
 
 _PLACEHOLDER = re.compile(
     r"\b(?:tbd|tbc|to be decided)\b"
@@ -44,66 +45,18 @@ def _is_move(stop: dict[str, Any]) -> bool:
 
 
 def out_of_order(plan: dict[str, Any]) -> list[str]:
-    """A timed stop listed after a later-timed stop on the same day."""
-    hits = []
-    for day in _days(plan):
-        latest, latest_name = -1, ""
-        for stop in _stops(day):
-            minute = _minutes(stop.get("time"))
-            if minute is None:
-                continue
-            if minute < latest:
-                hits.append(
-                    f"Day {day.get('day')}: {stop.get('name')} at {stop.get('time')}"
-                    f" after {latest_name}"
-                )
-            if minute >= latest:
-                latest, latest_name = minute, f"{stop.get('name')} at {stop.get('time')}"
-    return hits
+    """Shared with the save-time repair in ``tools.day_order`` so both agree."""
+    return day_order.out_of_order(plan)
 
 
 def stay_after_departure(plan: dict[str, Any]) -> list[str]:
-    """A hotel stop listed after the day's first journey that leaves town."""
-    hits = []
-    for day in _days(plan):
-        stops = _stops(day)
-        first_move = next((i for i, stop in enumerate(stops) if _is_move(stop)), None)
-        if first_move is None:
-            continue
-        origin_hotels = {
-            str(stop.get("name"))
-            for stop in stops[:first_move]
-            if str(stop.get("kind") or "").lower() == "hotel"
-        }
-        for stop in stops[first_move + 1 :]:
-            note = str(stop.get("note") or "").lower()
-            if str(stop.get("kind") or "").lower() == "hotel" and (
-                "check" in note and "out" in note or str(stop.get("name")) in origin_hotels
-            ):
-                hits.append(
-                    f"Day {day.get('day')}: {stop.get('name')} ({stop.get('note') or 'stay'})"
-                    f" after {stops[first_move].get('name')}"
-                )
-                break
-    return hits
+    """Shared with the save-time repair in ``tools.day_order`` so both agree."""
+    return day_order.misplaced_stays(plan)
 
 
 def unused_nights(plan: dict[str, Any]) -> list[str]:
-    """A selected stay whose checkout falls after the last planned day."""
-    days = _days(plan)
-    try:
-        last = max(date.fromisoformat(str(day.get("date"))) for day in days)
-    except ValueError:
-        return []
-    hits = []
-    for hotel in plan.get("selected_hotels") or []:
-        try:
-            checkout = date.fromisoformat(str(hotel.get("checkout")))
-        except (TypeError, ValueError):
-            continue
-        if (checkout - last).days >= 1 and _is_move((_stops(days[-1]) or [{}])[-1]):
-            hits.append(f"{hotel.get('name')} checks out {checkout} after leaving on {last}")
-    return hits
+    """Shared with the save-time repair in ``tools.day_order`` so both agree."""
+    return day_order.unused_nights(plan)
 
 
 def placeholder_stops(plan: dict[str, Any]) -> list[str]:
@@ -124,60 +77,14 @@ def synthetic_fares(plan: dict[str, Any]) -> list[str]:
     ]
 
 
-def implausible_road_speed(
-    plan: dict[str, Any], limit_kmh: float = 75.0, min_km: float = 250.0
-) -> list[str]:
-    """A long drive whose door-to-door average leaves no time for breaks or traffic."""
-    hits = []
-    for day in _days(plan):
-        for stop in _stops(day):
-            name = str(stop.get("name") or "")
-            try:
-                km, minutes = float(stop.get("distance_km")), float(stop.get("duration_min"))
-            except (TypeError, ValueError):
-                continue
-            if (
-                name.lower().startswith("drive")
-                and minutes > 0
-                and km >= min_km
-                and km / (minutes / 60) > limit_kmh
-            ):
-                hits.append(
-                    f"Day {day.get('day')}: {name} {km:.0f} km in {minutes:.0f} min"
-                    f" ({km / (minutes / 60):.0f} km/h)"
-                )
-    return hits
+def implausible_road_speed(plan: dict[str, Any]) -> list[str]:
+    """Shared with the completion gate so the probe and the planner agree."""
+    return trip_validation.implausible_drive_warnings(plan)
 
 
 def summary_drift(plan: dict[str, Any]) -> list[str]:
-    """A day summary naming a stop that is planned on a different day instead."""
-    days = _days(plan)
-    anchors = {str(plan.get(key) or "").strip().casefold() for key in ("origin", "destination")}
-    names_by_day = [
-        {
-            str(stop.get("name") or "").strip()
-            for stop in _stops(day)
-            if len(str(stop.get("name") or "")) > 5
-            and str(stop.get("name") or "").strip().casefold() not in anchors
-            and str(stop.get("kind") or "").lower() in {"attraction", "activity", "meal"}
-        }
-        for day in days
-    ]
-    hits = []
-    for index, day in enumerate(days):
-        summary = str(day.get("summary") or "")
-        for other, names in enumerate(names_by_day):
-            if other == index:
-                continue
-            for name in names - names_by_day[index]:
-                if name in summary and not name.lower().startswith(
-                    ("hotel", "drive", "flight", "train")
-                ):
-                    hits.append(
-                        f"Day {day.get('day')} summary names {name},"
-                        f" planned on Day {days[other].get('day')}"
-                    )
-    return hits
+    """Shared with the completion gate so the probe and the planner agree."""
+    return trip_validation.summary_drift_warnings(plan)
 
 
 def unpriced(plan: dict[str, Any]) -> list[str]:

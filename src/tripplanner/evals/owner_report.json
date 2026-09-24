@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated_at": "2026-09-23T16:12:32+00:00",
+ "generated_at": "2026-09-24T11:41:41+00:00",
  "judge": {
   "rubric": {
    "version": "itinerary-v1",
@@ -166,6 +166,7 @@
     ],
     "status": "complete",
     "overall_score": 4.43,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -285,7 +286,8 @@
      }
     ],
     "status": "complete",
-    "overall_score": 3.0,
+    "overall_score": 2.0,
+    "hard_gate_failed": true,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -409,7 +411,8 @@
      }
     ],
     "status": "complete",
-    "overall_score": 3.14,
+    "overall_score": 2.0,
+    "hard_gate_failed": true,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -530,6 +533,7 @@
     ],
     "status": "complete",
     "overall_score": 3.0,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -645,7 +649,8 @@
      }
     ],
     "status": "complete",
-    "overall_score": 4.0,
+    "overall_score": 2.0,
+    "hard_gate_failed": true,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -775,6 +780,7 @@
     ],
     "status": "complete",
     "overall_score": 3.25,
+    "hard_gate_failed": false,
     "scored_dimensions": 8,
     "advisory": true
    },
@@ -903,6 +909,7 @@
     ],
     "status": "complete",
     "overall_score": 3.29,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -1038,7 +1045,8 @@
      }
     ],
     "status": "complete",
-    "overall_score": 3.43,
+    "overall_score": 2.0,
+    "hard_gate_failed": true,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -1163,6 +1171,7 @@
     ],
     "status": "complete",
     "overall_score": 3.14,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -1291,6 +1300,7 @@
     ],
     "status": "complete",
     "overall_score": 2.43,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -1415,6 +1425,7 @@
     ],
     "status": "complete",
     "overall_score": 3.43,
+    "hard_gate_failed": false,
     "scored_dimensions": 7,
     "advisory": true
    },
@@ -1550,7 +1561,8 @@
      }
     ],
     "status": "complete",
-    "overall_score": 2.71,
+    "overall_score": 2.0,
+    "hard_gate_failed": true,
     "scored_dimensions": 7,
     "advisory": true
    }
@@ -1567,7 +1579,7 @@
   }
  },
  "audit": {
-  "generated_at": "2026-09-23T16:11:42.752503+00:00",
+  "generated_at": "2026-09-24T11:41:26.233600+00:00",
   "corpus": {
    "size": 391,
    "raw_size": 438,
@@ -1647,8 +1659,8 @@
     "title": "Completion gap",
     "statement": "A trip presented as planned must not still be missing its parts.",
     "severity": "gate",
-    "hits": 1331,
-    "trips": 329,
+    "hits": 1405,
+    "trips": 330,
     "evaluated": 349
    },
    {
@@ -1665,7 +1677,7 @@
     "title": "Render",
     "statement": "An itinerary stop must reach the map or say why it did not.",
     "severity": "report",
-    "hits": 270,
+    "hits": 269,
     "trips": 137,
     "evaluated": 205
    },
@@ -1751,21 +1763,21 @@
     "evaluated": 349
    },
    {
-    "code": "M1",
-    "title": "Metamorphic",
-    "statement": "Making a trip worse must never make the report quieter.",
-    "severity": "report",
-    "hits": 8,
-    "trips": 8,
-    "evaluated": 349
-   },
-   {
     "code": "I12",
     "title": "Permanently closed",
     "statement": "A place reported as shut down for good must not be planned at all.",
     "severity": "report",
     "hits": 7,
     "trips": 7,
+    "evaluated": 349
+   },
+   {
+    "code": "M1",
+    "title": "Metamorphic",
+    "statement": "Making a trip worse must never make the report quieter.",
+    "severity": "report",
+    "hits": 6,
+    "trips": 6,
     "evaluated": 349
    },
    {
@@ -1900,7 +1912,7 @@
    {
     "rule": "R4",
     "symptom": "<place> on Day N never reached the map (no_match).",
-    "count": 189,
+    "count": 188,
     "example": "Ross Island on Day 2 never reached the map (no_match).",
     "accepted": false
    },
@@ -1944,6 +1956,13 @@
     "symptom": "Departure day has no explicit flight, rail, ferry, road, or other journey from <place> back to <place> after checkout.",
     "count": 66,
     "example": "Departure day has no explicit flight, rail, ferry, road, or other journey from New York back to Delhi after checkout.",
+    "accepted": false
+   },
+   {
+    "rule": "gap",
+    "symptom": "Day N's summary names <place>, which is planned on Day N. Rewrite the summary from that day's own stops.",
+    "count": 64,
+    "example": "Day 1's summary names Burj Khalifa, which is planned on Day 2. Rewrite the summary from that day's own stops.",
     "accepted": false
    },
    {
@@ -2109,16 +2128,16 @@
    },
    {
     "rule": "gap",
-    "symptom": "Day(s) N, N, N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
-    "count": 9,
-    "example": "Day(s) 1, 2, 3, 4, 5, 6 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "symptom": "Day N schedules <place> (N km) in N minutes, N km/h door to door; replace it with a train or flight, or split it with an overnight stop.",
+    "count": 10,
+    "example": "Day 1 schedules Drive: Mumbai to Jaipur (1160 km) in 660 minutes, 105 km/h door to door; replace it with a train or flight, or split it with an overnight stop.",
     "accepted": false
    },
    {
-    "rule": "M1",
-    "symptom": "strand-a-stop made the trip worse, and the report went from N to N findings.",
-    "count": 8,
-    "example": "strand-a-stop made the trip worse, and the report went from 9 to 7 findings.",
+    "rule": "gap",
+    "symptom": "Day(s) N, N, N, N, N, N name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
+    "count": 9,
+    "example": "Day(s) 1, 2, 3, 4, 5, 6 name no bookable property -- a stay described only as a hotel in a city cannot be booked, reached, or priced. Choose a real property, or offer two or three named candidates.",
     "accepted": false
    },
    {
@@ -2140,13 +2159,6 @@
     "symptom": "Day N draws an inter-city Train from <place> Railway Station to <place> Railway Station that covers no distance.",
     "count": 7,
     "example": "Day 1 draws an inter-city Train from Hyderabad Railway Station to Tirupati Railway Station that covers no distance.",
-    "accepted": false
-   },
-   {
-    "rule": "gap",
-    "symptom": "Sparse itinerary: Day N has about N planned minutes; this profile's useful-day threshold is N minutes; Day N has about N planned minutes; this profile's useful-day threshold is N minutes; Day N has about N planned minutes; this profile's useful-day threshold is N minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
-    "count": 7,
-    "example": "Sparse itinerary: Day 2 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes; Day 3 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes; Day 4 has about 150 planned minutes; this profile's useful-day threshold is 198 minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler.",
     "accepted": false
    }
   ]
@@ -2185,21 +2197,21 @@
     "evaluated": 178,
     "hits": 28,
     "examples": [
-     "bhutan-budget-three-generation-3d: Day 3: Drive: Thimphu to Paro at 07:00 after Sonam Trophel Restaurant at 14:30",
-     "chikmagalur-accessible-three-generation-7d: Day 4: Drive: Belur to Chikmagalur at 15:00 after Anagha Grand at 15:15",
-     "chikmagalur-heritage-young-family-3d: Day 2: Drive: Halebidu to Chikmagalur at 15:00 after Hoysaleswara Temple, Halebidu at 15:30"
+     "bhutan-budget-three-generation-3d: Day 3: Drive: Thimphu to Paro at 07:00 is listed after Sonam Trophel Restaurant at 14:30",
+     "chikmagalur-accessible-three-generation-7d: Day 4: Drive: Belur to Chikmagalur at 15:00 is listed after Anagha Grand at 15:15",
+     "chikmagalur-heritage-young-family-3d: Day 2: Drive: Halebidu to Chikmagalur at 15:00 is listed after Hoysaleswara Temple, Halebidu at 15:30"
     ]
    },
    {
     "key": "stay_after_departure",
     "title": "Hotel stop after the day's departing journey",
-    "trips": 47,
+    "trips": 95,
     "evaluated": 178,
-    "hits": 64,
+    "hits": 143,
     "examples": [
+     "amritsar-outdoors-three-generation-7d: Day 3: Ramada by Wyndham Amritsar (Start from hotel) after Drive: Amritsar to Harike Wetland",
      "andaman-ferry: Day 3: SeaShell Port Blair (Checkout) after Ferry: Port Blair to Havelock",
-     "bhutan-heritage-young-family-5d: Day 3: Hotel in Thimphu (Check-out) after Drive: Thimphu to Paro",
-     "bhutan-outdoors-solo-3d: Day 3: Terma Linca Resort & Spa (Check out) after Drive: Thimphu to Paro"
+     "bali-honeymoon: Day 4: THE HAVEN Bali Seminyak (stay) after Transfer: Seminyak to Nusa Dua"
     ]
    },
    {
@@ -2209,9 +2221,9 @@
     "evaluated": 178,
     "hits": 26,
     "examples": [
-     "chikmagalur-packed-solo-7d: Day 2 summary names Mullayanagiri, planned on Day 3",
-     "dubai-visa: Day 1 summary names Burj Khalifa, planned on Day 2",
-     "india-amritsar-pilgrimage-three-generation-3d: Day 2 summary names Golden Temple, planned on Day 1"
+     "chikmagalur-packed-solo-7d: Day 2's summary names Mullayanagiri, which is planned on Day 3. Rewrite the summary from that day's own stops.",
+     "dubai-visa: Day 1's summary names Burj Khalifa, which is planned on Day 2. Rewrite the summary from that day's own stops.",
+     "india-amritsar-pilgrimage-three-generation-3d: Day 2's summary names Golden Temple, which is planned on Day 1. Rewrite the summary from that day's own stops."
     ]
    },
    {
@@ -2233,9 +2245,9 @@
     "evaluated": 178,
     "hits": 5,
     "examples": [
-     "rajasthan-multicity: Day 1: Drive: Mumbai to Jaipur 1160 km in 660 min (105 km/h)",
-     "tirupati-accessible-couple-7d: Day 7: Drive: Tirupati to Hyderabad 550 km in 420 min (79 km/h)",
-     "tirupati-slow-couple-7d: Day 1: Drive: Hyderabad to Tirupati 550 km in 420 min (79 km/h)"
+     "rajasthan-multicity: Day 1 schedules Drive: Mumbai to Jaipur (1160 km) in 660 minutes, 105 km/h door to door; replace it with a train or flight, or split it with an overnight stop.",
+     "tirupati-accessible-couple-7d: Day 7 schedules Drive: Tirupati to Hyderabad (550 km) in 420 minutes, 79 km/h door to door; replace it with a train or flight, or split it with an overnight stop.",
+     "tirupati-slow-couple-7d: Day 1 schedules Drive: Hyderabad to Tirupati (550 km) in 420 minutes, 79 km/h door to door; replace it with a train or flight, or split it with an overnight stop."
     ]
    },
    {
@@ -2298,7 +2310,9 @@
    "evidence": "\"India Gate | delhi, agra, jaipur\" -> tour agency \"Delhi Agra Jaipur Trip\" (42 stops resolve to it); \"Meetings (User's location) | new york\" -> New York Inter-Group of AA; \"Harajuku\" -> a gyukatsu restaurant; \"Kamadgiri\" -> Kashi Vishwanath (wrong city); \"Ross Island\" -> Aberdeen Jetty; 17 clock times (\"08:00\") and prompt sentences (\"key details:\") were paid lookups. Today's filters (places_cache.is_lookupable_place_name and place_confidence.stop_place_tier) both still pass \"08:00\", \"Work meetings\", \"Lunch break\" and \"Sunset at beach\". Hand review of a random 40 of the mismatches: about 30 were a wrong place or a non-place label.",
    "impact": "Confident map pins in the wrong place (sometimes the wrong city), wrong photos and ratings in the stop card, and paid Places calls that buy nothing.",
    "fix": "One stop classifier shared by lookup gating and map tiering that rejects times, activity phrases and sentences; bias each lookup with the stop's own city rather than the whole destination phrase; and accept a result only when its name shares a token with the query or its type matches the stop kind, otherwise store it as approximate and never pin it.",
-   "source": "LLM judge (New York, Tokyo, Cape Town packets) then deterministic place_identity probe"
+   "source": "LLM judge (New York, Tokyo, Cape Town packets) then deterministic place_identity probe",
+   "status": "fixed",
+   "resolution": "places_cache now declines clock times, sentences and activity labels (via place_confidence, which learned the missing words), requests five candidates in the same single billed search and keeps the one named like the stop, and never shows or pins a cached result that shares no word with it. On the committed cache: 272 distinct non-place names would no longer be bought, and 322 wrong results are hidden. City bias still uses the caller's context. Tests: tests/test_places_cache.py."
   },
   {
    "id": "BL-02",
@@ -2309,7 +2323,9 @@
    "evidence": "\"Duffel Airways\" (flight numbers ZZ…) in 6 trips, e.g. Cape Town $596.75, Bhutan $1,206.54; \"Nuitée Air\" from liteapi in 3 trips, e.g. Goa ₹29,582. tools/duffel_flights.py documents that duffel_test_ tokens return synthetic offers, but nothing marks them after selection.",
    "impact": "A traveller or the booking handoff can present a fare that does not exist; budget totals include invented prices.",
    "fix": "Mark every offer from a test-mode credential or known sandbox carrier as synthetic at the provider adapter; refuse to persist it in selected_flights or the booking handoff; if kept for development, label it \"Sample fare, not bookable\" in every view.",
-   "source": "LLM judge (Cape Town, Goa) then synthetic_fares probe"
+   "source": "LLM judge (Cape Town, Goa) then synthetic_fares probe",
+   "status": "deferred",
+   "resolution": "Not approved in this round."
   },
   {
    "id": "BL-03",
@@ -2320,7 +2336,9 @@
    "evidence": "Tokyo day 4: Shinkansen 09:00 then Sunroute checkout 12:10; Gujarat day 3: drive 08:00 then Ahmedabad checkout 14:30; Rajasthan day 3: Jaipur checkout 18:00 after reaching Jodhpur, \"Lunch break\" 20:00; Char Dham days 3-7 repeat the pattern; Andaman: Port Blair checkout after the Havelock ferry.",
    "impact": "The itinerary, the map route and the day's travel totals describe an impossible order; audit rules I4/I9 fire on the symptom rather than the cause.",
    "fix": "A deterministic normaliser on save: origin-hotel checkout precedes the first departing move, timed stops sort by time, and a stop whose time runs backwards is rejected back to the agent with the exact conflict instead of being saved.",
-   "source": "LLM judge (5 of 12 trips) then deterministic probes"
+   "source": "LLM judge (5 of 12 trips) then deterministic probes",
+   "status": "fixed",
+   "resolution": "tools/day_order.py runs on every save: a stay that is being left (a check-out, a 'start from hotel', or the previous night's hotel before any return journey) moves to just before the day's first departure and loses an impossible time. Out-of-order times were already rejected by the chronology check merged on 2026-09-12; all 26 corpus cases predate it. On the corpus, simulated saves take misplaced stays from 95 trips to 0. Tests: tests/test_day_order.py."
   },
   {
    "id": "BL-04",
@@ -2331,7 +2349,9 @@
    "evidence": "Paris: Hotel Le Littre to 12 Apr, flight home 11 Apr; Tokyo: Granvia Kyoto to 9 Apr, flight 8 Apr; Mysore: Radisson to 15 Sep, drive home 14 Sep and a 'Buffer/Return' day 6 at the hotel; Bali-honeymoon: Mulia to 19 Nov, leaves 18 Nov. Contributing cause: every generated request phrases an N-day trip across N+1 calendar dates (matrix._compose uses start + days), and checkout copies return_date. The deterministic audit reports \"Itinerary covers N of N+1 requested days\" 241 times across the corpus.",
    "impact": "Budget totals include a night nobody uses, and the plan invents filler days at a hotel after departure.",
    "fix": "Checkout equals the date of the departing journey; when the request's day count and date span disagree, ask once instead of silently choosing; generate corpus requests with an end date of start + days - 1.",
-   "source": "LLM judge (Paris, Tokyo, Mysore) then unused_nights probe"
+   "source": "LLM judge (Paris, Tokyo, Mysore) then unused_nights probe",
+   "status": "fixed",
+   "resolution": "The same save-time step checks out on the day the trip ends with the journey home and re-prices the stay from its nightly rate (20 corpus trips to 0 when re-saved). The generation matrices now phrase an N-day trip as N calendar days; the manifest keeps the original requests of the 178 existing trips."
   },
   {
    "id": "BL-05",
@@ -2342,7 +2362,9 @@
    "evidence": "Goa (\"We want … good food\") has five TBD meals; Rajasthan's every meal is \"Local restaurant <city>\"; Char Dham and Kerala have only \"Hotel in <city>\"; New York has \"Hotel (TBD)\" on every day. prompts.py forbids leaving TBD meals, but trip_validation only warns and the plan still completes. Paris uses \"Central Paris Hotel\" instead of the selected Hotel Le Littre (10 of 102 trips with a selected hotel do not name it in the itinerary). Audit I6 finds 459 nights with no concrete, bookable stay.",
    "impact": "The traveller receives an itinerary that reads as decided but is not; judged meal quality averages 2.58/5, second lowest after narrative coherence (2.50).",
    "fix": "Count placeholders deterministically at the completion gate and either fill them from research already in hand or return them as explicit open decisions (UX Lab 32); bind hotel stops to selected_hotels by id rather than by name.",
-   "source": "LLM judge (all 12 trips) then placeholder_stops probe"
+   "source": "LLM judge (all 12 trips) then placeholder_stops probe",
+   "status": "deferred",
+   "resolution": "Not approved in this round; UX Lab 32 covers the presentation side."
   },
   {
    "id": "BL-06",
@@ -2353,7 +2375,9 @@
    "evidence": "Paris: \"Include the flights\" -> no selected flight; Bali: \"Verify current official entry requirements\" -> no visa or advisory section; Char Dham: 2 of 4 dhams with no explanation; Goa: \"good food\" -> all meals TBD.",
    "impact": "The plan looks complete to the traveller while missing the one thing they asked for.",
    "fix": "Extract explicit asks into a request checklist at kickoff and have the completion gate require each to be Met or Dropped with a stated reason.",
-   "source": "LLM judge"
+   "source": "LLM judge",
+   "status": "fixed",
+   "resolution": "tools/request_asks.py reads the traveller's words from the turn that created the trip. 'Include the flights', 'verify entry requirements' and 'covering A, B and C' (with named circuits such as Char Dham) become first-turn completion gaps unless met or recorded in the new dropped_requests field with a reason the agent must also say. On the corpus it flags 18 trips: 16 missing entry checks, Paris flights and Char Dham. Tests: tests/test_request_asks.py."
   },
   {
    "id": "BL-07",
@@ -2364,7 +2388,9 @@
    "evidence": "Lonavala day 2 summary: \"Visit Bhushi Dam, Tiger Point\"; those are on days 3 and 1. Dubai day 1 names Burj Khalifa (day 2); Amritsar day 2 names the Golden Temple (day 1).",
    "impact": "The day card contradicts itself, so the traveller cannot trust either the summary or the stops.",
    "fix": "Rebuild the summary line from the day's stops after every edit, or validate that every place it names is on that day.",
-   "source": "LLM judge (Lonavala) then summary_drift probe"
+   "source": "LLM judge (Lonavala) then summary_drift probe",
+   "status": "fixed",
+   "resolution": "trip_validation.summary_drift_warnings is a first-turn completion gap: a summary naming another day's stop must be rewritten from that day's stops (10 corpus trips)."
   },
   {
    "id": "BL-08",
@@ -2375,7 +2401,9 @@
    "evidence": "Rajasthan day 1: Mumbai to Jaipur 1,160 km in 660 minutes (105 km/h door to door), followed by an 18:00 bazaar stroll; Tirupati-Hyderabad 550 km in 7 hours.",
    "impact": "A day that cannot be driven; the audit's temporal rules trust the stated duration.",
    "fix": "Floor road durations by distance and region (for example 55 km/h door to door in India beyond 250 km plus breaks), and split or replace drives over about 9 hours with a train or flight.",
-   "source": "LLM judge (Rajasthan) then implausible_road_speed probe"
+   "source": "LLM judge (Rajasthan) then implausible_road_speed probe",
+   "status": "fixed",
+   "resolution": "trip_validation.implausible_drive_warnings is a first-turn completion gap for drives of 250 km or more averaging over 75 km/h door to door; it asks for a realistic duration or, beyond nine realistic hours, a train, flight or overnight split (3 corpus trips)."
   },
   {
    "id": "BL-09",
@@ -2386,7 +2414,9 @@
    "evidence": "harness/audit.py passes the whole place cache (3,985 entries, about 13 MB) as places for every generated record, and evals/judge.evidence_for sends it; a judge profile's max_input_bytes is 100 KB. The manifest also stores no request text for any trip and scenario_expectations for only 34.",
    "impact": "Milestone 3 judging is unusable on the corpus it was built for, so quality has never been measured at scale.",
    "fix": "Send only the plan's own places (evals/trip_text.places_for, added here) and persist request, expectations and producer commit for every generated trip.",
-   "source": "Building this report"
+   "source": "Building this report",
+   "status": "fixed",
+   "resolution": "judge.evidence_for sends only the places the plan names, with judge-relevant fields: every corpus judge input is now under 50 KB (median 20 KB, previously about 13 MB). All 178 manifest entries now carry their request (reconstructed and marked request_reconstructed) and expectations; owner_evals reads them from the manifest."
   },
   {
    "id": "BL-10",
@@ -2397,7 +2427,9 @@
    "evidence": "Bali scores 4.00 overall while failing preference fidelity (2/5): it ignored the explicit entry-requirement ask.",
    "impact": "Ranking by overall score hides fidelity failures.",
    "fix": "Withhold or cap the overall score when a hard gate scores 2 or lower, and report the gate result beside the taste mean.",
-   "source": "Building this report"
+   "source": "Building this report",
+   "status": "fixed",
+   "resolution": "judge.validate caps the overall score at a failed hard gate's score (2 or lower) and reports hard_gate_failed; Bali now ranks 2.00 instead of 4.00. Test: tests/test_itinerary_judge.py."
   }
  ],
  "efficiencies": [

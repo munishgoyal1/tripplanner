@@ -52,10 +52,12 @@ def test_probes_find_each_judged_defect_pattern() -> None:
     assert probes.synthetic_fares(plan) == ["Duffel Airways 10 USD"]
     assert probes.stay_after_departure(plan)[0].startswith("Day 2: Stay (Checkout)")
     assert probes.out_of_order(plan)[0].startswith("Day 2: Baga Beach at 07:00")
-    assert probes.implausible_road_speed(plan) == [
-        "Day 2: Drive: Goa to Bangalore 560 km in 300 min (112 km/h)"
-    ]
-    assert probes.summary_drift(plan) == ["Day 1 summary names Baga Beach, planned on Day 2"]
+    assert probes.implausible_road_speed(plan)[0].startswith(
+        "Day 2 schedules Drive: Goa to Bangalore (560 km) in 300 minutes, 112 km/h"
+    )
+    assert probes.summary_drift(plan)[0].startswith(
+        "Day 1's summary names Baga Beach, which is planned on Day 2."
+    )
 
 
 def test_probes_stay_quiet_on_a_clean_plan() -> None:

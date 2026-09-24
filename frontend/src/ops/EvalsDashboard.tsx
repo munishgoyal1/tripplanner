@@ -11,6 +11,11 @@ const SEVERITY_STYLE: Record<EvalFinding["severity"], string> = {
   medium: "bg-amber-300 text-stone-950",
   low: "bg-stone-300 text-stone-900",
 };
+const STATUS_STYLE: Record<NonNullable<EvalFinding["status"]>, string> = {
+  open: "border border-stone-400 text-stone-700",
+  fixed: "bg-emerald-600 text-white",
+  deferred: "border border-dashed border-stone-400 text-stone-500",
+};
 const SCORE_STYLE: Record<number, string> = {
   1: "bg-rose-200 text-rose-950",
   2: "bg-orange-200 text-orange-950",
@@ -75,6 +80,7 @@ function FindingsView({ report }: { report: EvalsReport }) {
             <span className="font-mono text-xs text-stone-500">{finding.id}</span>
             <span className="text-xs text-stone-500">· {finding.area}</span>
             {finding.prevalence && <span className="text-xs font-semibold text-stone-700">· {finding.prevalence}</span>}
+            {finding.status && <span className={`ml-auto px-2 py-0.5 text-xs font-bold uppercase ${STATUS_STYLE[finding.status]}`}>{finding.status}</span>}
           </div>
           <h3 className="mt-2 font-display text-lg text-stone-900">{finding.title}</h3>
           <dl className="mt-2 grid gap-2 text-sm text-stone-700 md:grid-cols-3">
@@ -82,6 +88,7 @@ function FindingsView({ report }: { report: EvalsReport }) {
             <div><dt className="text-xs font-semibold uppercase text-stone-500">Impact</dt><dd>{finding.impact}</dd></div>
             <div><dt className="text-xs font-semibold uppercase text-stone-500">Proposed fix</dt><dd>{finding.fix}</dd></div>
           </dl>
+          {finding.resolution && <p className="mt-2 border-l-2 border-stone-300 pl-3 text-sm text-stone-700"><span className="font-semibold">Resolution: </span>{finding.resolution}</p>}
           <p className="mt-2 text-xs text-stone-500">Found by {finding.source}</p>
         </article>
       ))}
@@ -112,7 +119,7 @@ function JudgeView({ report }: { report: EvalsReport }) {
                 <tr className="cursor-pointer hover:bg-stone-50" onClick={() => setOpen(open === trip.slug ? null : trip.slug)}>
                   <td className="py-1 pr-3"><span className="flex items-center gap-1">{open === trip.slug ? <ChevronDown size={14} /> : <ChevronRight size={14} />}<span className="font-medium text-stone-900">{trip.destination}</span><span className="text-xs text-stone-500">· {trip.days}d · {trip.slug}</span></span></td>
                   {dimensions.map((key) => <ScoreCell key={key} trip={trip} dimension={key} />)}
-                  <td className="px-2 py-1 text-center font-mono font-semibold">{trip.overall_score?.toFixed(2) ?? "—"}</td>
+                  <td className="px-2 py-1 text-center font-mono font-semibold" title={trip.hard_gate_failed ? "Capped: a hard gate scored 2 or lower" : undefined}>{trip.overall_score?.toFixed(2) ?? "—"}{trip.hard_gate_failed ? " ⚑" : ""}</td>
                 </tr>
                 {open === trip.slug && (
                   <tr>
@@ -254,8 +261,9 @@ export default function EvalsDashboard() {
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
   if (!report) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">{error ? <div role="alert" className="text-center"><p>{error}</p><button type="button" className="mt-3 underline" onClick={() => void load()}>Retry</button></div> : "Loading"}</main>;
 
-  const open = report.findings.length;
-  const severe = report.findings.filter((finding) => finding.severity === "critical" || finding.severity === "high").length;
+  const open = report.findings.filter((finding) => finding.status !== "fixed").length;
+  const fixed = report.findings.filter((finding) => finding.status === "fixed").length;
+  const severe = report.findings.filter((finding) => finding.status !== "fixed" && (finding.severity === "critical" || finding.severity === "high")).length;
   const judged = report.judge?.trips ?? [];
   const scored = judged.map((trip) => trip.overall_score).filter((score): score is number => score !== null);
   const mean = scored.length ? (scored.reduce((sum, score) => sum + score, 0) / scored.length).toFixed(2) : "—";
@@ -287,7 +295,7 @@ export default function EvalsDashboard() {
       {error && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{error}</div>}
       <div className="mx-auto grid max-w-[1500px] gap-4 px-5 py-6 sm:px-8">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Tile label="Open findings" value={String(open)} detail={`${severe} critical or high`} />
+          <Tile label="Open findings" value={String(open)} detail={`${severe} critical or high open · ${fixed} fixed`} />
           <Tile label="Judged trips" value={String(judged.length)} detail={`mean overall ${mean} / 5`} />
           <Tile label="Audit corpus" value={String(report.audit?.corpus.size ?? "—")} detail={`${gateTrips} gate rules failing somewhere`} />
           <Tile label="Efficiency items" value={String(report.efficiencies.length)} detail="ranked by value" />

@@ -629,7 +629,7 @@ def _compose(
         shape=f"India: {destination.phrase}, {emphasis.shape}, {party.key}, {days} days",
         message=(
             f"Plan a {days} day trip to {destination.phrase} from {destination.origin} for "
-            f"{party.phrase}, {_date_phrase(start, start + timedelta(days=days))}. "
+            f"{party.phrase}, {_date_phrase(start, start + timedelta(days=days - 1))}. "
             f"{emphasis.clause} This is a domestic trip within India."
         ),
         destination=f"india:{destination.key}",

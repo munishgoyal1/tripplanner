@@ -741,6 +741,9 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
     _normalize_hotel_endpoints(plan)
+    from tripplanner.tools import day_order
+
+    day_order.normalize(plan)
     # Carry forward what we already know about each stop. Cache-only, so this
     # adds no provider call; it just stops a saved trip from depending on a
     # volatile process cache for coordinates it has already paid to learn.
@@ -1501,6 +1504,10 @@ def update_trip_plan(updates_json: str) -> str:
        "source_domain": "gob.mx", "checked_on": "YYYY-MM-DD", "note": "one line"}
       Use 0 for processing_days_typical when no source states one — never
       estimate it, because it drives a deadline warning.
+    - dropped_requests: list of {"ask": "...", "reason": "..."} for an explicit
+      request you cannot meet (e.g. {"ask": "Kedarnath and Badrinath",
+      "reason": "not reachable in 8 days with two elderly travellers"}). Tell the
+      traveller the same reason in your reply. Never use it to skip work you can do.
 
     Example: '{"selected_flights": [{"option": 1, "airline": "IndiGo", "price": 8500}]}'
     """
@@ -1570,6 +1577,7 @@ def update_trip_plan(updates_json: str) -> str:
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
         "visa", "travel_scope", "lodging_research", "category_caps",
+        "dropped_requests",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False
@@ -1583,6 +1591,14 @@ def update_trip_plan(updates_json: str) -> str:
                     return "Error: category_caps must map flights/hotels/tickets/transport to amount and ISO currency."
             if key == "total_cost" and isinstance(val, (int, float)) and not isinstance(val, bool):
                 plan.pop("cost_total_needs_review", None)
+            if key == "dropped_requests":
+                if not isinstance(val, list) or not all(
+                    isinstance(item, dict)
+                    and str(item.get("ask") or "").strip()
+                    and str(item.get("reason") or "").strip()
+                    for item in val
+                ):
+                    return "Error: dropped_requests must be a list of {ask, reason} with both set."
             if key == "lodging_research":
                 if not isinstance(val, dict):
                     continue

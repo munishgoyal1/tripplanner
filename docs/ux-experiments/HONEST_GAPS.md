@@ -70,7 +70,7 @@ including the wrong map pin.
 
 The Lab page ranks six follow-up candidates with their evidence; they are not
 options in this Lab. In order: never pin a guessed place (11.3% of cached lookups
-share no word with the stop name); show the day in the order it happens (47 trips
+share no word with the stop name); show the day in the order it happens (95 trips
 list a hotel after the day's departure); rebuild day summaries from stops (10 trips
 contradict themselves); say when a trip is unpriced; echo each explicit request ask as
 Met, Not yet or Dropped; and show nights used against nights booked (20 trips keep a

@@ -995,6 +995,56 @@ Selecting another trip clears the filters.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `shows arrival and departure days for legacy flight legs`
 - [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `does not invent fallback connectors for an explicitly filtered day`
 
+### EB-ITIN-008 - Save a day in the order its journeys allow
+
+**Trigger:** Save an itinerary in which a stay being left (a check-out, a "start from
+hotel", or the previous night's hotel) is listed after the day's first departing drive,
+train, flight or ferry, or in which the trip ends with the journey home while a selected
+stay checks out a day later.
+
+**Expected:** On every save the stay moves to just before that departure and drops a time
+that falls after it; an arrival check-in, and a return to the hotel the day set out from
+after a later journey, stay where they are. A selected stay then checks out on the day the
+trip ends with its journey home, and a priced stay is re-totalled from its nightly rate.
+Times that run backwards are never re-sorted; the chronology check rejects them back to
+the agent with the exact conflict.
+
+**Executable proof:** [`tests/test_day_order.py`](../tests/test_day_order.py)
+
+### EB-PLAN-005 - Answer every explicit ask and keep each day's story honest
+
+**Trigger:** A first planning turn saves an itinerary for a request that says "include the
+flights", asks to verify entry requirements or advisories, names places with "covering A,
+B and C" or "trip to A, B and C from" (a named circuit such as Char Dham expands to its
+parts), or whose itinerary has a day summary naming another day's stop or a drive of
+250 km or more averaging over 75 km/h door to door.
+
+**Expected:** Each becomes a completion gap the agent must repair before presenting the
+plan: select the flights, save the entry check as `visa`, plan the named places, rewrite
+the summary from that day's stops, or give the drive a realistic duration (beyond nine
+realistic hours, a train, flight or overnight split). An ask that genuinely cannot be met
+is recorded in `dropped_requests` with a reason the reply repeats; an "A or B" choice is
+met by either, and region phrases such as "northern Italy" are not checked by name.
+
+**Executable proof:** [`tests/test_request_asks.py`](../tests/test_request_asks.py)
+
+### EB-MAP-003 - Never buy or pin a place the stop does not name
+
+**Trigger:** A stop is named with a clock time, an activity or gap ("Lunch break", "Work
+meetings", "Meetings (User's location)"), a copied sentence, or a place whose Google
+search returns a business named after the destination rather than the stop.
+
+**Expected:** Names that cannot be places cost no Places request and are map labels, not
+pins. A search asks for several candidates in the same single billed request and keeps the
+one named like the stop. A cached result that shares no word with the stop (other than an
+explicit airport) is kept, so it is never bought twice, but it is never shown, pinned or
+used for coordinates.
+
+**Executable proof:** [`tests/test_places_cache.py`](../tests/test_places_cache.py) -
+`test_activity_labels_and_clock_times_are_not_bought`,
+`test_lookup_prefers_the_candidate_named_like_the_stop`,
+`test_a_result_sharing_no_word_with_the_stop_is_kept_but_never_shown`
+
 ### EB-EXPORT-001 - Export a layered Trip Book
 
 **Trigger:** Choose Trip Book in export preview, print, PDF, or email.

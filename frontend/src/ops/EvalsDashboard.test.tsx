@@ -29,7 +29,7 @@ const report: EvalsReport = {
     rules: [{ code: "I9", title: "Continuity", statement: "Every move is explained.", severity: "gate", hits: 4, trips: 2 }],
     top_groups: [{ rule: "I9", symptom: "Day N jumps", count: 4, example: "Day 3", accepted: false }],
   },
-  findings: [{ id: "BL-1", title: "Checkout after departure", severity: "high", area: "Scheduling", evidence: "Tokyo day 4", impact: "Wrong order", fix: "Sort anchors", source: "judge" }],
+  findings: [{ id: "BL-1", title: "Checkout after departure", severity: "high", area: "Scheduling", evidence: "Tokyo day 4", impact: "Wrong order", fix: "Sort anchors", source: "judge", status: "fixed", resolution: "Stays move before the departure on save." }],
   efficiencies: [{ id: "EE-1", title: "One place classifier", value: "high", effort: "S", evidence: "two classifiers", plan: "merge" }],
 };
 
@@ -41,6 +41,8 @@ describe("EvalsDashboard", () => {
     render(<EvalsDashboard />);
 
     expect(await screen.findByText("Checkout after departure")).toBeInTheDocument();
+    expect(screen.getByText("Stays move before the departure on save.")).toBeInTheDocument();
+    expect(screen.getByText("0 critical or high open · 1 fixed")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: /LLM judge/ }));
     fireEvent.click(screen.getByText("Goa"));
     expect(screen.getByText("Every meal is TBD.")).toBeInTheDocument();

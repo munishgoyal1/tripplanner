@@ -12,6 +12,7 @@ can use it without touching ``places_cache``.
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any
 
 # The trip's shape depends on these: where the traveller sleeps, how they arrive
@@ -33,21 +34,24 @@ _ANCHOR_KINDS = frozenset({"hotel", "airport", "station", "bus_station", "origin
 # the city.
 _GENERIC_TOKENS = frozenset({
     "activities", "activity", "afternoon", "and", "area", "around", "arrival",
-    "arrive", "beach", "breakfast", "brunch", "check", "checkin", "checkout",
+    "arrive", "beach", "break", "breakfast", "brunch", "check", "checkin", "checkout",
     "center", "centre", "city", "class", "day", "days", "depart", "departure",
-    "dinner", "district", "dive", "diving",
+    "details", "dinner", "district", "dive", "diving",
     "downtown", "drinks", "evening", "explore", "exploring", "for", "free",
-    "from", "home", "hotel", "late", "leisure", "local", "lunch", "meal",
-    "morning", "near", "nearby", "night", "old", "onward", "optional", "our",
+    "from", "home", "hotel", "late", "leisure", "local", "location", "lunch", "meal",
+    "meeting", "meetings", "morning", "near", "nearby", "night", "old", "onward",
+    "optional", "our",
     "own", "pace", "pool", "relax", "restaurant", "rest", "return", "scuba",
     "shop", "shopping", "sightseeing", "snack", "spa", "stay", "stroll",
-    "supper", "tbd", "the", "time", "tour", "town", "transfer", "travel", "trip",
-    "visit", "walk", "walking", "with", "your",
+    "sunrise", "sunset", "supper", "tbd", "the", "time", "tour", "town", "transfer",
+    "travel", "trip", "user", "visit", "walk", "walking", "with", "work", "your",
 })
 
 
 def _identity_tokens(name: str) -> list[str]:
-    return [token for token in re.findall(r"[a-z0-9]+", str(name or "").lower()) if len(token) > 2]
+    # NFKD folds accents and styled Unicode ("𝗠𝗼𝘂𝗻𝘁 𝗩𝗶𝗲𝘄") back to plain letters.
+    folded = unicodedata.normalize("NFKD", str(name or "")).lower()
+    return [token for token in re.findall(r"[a-z0-9]+", folded) if len(token) > 2]
 
 
 def names_a_place(text: str) -> bool:
@@ -71,7 +75,8 @@ def stop_place_tier(
     if str(name or "").strip().lower() in selected:
         return PLACE
     tokens = _identity_tokens(name)
-    if tokens and all(token in _GENERIC_TOKENS for token in tokens):
+    # "08:00" or "--" has no identity at all; geocoding it bought a travel agency.
+    if not tokens or all(token in _GENERIC_TOKENS for token in tokens):
         return LABEL
     return PLACE
 

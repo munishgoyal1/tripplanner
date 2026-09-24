@@ -82,6 +82,7 @@ class PlaceLookupUnavailableError(RuntimeError):
 
 
 _MAX_WORKERS = 8
+_CANDIDATES = 5
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
 # --- Rate limiting -----------------------------------------------------------
@@ -566,12 +567,42 @@ _NON_PLACE_NAME_RE = re.compile(
 )
 
 
+#: A clock time, or prose copied out of the reply ("Key details:"), is never a
+#: place; the committed place cache held seventeen paid lookups of "08:00".
+_NOT_A_NAME_RE = re.compile(r"^\s*\d{1,2}[:.]\d{2}\b|:\s*$")
+_MAX_PLACE_NAME_WORDS = 14
+
+
 def is_lookupable_place_name(name: str) -> bool:
-    """Whether ``name`` could plausibly be a Google place worth searching for."""
+    """Whether ``name`` could plausibly be a Google place worth searching for.
+
+    Shares ``place_confidence``'s notion of an activity label, so the map never
+    pins what this module declined to buy and never buys what it will not pin.
+    """
+    from tripplanner.web.place_confidence import names_a_place
+
     text = str(name or "").strip()
-    if len(text) < 3:
+    if len(text) < 3 or _NOT_A_NAME_RE.search(text):
         return False
-    return not _NON_PLACE_NAME_RE.search(text)
+    if len(text.split()) > _MAX_PLACE_NAME_WORDS:
+        return False
+    if _NON_PLACE_NAME_RE.search(text):
+        return False
+    return _is_explicit_airport_name(text) or names_a_place(text)
+
+
+def resolves_to_asked_place(name: str, entry: dict[str, Any] | None) -> bool:
+    """Whether a cached lookup plausibly answered ``name`` rather than its city.
+
+    Cached results that share no word with the stop are kept (so nobody pays
+    for them again) but never shown or pinned. Explicit airports are exempt:
+    "Flight: Bangalore to Paris" rightly resolves to Kempegowda International.
+    """
+    from tripplanner.place_facts import names_overlap
+
+    if not entry or _is_miss(entry) or _is_explicit_airport_name(name):
+        return True
+    return names_overlap(name, str(entry.get("name") or ""))
 
 
 def _lookup_city(name: str, city: str) -> str:
@@ -666,7 +697,9 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
             resp = http_client.post(
                 f"{_BASE}/places:searchText",
                 headers=_headers(field_mask),
-                json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
+                # One billed request either way; several candidates let the
+                # stop's own name win over a business named after the city.
+                json={"textQuery": f"{name} {city}".strip(), "pageSize": _CANDIDATES},
                 timeout=_HTTP_TIMEOUT_S,
                 log_context={"place": name, "city": city},
             )
@@ -691,7 +724,16 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         # Google answered, and the answer is "no such place". Distinct from the
         # failures above, which tell us nothing and must not be cached as fact.
         return None
-    return normalize_place(places[0], name)
+    from tripplanner.place_facts import names_overlap
+
+    best = next(
+        (
+            place for place in places
+            if names_overlap(name, str((place.get("displayName") or {}).get("text") or ""))
+        ),
+        places[0],
+    )
+    return normalize_place(best, name)
 
 
 def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:
@@ -826,6 +868,12 @@ def _fetch_reviews(place_id: str) -> list[dict[str, Any]] | None:
 
 
 def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
+    """Return cached info for ``(name, city)`` when it answers ``name`` itself."""
+    info = _ensure_entry(name, city, refresh=refresh)
+    return info if resolves_to_asked_place(name, info) else {}
+
+
+def _ensure_entry(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     """Return cached info for ``(name, city)``; populate on first request.
 
     Always returns a dict — empty `{}` for known-misses so we don't retry
@@ -1182,6 +1230,8 @@ def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
             cache[key] = info
             _evict_if_needed()
         _persist_entry(key)
+        if not resolves_to_asked_place(name, info):
+            return None, False
         return info, True
 
 

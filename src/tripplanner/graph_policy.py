@@ -11,6 +11,7 @@ from typing import Any, Literal, TypeAlias
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from tripplanner.hotel_research import current_hotel_research, unresearched_hotel_cities
+from tripplanner.tools.request_asks import unmet_asks
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
@@ -714,6 +715,29 @@ def trip_creation_tool_choice(
     return "create_trip_plan"
 
 
+def trip_request_text(messages: Sequence[BaseMessage]) -> str:
+    """What the traveller asked for this trip: their words from the turn that created it on.
+
+    Earlier conversation about another trip is excluded; kickoff answers and
+    later refinements are included, so a later "skip the flights" is visible.
+    """
+    positions = _tool_call_positions(messages)
+    created = max(
+        (index for index, name in positions if name == "create_trip_plan"), default=None
+    )
+    humans = [index for index, message in enumerate(messages) if isinstance(message, HumanMessage)]
+    if not humans:
+        return ""
+    start = (
+        humans[0]
+        if created is None
+        else max((index for index in humans if index < created), default=humans[0])
+    )
+    return "\n".join(
+        str(messages[index].content) for index in humans if index >= start
+    )
+
+
 def resolve_completion_policy(
     *,
     messages: Sequence[BaseMessage],
@@ -759,6 +783,7 @@ def resolve_completion_policy(
         )
     core_gaps_for_planning_turn = (
         tuple(core_planning_completion_gaps(active_trip))
+        + tuple(unmet_asks(trip_request_text(messages), active_trip))
         if (
             not proposal_only
             and not flight_followup

@@ -576,7 +576,7 @@ def _compose(
         shape=f"India outbound: {destination.phrase}, {emphasis.shape}, {party.key}, {days} days",
         message=(
             f"Plan a {days} day trip to {destination.phrase} from {destination.origin} for "
-            f"{party.phrase}, {_date_phrase(start, start + timedelta(days=days))}. "
+            f"{party.phrase}, {_date_phrase(start, start + timedelta(days=days - 1))}. "
             f"{emphasis.clause} Verify current official entry requirements and Indian "
             "government travel advisories before treating the plan as bookable."
         ),

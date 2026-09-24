@@ -320,6 +320,7 @@ export interface EvalJudgedTrip {
   request: string;
   status: string;
   overall_score: number | null;
+  hard_gate_failed?: boolean;
   assessments: EvalAssessment[];
 }
 
@@ -333,6 +334,8 @@ export interface EvalFinding {
   fix: string;
   source: string;
   prevalence?: string;
+  status?: "open" | "fixed" | "deferred";
+  resolution?: string;
 }
 
 export interface EvalEfficiency {

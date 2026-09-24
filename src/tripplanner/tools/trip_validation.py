@@ -610,6 +610,83 @@ def _ground_leg_distance_warnings(plan: dict[str, Any]) -> list[str]:
     return warnings
 
 
+#: Door-to-door average above which a long drive leaves no room for breaks,
+#: traffic or ghat roads (Mumbai to Jaipur was saved as 1,160 km in 11 hours).
+MAX_LONG_DRIVE_KMH = 75.0
+LONG_DRIVE_KM = 250.0
+#: Beyond this many realistic hours a single road leg should become a train,
+#: a flight or an overnight break instead.
+MAX_DRIVE_HOURS = 9.0
+REALISTIC_DRIVE_KMH = 55.0
+
+
+def implausible_drive_warnings(plan: dict[str, Any]) -> list[str]:
+    """Long drives scheduled faster than they can be driven door to door."""
+    warnings: list[str] = []
+    for index, entry in enumerate(plan.get("day_wise_itinerary") or []):
+        if not isinstance(entry, dict):
+            continue
+        day = entry.get("day") if isinstance(entry.get("day"), int) else index + 1
+        for stop in entry.get("stops") or []:
+            if not isinstance(stop, dict):
+                continue
+            name = _stop_name(stop)
+            mode = str(stop.get("mode") or "").lower()
+            is_road = mode in {"drive", "car", "road"}
+            if not is_road and not re.match(r"(?:drive|road)\b", name, re.I):
+                continue
+            try:
+                distance = float(stop.get("distance_km"))
+                duration = float(stop.get("duration_min"))
+            except (TypeError, ValueError):
+                continue
+            if distance < LONG_DRIVE_KM or duration <= 0:
+                continue
+            if distance / (duration / 60) <= MAX_LONG_DRIVE_KMH:
+                continue
+            realistic = round(distance / REALISTIC_DRIVE_KMH * 60)
+            advice = (
+                "replace it with a train or flight, or split it with an overnight stop"
+                if realistic > MAX_DRIVE_HOURS * 60
+                else f"allow at least {realistic} minutes and retime the day"
+            )
+            warnings.append(
+                f"Day {day} schedules {name} ({distance:.0f} km) in {duration:.0f} minutes, "
+                f"{distance / (duration / 60):.0f} km/h door to door; {advice}."
+            )
+    return warnings
+
+
+def summary_drift_warnings(plan: dict[str, Any]) -> list[str]:
+    """Day summaries that promise a place planned on a different day."""
+    days = [day for day in plan.get("day_wise_itinerary") or [] if isinstance(day, dict)]
+    anchors = {str(plan.get(key) or "").strip().casefold() for key in ("origin", "destination")}
+    names_by_day = [
+        {
+            _stop_name(stop) for stop in day.get("stops") or []
+            if isinstance(stop, dict)
+            and len(_stop_name(stop)) > 5
+            and _stop_name(stop).casefold() not in anchors
+            and _stop_kind(stop) in {"attraction", "activity", "meal"}
+        }
+        for day in days
+    ]
+    warnings: list[str] = []
+    for index, day in enumerate(days):
+        summary = str(day.get("summary") or "")
+        for other, names in enumerate(names_by_day):
+            if other == index:
+                continue
+            for name in sorted(names - names_by_day[index]):
+                if name in summary:
+                    warnings.append(
+                        f"Day {day.get('day') or index + 1}'s summary names {name}, which is "
+                        f"planned on Day {days[other].get('day') or other + 1}. Rewrite the "
+                        "summary from that day's own stops."
+                    )
+    return warnings
+
+
 def _itinerary_density_warnings(plan: dict[str, Any]) -> list[str]:
     recommendation = plan.get("planning_recommendation")
     if not isinstance(recommendation, dict):
@@ -671,6 +748,8 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *journey_continuity,
         *departure_buffers,
         *_ground_leg_distance_warnings(plan),
+        *implausible_drive_warnings(plan),
+        *summary_drift_warnings(plan),
         *_requested_budget_without_cost_evidence(plan),
         *_itinerary_density_warnings(plan),
     ]
@@ -714,6 +793,8 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_hotel_selection_warnings(plan),
         *coherence_gaps,
         *_ground_leg_distance_warnings(plan),
+        *implausible_drive_warnings(plan),
+        *summary_drift_warnings(plan),
         *_itinerary_density_warnings(plan),
     ]
 
