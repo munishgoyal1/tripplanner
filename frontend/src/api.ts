@@ -345,6 +345,8 @@ export interface EvalEfficiency {
   effort: string;
   evidence: string;
   plan: string;
+  status?: "open" | "fixed" | "deferred";
+  resolution?: string;
 }
 
 export interface EvalsReport {

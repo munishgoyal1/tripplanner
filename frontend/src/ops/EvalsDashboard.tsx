@@ -218,10 +218,11 @@ function EfficiencyView({ report }: { report: EvalsReport }) {
     <div className="grid gap-3 lg:grid-cols-2">
       {report.efficiencies.map((item) => (
         <article key={item.id} className="border border-stone-200 bg-white p-4">
-          <p className="font-mono text-xs text-stone-500">{item.id} · value {item.value} · effort {item.effort}</p>
+          <p className="flex items-center gap-2 font-mono text-xs text-stone-500">{item.id} · value {item.value} · effort {item.effort}{item.status && <span className={`ml-auto px-2 py-0.5 font-sans font-bold uppercase ${STATUS_STYLE[item.status]}`}>{item.status}</span>}</p>
           <h3 className="mt-1 font-display text-lg text-stone-900">{item.title}</h3>
           <p className="mt-2 text-sm text-stone-700"><span className="font-semibold">Evidence: </span>{item.evidence}</p>
           <p className="mt-1 text-sm text-stone-700"><span className="font-semibold">Plan: </span>{item.plan}</p>
+          {item.resolution && <p className="mt-2 border-l-2 border-stone-300 pl-3 text-sm text-stone-700"><span className="font-semibold">Resolution: </span>{item.resolution}</p>}
         </article>
       ))}
     </div>

@@ -1,0 +1,13 @@
+# Evaluation and planning efficiency, EE-01 to EE-04 (implemented 2026-09-24)
+
+Status: **Implemented**. Split from
+[`../eng-backlog/evaluation-and-planning-efficiency.md`](../eng-backlog/evaluation-and-planning-efficiency.md),
+which keeps the unapproved EE-05. Evidence for each item is also rendered on the
+owner `/evals` console from [`corpus/evals/findings.json`](../../corpus/evals/findings.json).
+
+| ID | Item | What shipped | Validation |
+| --- | --- | --- | --- |
+| EE-01 | Stop attaching the whole place cache to every corpus record | `harness/corpus.scope_places` gives each generated-final and emulator record only the stored facts whose name (or a derived "<place> Airport / Railway Station / Bus Stand" endpoint) appears in its plan. | Offline audit over 391 records: groups, rules, per-record results and observations identical before and after. Uncached run 48 s to 25 s. Cold incremental run 38 s and 90 MB of state (previously stopped after 19 minutes at 1.6 GB, projected about 7 GB); warm re-run reuses 1,420 results in 28 s. `tests/test_corpus_place_scope.py`. |
+| EE-02 | One stop classifier and a post-lookup identity check before paid Places calls | Shipped with BL-01: `places_cache.is_lookupable_place_name` defers to `place_confidence`, searches return five candidates in one billed request and the stop-named one wins, and non-matching cached results are never shown or pinned. | `tests/test_places_cache.py`. Not done: passing each stop's own city instead of the caller's destination, because it changes cache keys (every existing trip would re-buy its places on the next save) and the candidate choice already neutralises region-phrase results. |
+| EE-03 | Deterministic save-time plan hygiene instead of prompt rules and repair turns | Shipped with BL-03/04/06/07/08: `tools/day_order.py` repairs stays and checkout on every save; `request_asks` and `trip_validation` return only residual conflicts as first-turn gaps. | `tests/test_day_order.py`, `tests/test_request_asks.py`. Not done: rewriting summary prose in code (kept as a gap because prose rebuilt from stops loses quality) and placeholder counting at completion (BL-05, not approved). |
+| EE-04 | Self-describing paid corpus | All 178 manifest entries carry their request (reconstructed, marked `request_reconstructed`) and expectations; generators phrase an N-day trip as N calendar days; new entries already record request, expectations, producer commit and model. Producer commits are not invented for the backfilled entries. | `tests/test_generation_dates.py`; `tests/test_validation_harness.py::test_a_run_keeps_asking_until_the_budget_is_spent`. |

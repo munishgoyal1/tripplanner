@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Iterator
 from dataclasses import replace
 from pathlib import Path
@@ -82,7 +83,7 @@ def from_emulator(database: str, *, user_id: str = "") -> list[CorpusRecord]:
             provenance=REAL,
             source=database,
             plan=trip,
-            places=places,
+            places=scope_places(trip, places),
         )
         for trip in read_trips(database, user_id=user_id)
         if _is_plan(trip)
@@ -137,6 +138,36 @@ def from_fixtures(directory: Path) -> list[CorpusRecord]:
     return records
 
 
+_DERIVED_SUFFIX = re.compile(
+    r"\s+(?:international airport|airport|railway station|bus stand)$"
+)
+
+
+def scope_places(plan: dict[str, Any], places: dict[str, Any]) -> dict[str, Any]:
+    """Only the stored place facts whose name this plan mentions anywhere.
+
+    Sources such as the committed corpus cache or an emulator database hold facts
+    for every trip at once (the corpus cache is about 13 MB). Attaching all of
+    them to each record made the incremental audit spend about 95% of its time
+    serialising and hashing them and wrote a 13 MB input snapshot per record and
+    evaluator. Evaluators look places up by names taken from the plan, so any
+    fact whose name never appears in the plan's text cannot be read; keeping a
+    substring superset leaves every result unchanged.
+    """
+    if not places:
+        return {}
+    text = json.dumps(plan, ensure_ascii=False).casefold()
+
+    def mentioned(key: str) -> bool:
+        name = key.partition("|")[0].strip().casefold()
+        # Renderers also derive transport endpoints from a named place
+        # (web/transport.py, web/map_pins.py): "<place> Railway Station".
+        base = _DERIVED_SUFFIX.sub("", name).strip()
+        return bool(name) and (name in text or (bool(base) and base in text))
+
+    return {key: value for key, value in places.items() if mentioned(str(key))}
+
+
 def from_generated_finals(
     directory: Path, *, places: dict[str, Any] | None = None
 ) -> list[CorpusRecord]:
@@ -168,7 +199,7 @@ def from_generated_finals(
                 provenance=SYNTHETIC,
                 source=str(path),
                 plan=plan,
-                places=places or {},
+                places=scope_places(plan, places or {}),
                 case_id=f"generated:{path.stem}",
                 request=str(entry.get("request") or ""),
                 preferences=dict(plan.get("preferences_snapshot") or {}),

@@ -141,7 +141,9 @@
    "effort": "S",
    "title": "Stop attaching the whole 13 MB place cache to every corpus record",
    "evidence": "A cProfile of the incremental audit (1,124 s before it was stopped) spent about 95% of its time on JSON encode (386 s), file reads (261 s), JSON decode (176 s) and SHA-256 (66 s) of the place cache, which harness/audit.py passes whole as each generated record's places and harness/incremental.py re-serialises about 13 times per record. The state directory reached 1.6 GB after 113 input snapshots, projecting about 7 GB for one full run. The same payload makes the judge unusable (BL-09). The same audit run through the uncached API path finished in 70 s for 391 records.",
-   "plan": "Give each record only the places its plan names (evals/trip_text.places_for, widened to the render's lookup keys), or store the cache once by digest and reference it. Expected: a full audit in minutes rather than the projected 30-plus, audit state in MB rather than GB, and a judge request within its 100 KB limit."
+   "plan": "Give each record only the places its plan names (evals/trip_text.places_for, widened to the render's lookup keys), or store the cache once by digest and reference it. Expected: a full audit in minutes rather than the projected 30-plus, audit state in MB rather than GB, and a judge request within its 100 KB limit.",
+   "status": "fixed",
+   "resolution": "corpus.scope_places scopes each record's facts to its plan: identical audit output, uncached 48 s to 25 s, cold incremental 38 s and 90 MB (was 19+ minutes and 1.6 GB, projected 7 GB)."
   },
   {
    "id": "EE-02",
@@ -149,7 +151,9 @@
    "effort": "M",
    "title": "One stop classifier and a post-lookup identity check before any paid Places call",
    "evidence": "places_cache.is_lookupable_place_name (regex) and place_confidence.stop_place_tier (tokens) disagree, and both pass clock times and activity labels. 451 of 3,975 cached resolutions share no word with the stop name; 42 stops resolved to one tour agency, and 17 clock times were paid lookups.",
-   "plan": "Make place_confidence the single owner, call it from places_cache before lookup, bias each lookup with the day's city rather than the whole destination phrase, and store non-matching results as approximate. It saves Places spend and removes wrong pins in the same change (BL-01)."
+   "plan": "Make place_confidence the single owner, call it from places_cache before lookup, bias each lookup with the day's city rather than the whole destination phrase, and store non-matching results as approximate. It saves Places spend and removes wrong pins in the same change (BL-01).",
+   "status": "fixed",
+   "resolution": "Shipped with BL-01. Per-stop city bias deliberately not changed: it re-keys the cache so existing trips would re-buy every place."
   },
   {
    "id": "EE-03",
@@ -157,7 +161,9 @@
    "effort": "M",
    "title": "Move plan hygiene from prompt rules and repair turns into a deterministic save-time normaliser",
    "evidence": "prompts.py holds about 40 KB of rules, yet 95 of 178 trips list a hotel after the day's departure, 26 are out of time order, 20 keep an unused night, and 75 carry 544 placeholders. Corpus generation measured a median of 5.4 minutes per accepted trip (p90 12.1) at a median ₹38.6, and the August audit's completion-gap gate fired on 236 trips.",
-   "plan": "Sort and anchor stops, set checkout to the departure date, rebuild day summaries from stops, and count placeholders in code on save. Return only the residual conflicts to the agent (the Lab 19 deterministic-engine direction). The bug class stops occurring instead of being detected, with fewer repair rounds, fewer tokens and less latency."
+   "plan": "Sort and anchor stops, set checkout to the departure date, rebuild day summaries from stops, and count placeholders in code on save. Return only the residual conflicts to the agent (the Lab 19 deterministic-engine direction). The bug class stops occurring instead of being detected, with fewer repair rounds, fewer tokens and less latency.",
+   "status": "fixed",
+   "resolution": "Shipped with BL-03/04/06/07/08 (save-time repairs plus residual gaps). Summary prose is not rewritten in code; placeholder counting is BL-05, not approved."
   },
   {
    "id": "EE-04",
@@ -165,7 +171,9 @@
    "effort": "S",
    "title": "Make the paid corpus self-describing",
    "evidence": "0 of 178 manifest entries store the request text and 34 store scenario expectations; this report had to reconstruct requests from hash-seeded generation matrices. Every generated request phrases an N-day trip across N+1 dates. The 178 trips cost ₹7,469 to produce.",
-   "plan": "Persist request, expectations, producer commit and model for every generated trip, and fix the date phrase. Fidelity judging and regression comparison can then reuse the corpus indefinitely without paid regeneration."
+   "plan": "Persist request, expectations, producer commit and model for every generated trip, and fix the date phrase. Fidelity judging and regression comparison can then reuse the corpus indefinitely without paid regeneration.",
+   "status": "fixed",
+   "resolution": "Manifest backfilled with requests and expectations; N-day requests now span N dates; generation test requires request, expectations and model on every new entry."
   },
   {
    "id": "EE-05",
@@ -173,7 +181,9 @@
    "effort": "S",
    "title": "Run the probes on every pull request as a free quality signal",
    "evidence": "The eight probes and the place-identity check run over all 178 corpus trips in under 0.5 s with no provider or model call, while the complete suites are suspended from the lane gates.",
-   "plan": "Promote the probes into the audit rule registry with an accepted baseline, and fail a PR only on a new occurrence on committed corpus trips or golden fixtures, so a behaviour-changing prompt or policy edit is caught before merge."
+   "plan": "Promote the probes into the audit rule registry with an accepted baseline, and fail a PR only on a new occurrence on committed corpus trips or golden fixtures, so a behaviour-changing prompt or policy edit is caught before merge.",
+   "status": "deferred",
+   "resolution": "Not approved."
   }
  ]
 }

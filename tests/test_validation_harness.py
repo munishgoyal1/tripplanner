@@ -1933,6 +1933,11 @@ def test_a_run_keeps_asking_until_the_budget_is_spent(
     manifest = generate.load_manifest(tmp_path)
     assert manifest["produced"][0]["generation_run_id"] == result["generation_run_id"]
     assert "generated_by_commit" in manifest["produced"][0]
+    # A corpus trip is only reusable for judging if it says what was asked of it.
+    entry = manifest["produced"][0]
+    assert entry["request"].startswith("Plan ")
+    assert entry["scenario_expectations"]
+    assert "model" in entry and "request_reconstructed" not in entry
 
 
 def test_turns_in_flight_together_still_cannot_overshoot_the_budget(

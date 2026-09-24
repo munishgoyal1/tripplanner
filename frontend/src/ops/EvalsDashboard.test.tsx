@@ -30,7 +30,7 @@ const report: EvalsReport = {
     top_groups: [{ rule: "I9", symptom: "Day N jumps", count: 4, example: "Day 3", accepted: false }],
   },
   findings: [{ id: "BL-1", title: "Checkout after departure", severity: "high", area: "Scheduling", evidence: "Tokyo day 4", impact: "Wrong order", fix: "Sort anchors", source: "judge", status: "fixed", resolution: "Stays move before the departure on save." }],
-  efficiencies: [{ id: "EE-1", title: "One place classifier", value: "high", effort: "S", evidence: "two classifiers", plan: "merge" }],
+  efficiencies: [{ id: "EE-1", title: "One place classifier", value: "high", effort: "S", evidence: "two classifiers", plan: "merge", status: "fixed", resolution: "Merged into one classifier." }],
 };
 
 describe("EvalsDashboard", () => {
@@ -48,6 +48,8 @@ describe("EvalsDashboard", () => {
     expect(screen.getByText("Every meal is TBD.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: /Deterministic audit/ }));
     expect(screen.getByText("Day N jumps")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: /Efficiency/ }));
+    expect(screen.getByText("Merged into one classifier.")).toBeInTheDocument();
   });
 
   it("hides the console from anyone but the owner", async () => {
