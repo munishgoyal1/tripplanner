@@ -153,9 +153,9 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "/api/auth/guest/session" in browser_smoke
     assert "Authorization: `Bearer ${guestToken}`" in browser_smoke
     assert "/api/destination/overview?destination=Paris&news=false" in browser_smoke
-    assert 'environment === "canary"' in browser_smoke
-    assert "Google Places is intentionally disabled in canary" in browser_smoke
-    assert "destination overview returned no photo" in browser_smoke
+    assert "verifyDestinationPhotos(overview, environment)" in browser_smoke
+    assert "Destination photo contract" in browser_smoke
+    assert "context.request.get(photoUrl)" not in browser_smoke
 
 
 def test_local_maps_browser_key_has_no_http_referrer_restriction() -> None:

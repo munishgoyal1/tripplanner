@@ -1,4 +1,5 @@
 import { chromium } from "@playwright/test";
+import { verifyDestinationPhotos } from "./destination-photo-contract.mjs";
 
 function argument(name) {
   const prefix = `--${name}=`;
@@ -94,14 +95,11 @@ try {
   );
   if (!overviewResponse.ok()) throw new Error(`destination overview HTTP ${overviewResponse.status()}`);
   const overview = await overviewResponse.json();
-  const photoUrl = overview.photos?.[0] || overview.key_attractions?.find((item) => item.photo)?.photo;
-  if (!photoUrl && environment === "canary") {
-    console.log("[SKIP] Destination photo (Google Places is intentionally disabled in canary)");
+  const photoCount = verifyDestinationPhotos(overview, environment);
+  if (!photoCount) {
+    console.log("[SKIP] Destination photo contract (no cached photos available in canary)");
   } else {
-    if (!photoUrl) throw new Error("destination overview returned no photo");
-    const photoResponse = await context.request.get(photoUrl);
-    if (!photoResponse.ok()) throw new Error(`destination photo HTTP ${photoResponse.status()}`);
-    console.log(`[PASS] Destination photo loaded (${photoResponse.status()})`);
+    console.log(`[PASS] Destination photo contract (${photoCount} valid HTTPS Google photo URLs; CDN expiry is not a release gate)`);
   }
 } finally {
   await browser.close();

@@ -1594,3 +1594,16 @@ continues to block image publication and production promotion.
 
 Executable proof: `tests/test_release_workflow.py` —
 `test_deployment_failure_cleanup_preserves_the_actionable_cause`.
+
+
+### EB-DEPLOY-PHOTO-001 — Photo smoke does not gate on cached CDN signatures
+
+Hosted smoke authenticates an isolated guest and reads the Paris destination
+overview. It validates both photo arrays and every returned photo URL as an
+absolute, credential-free HTTPS Google photo URL. Missing production photos
+or malformed/unsupported URLs fail. An empty canary photo cache is reported
+as skipped; canary is not assumed to have Places disabled. Signed CDN URLs
+are not fetched, so provider-expired signatures cannot block deployment.
+Maps JavaScript authorization still runs live in a browser. This is API-contract
+evidence, not proof of current photo rendering; check the gallery during bake.
+Regression: `frontend/scripts/destination-photo-contract.test.mjs`.
