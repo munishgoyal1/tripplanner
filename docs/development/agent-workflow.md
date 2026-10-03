@@ -105,6 +105,11 @@ A change is not finished until all of these are true:
    shipped part rather than moving the whole file.
 4. **Committed and pushed**, with the lane, commit, and publication status
    reported.
+5. **Published to `master` (Claude Code sessions).** Owner instruction: at the end of
+   every task, without being asked again, open a PR from the task branch to `master`,
+   merge it once its CI checks pass, and confirm `origin/master` contains the commit.
+   A red check is fixed on the branch first, never merged past. Merging to `master`
+   is not a production deploy; that still needs the owner's explicit approval.
 
 Write docs densely enough that the next agent can reconstruct the feature without
 re-reading the code. That is the deal that makes section 4 safe: validation got
