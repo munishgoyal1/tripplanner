@@ -110,7 +110,13 @@ The script:
   Azure credentials or deployment step.
 5. Applies `main.bicep` and canary parameters.
 6. Updates the Container App to the immutable SHA image.
-7. Runs the public read-only hosted smoke suite.
+7. Runs the public read-only hosted smoke suite. Maps authorization is checked
+   in a real browser. Destination-photo verification checks the authenticated
+   overview API's photo arrays and supported HTTPS Google photo URL shapes; it
+   does not download signed CDN URLs, whose provider expiry is independent of
+   the release. Missing production photos and malformed/unsupported URLs fail;
+   an empty canary photo cache is reported as skipped. Actual image rendering
+   remains part of the manual Details/gallery bake check.
 8. Prints and logs the tested image tag.
 
 The image publisher reports dependency/application build time, each tag push, total

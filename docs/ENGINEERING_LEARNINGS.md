@@ -2549,3 +2549,15 @@ after timers and transcript closure. Execute the actual trap in a hermetic harne
 and assert its exit status, cleanup and original message; source-string checks alone
 would not prove PowerShell propagation semantics. Authentication scope repair remains
 a manual operator action rather than an automatic deployment permission expansion.
+
+
+### 2026-10-03 — Separate deployment contracts from cached photo validity
+
+- A canary rollout and its nine API checks passed, but the release gate fetched
+  a cached Google CDN photo URL and failed with HTTP 403. The configured 180-day
+  reuse policy does not extend the provider's signed URL lifetime.
+- Validate the photo API payload and supported URL shapes in the release smoke,
+  keep Maps authorization live, and label the result as contract verification.
+  Preserve manual gallery validation so this narrower gate is not mistaken for
+  proof that cached photos render. Test expired signatures, absent production
+  photos, malformed contracts, and unsupported URLs without provider traffic.

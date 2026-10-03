@@ -674,6 +674,12 @@ MasterAgent in the primary workspace owns local stack lifecycle and manual-test 
 
 The release procedure is [operations/deployment-flow.md](operations/deployment-flow.md).
 Infrastructure topology and script ownership are in [infra/README.md](../infra/README.md).
+
+`frontend/scripts/hosted-maps-smoke.mjs` owns the live Maps authorization smoke
+and authenticated destination overview read. Its `destination-photo-contract.mjs`
+helper verifies photo payload/URL shape without requesting expiring CDN links;
+`destination-photo-contract.test.mjs` runs with Node's built-in test runner.
+
 The non-negotiable gates are:
 
 - Image publication is manual.
