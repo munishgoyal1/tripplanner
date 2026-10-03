@@ -1582,3 +1582,15 @@ copy checks every discovered source container, backs up existing target records,
 preserves per-container expiry and fails on target-only data rather than deleting
 it. Changing a run manifest invalidates checkpoints; completed traffic cutover
 blocks recopying the old source over the live target.
+
+
+### Deployment failures preserve the actionable cause
+
+When a canary or production prerequisite fails, the command exits nonzero after
+printing failed-stage/total timings and closing its transcript. The terminal keeps
+the original exception, including GHCR scope and credential-refresh guidance;
+cleanup must not replace it with `ScriptHalted`. A missing package-write credential
+continues to block image publication and production promotion.
+
+Executable proof: `tests/test_release_workflow.py` —
+`test_deployment_failure_cleanup_preserves_the_actionable_cause`.

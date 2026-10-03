@@ -2538,3 +2538,14 @@ inventing coordinates for a hotel or cruise operator. Provider aliases accepted
 by Map can supply rating evidence while opening hours retain stricter matching.
 Verify the running immutable image and live identity settings: a merged change
 does not prove rollout, and production was still using key authentication.
+
+
+### 2026-10-03 - PowerShell traps must retain their error record
+
+A bare `throw` inside a deployment `trap` replaced a useful missing-GHCR-scope
+exception with `ScriptHalted` in the terminal, though the transcript retained the
+original error. Capture `$_` before cleanup and explicitly throw that error record
+after timers and transcript closure. Execute the actual trap in a hermetic harness
+and assert its exit status, cleanup and original message; source-string checks alone
+would not prove PowerShell propagation semantics. Authentication scope repair remains
+a manual operator action rather than an automatic deployment permission expansion.

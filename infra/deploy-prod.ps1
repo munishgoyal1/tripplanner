@@ -44,6 +44,7 @@ $totalTimer = Start-DeploymentTimer
 $stageTimer = $null
 $stageName = ""
 trap {
+    $deploymentFailure = $_
     if ($null -ne $stageTimer -and $stageTimer.IsRunning) {
         Complete-DeploymentTimer -Name "$stageName (failed)" -Timer $stageTimer | Out-Null
     }
@@ -51,7 +52,7 @@ trap {
         Complete-DeploymentTimer -Name "Production deployment total (failed)" -Timer $totalTimer | Out-Null
     }
     Stop-RunLog
-    throw
+    throw $deploymentFailure
 }
 
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
