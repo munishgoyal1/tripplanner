@@ -1,8 +1,8 @@
 """Optional Azure Cosmos DB storage backend.
 
-Used when COSMOS_ENDPOINT and COSMOS_KEY (or COSMOS_CONNECTION_STRING) are
-configured. Otherwise the trip planner falls back to local JSON files in
-~/.tripplanner/.
+Hosted connections use managed identity; explicit key/connection-string
+connections remain available for local and legacy workflows. Without a configured
+connection, the trip planner falls back to local JSON files in ~/.tripplanner/.
 
 Container layout (single database, partition key /user_id on every container):
 - ``users``  — one doc per user per kind. doc id is the kind ("preferences",
@@ -87,21 +87,27 @@ def _client_singleton():
     client_options = _client_options(s.cosmos_endpoint, s.cosmos_emulator)
     if s.cosmos_emulator:
         _suppress_emulator_tls_warning()
-    if s.cosmos_connection_string:
+    if s.cosmos_use_managed_identity:
+        from azure.identity import ManagedIdentityCredential
+
+        if s.cosmos_emulator:
+            raise ValueError("Managed identity cannot be used with the Cosmos emulator")
+        credential = ManagedIdentityCredential(
+            client_id=s.cosmos_managed_identity_client_id or None
+        )
+        _client = CosmosClient(s.cosmos_endpoint, credential=credential, **client_options)
+    elif s.cosmos_connection_string:
         _client = CosmosClient.from_connection_string(
             s.cosmos_connection_string, **client_options
-        )
-    elif s.cosmos_use_managed_identity:
-        from azure.identity import DefaultAzureCredential
-
-        _client = CosmosClient(
-            s.cosmos_endpoint, credential=DefaultAzureCredential(), **client_options
         )
     else:
         _client = CosmosClient(
             s.cosmos_endpoint, credential=s.cosmos_key, **client_options
         )
-    _database = _client.create_database_if_not_exists(id=s.cosmos_database)
+    if s.cosmos_use_managed_identity:
+        _database = _client.get_database_client(s.cosmos_database)
+    else:
+        _database = _client.create_database_if_not_exists(id=s.cosmos_database)
     return _client
 
 
@@ -145,6 +151,10 @@ def _container(name: str):
     if name in _containers:
         return _containers[name]
     _client_singleton()
+    if get_settings().cosmos_use_managed_identity:
+        container = _database.get_container_client(name)
+        _containers[name] = container
+        return container
     from azure.cosmos import PartitionKey  # imported lazily
 
     ttl = _CONTAINER_TTLS.get(name)

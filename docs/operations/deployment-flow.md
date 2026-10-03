@@ -293,3 +293,94 @@ Validate shared-data changes separately and obtain approval before applying
 them. Then deploy canary through the normal flow, validate and bake, and promote
 the same application image to production. Never allow canary and production to
 share a database or import local `.env` values for environment-owned settings.
+
+## Cosmos identity and read-only trip debugging
+
+The main app now uses a dedicated user-assigned managed identity. Bicep assigns
+Cosmos Data Contributor on `/dbs/<environment-database>` before creating the app,
+then injects the endpoint, database, managed-identity flag and identity client ID.
+No Cosmos key is retrieved or stored in the Container App by this template.
+The existing demo-refresh job continues to use its system-assigned identity and
+its existing account-wide role; tightening that existing grant is a separate
+access migration. Legacy copy/cache-sync utilities still use account keys, so
+this change deliberately does not disable account-wide key authentication.
+
+### First rollout
+
+1. Apply/reconcile the existing shared data stack before deploying the new app:
+   every container, TTL and indexing policy must exist. Identity-mode runtime
+   only obtains existing proxies and cannot repair schema. Review data-stack
+   what-if first; do not recreate or delete databases/containers.
+2. Deploy to canary using the normal guarded release. The deployment identity
+   needs permission to create/assign the user-assigned identity and Cosmos SQL
+   role assignments in the data resource group. Allow time for RBAC propagation;
+   a role resource completing does not guarantee immediate data-plane access.
+3. Verify the new revision has `COSMOS_USE_MANAGED_IDENTITY=1`, the intended
+   `COSMOS_MANAGED_IDENTITY_CLIENT_ID`, and no `COSMOS_KEY` or connection string.
+   Verify existing trip reads and a disposable canary trip create/update, plus
+   cache and operational writes. A canary identity must not access production.
+4. Promote the same verified image to production only with owner approval.
+   Observe authentication/403 failures; never mask a failed identity rollout
+   by reintroducing a production key into application configuration.
+5. Inventory old revisions and the `cosmos-key` secret. Retire key-dependent
+   revisions and remove any leftover secret after the rollback window, checking
+   secret references first. The template no longer declares that secret. An old
+   image may require the old secret/config; revision-only rollback is not proof
+   of a working rollback across this authentication migration. Prefer a tested
+   identity-compatible rollback image. Rotate the old account key only after
+   separately inventorying legacy tools and both hosted environments.
+
+Repository validation is not live acceptance: Azure sign-in, canary role and
+schema checks, and production approval remain rollout prerequisites.
+
+### Separate read-only connection
+
+Use a dedicated Entra debugging user/group with no inherited write roles. An
+administrator can grant the built-in Cosmos **Data Reader** role to the `trips`
+and `users` containers using this standalone template (this changes access;
+it is not run by the debugging command or normal app deployment):
+
+```sh
+az deployment group create --resource-group rg-tripplanner-data \
+  --template-file infra/cosmos-debug-reader.bicep \
+  --parameters cosmosAccountName=tripplanner-data-9fe3951c \
+    databaseName=tripplanner-prod principalId=<debug-user-or-group-object-id>
+```
+
+Record the returned `roleAssignmentIds`. Sign in to the intended tenant as that
+reader identity, then run from an installed checkout:
+
+```sh
+az login --tenant <tenant-id>
+python -m tripplanner.cosmos_debug \
+  --endpoint https://tripplanner-data-9fe3951c.documents.azure.com \
+  --database tripplanner-prod --tenant-id <tenant-id> \
+  --user-id <stored-application-user-id> --trip-id <trip-id>
+```
+
+Add `--include-chat` only when the transcript is needed. The command reads
+`trips/<trip-id>` and optionally `users/chat_<trip-id>` using the exact `user_id`
+partition key. It never reads `active_trip`, lists users/trips, queries across
+partitions, provisions resources, or writes data. It ignores application keys,
+connection strings, and managed-identity settings. Authentication is explicitly
+`AzureCliCredential` in the supplied tenant; endpoint/database are required and
+there is no default production target. The endpoint guard supports Azure public
+cloud account endpoints only. Output contains private trip/chat data on stdout;
+keep it out of public logs. Exit 0 means trip found, 2 means missing trip (or CLI
+usage error), and 1 means the read/authentication failed.
+
+Azure RBAC enforces read-only access, but its smallest scope is a container,
+not an individual user or trip. The CLI enforces exact point reads within those
+containers; it cannot remove write privileges the signed-in principal already
+has. Confirm effective grants separately. Do not use a broadly privileged owner
+identity when testing the read-only security boundary.
+
+After debugging, revoke each temporary assignment using its recorded final GUID:
+
+```sh
+az cosmosdb sql role assignment delete --resource-group rg-tripplanner-data \
+  --account-name tripplanner-data-9fe3951c --role-assignment-id <assignment-guid>
+```
+
+Do not use `prod-cache-sync.ps1` or the normal app entry point for read-only trip
+inspection: they have broader responsibilities and credentials.
