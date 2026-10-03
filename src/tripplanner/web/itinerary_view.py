@@ -865,9 +865,13 @@ def _render_day_stops(
         is_place = s["kind"] not in {"flight", "transport"}
         context = str((raw.get("city") if isinstance(raw, dict) else "") or _day_place_context(entry, destination))
         summary = places_cache.get_details(s["name"], context) or {} if is_place else {}
-        if not place_facts.names_match(s["name"], str(summary.get("name") or "")):
-            summary = {}
         if isinstance(raw, dict) and raw.get("place_id") and summary.get("place_id") != raw["place_id"]:
+            summary = {}
+        rating_summary = summary if (
+            place_facts.names_match(s["name"], str(summary.get("name") or ""))
+            or _provider_name_matches(s["name"], str(summary.get("name") or ""))
+        ) else {}
+        if not place_facts.names_match(s["name"], str(summary.get("name") or "")):
             summary = {}
         opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
         s["duration_min"] = (
@@ -889,9 +893,9 @@ def _render_day_stops(
         )
         if is_place and not s.get("insight"):
             s["insight"] = _insight_hint(s["name"], s["kind"], summary)
-        s["rating"] = summary.get("rating") if is_place else None
-        s["review_count"] = summary.get("review_count") if is_place else None
-        s["popularity_score"] = _popularity_score(summary) if is_place else None
+        s["rating"] = rating_summary.get("rating") if is_place else None
+        s["review_count"] = rating_summary.get("review_count") if is_place else None
+        s["popularity_score"] = _popularity_score(rating_summary) if is_place else None
         rendered_stops = _transport_terminal_stops(s, place_coords_map)
         bus_arrival = (
             rendered_stops.pop()
@@ -1226,6 +1230,20 @@ def _day_travel_route(stops: list[dict[str, Any]], local_route: dict[str, Any]) 
     }
 
 
+def _day_travel_completeness(
+    stops: list[dict[str, Any]], route: dict[str, Any]
+) -> dict[str, Any]:
+    local_indexes = _local_route_stop_indexes(stops)
+    unresolved = sum(
+        index in local_indexes
+        and index + 1 in local_indexes
+        and previous["name"].strip().lower() != current["name"].strip().lower()
+        and not current.get("travel_from_previous")
+        for index, (previous, current) in enumerate(zip(stops, stops[1:]), start=1)
+    )
+    return {**route, "unresolved_legs": unresolved}
+
+
 def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Structured day-by-day itinerary view-model (frontend-agnostic).
 
@@ -1348,7 +1366,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "summary": str(entry.get("summary") or entry.get("plan") or "").strip(),
                 "color": _day_color(day_num),
                 "stops": stops,
-                "route": _day_travel_route(stops, route),
+                "route": _day_travel_completeness(stops, _day_travel_route(stops, route)),
                 "schedule": schedule,
                 "weather": weather_by_date.get(str(entry.get("date") or "").strip()),
                 "reachability": _reachability_hint(local_stops, route),

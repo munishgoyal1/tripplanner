@@ -1118,12 +1118,17 @@ for example a car day trip from the hotel to Dhanushkodi and back.
 
 **Expected:** `Day's travel` totals every leg the rows show, the drive legs included,
 with their mode, instead of only the local hops between drive rows. A drive whose legs
-cannot be measured adds its saved `distance_km` and `duration_min`. A day with no
-measurable travel still shows the local route as before.
+cannot be measured adds its saved `distance_km` and `duration_min`. Unresolved local edges, including hotel departure and return, are counted separately.
+A partial subtotal says `known legs only` and names the unresolved transfer count;
+a day with no measurable legs says `Travel unresolved`, never `0 min · 0 km`.
+Resolved provider aliases accepted by Map contribute both travel and rating evidence;
+opening-hours evidence retains its stricter identity check.
 
 **Executable proof:**
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_car_day_trip_counts_its_drives_in_the_days_travel`
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_unresolved_day_travel_retains_only_known_legs`
 
 ### EB-ITIN-013 - Read a place row in three lines
 

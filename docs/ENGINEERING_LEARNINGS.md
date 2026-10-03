@@ -2526,3 +2526,15 @@ container proxies; create-if-missing and TTL/index changes belong to IaC. A
 read-only debugging path needs its own Reader identity and direct point reads,
 not imports of application initialization. Issue #359 records the implementation;
 canary/production authentication still requires live rollout validation.
+
+
+### 2026-10-03 - Unknown transfers are not zero travel
+
+The Europe Day 6 production card reported zero while Map showed a measured
+Luxembourg Gardens to Notre-Dame edge. Production predated the shared route
+identity fix, and the hotel was still a placeholder. Count unresolved adjacent
+local edges separately from the measured subtotal; preserve known legs without
+inventing coordinates for a hotel or cruise operator. Provider aliases accepted
+by Map can supply rating evidence while opening hours retain stricter matching.
+Verify the running immutable image and live identity settings: a merged change
+does not prove rollout, and production was still using key authentication.
