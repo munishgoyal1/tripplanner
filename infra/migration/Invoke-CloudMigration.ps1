@@ -30,7 +30,7 @@ if ($Phase -eq "all" -and -not $Resume) {
 }
 
 $phases = if ($Phase -eq "all") {
-    @("preflight", "inventory", "provision", "data", "validate", "cutover", "retire")
+    @("preflight", "inventory", "provision", "data", "validate", "cutover")
 } else {
     @($Phase)
 }
@@ -44,7 +44,12 @@ foreach ($selectedPhase in $phases) {
         }
         $evidenceDirectory = New-MigrationEvidenceDirectory `
             -Root $EvidenceRoot -Cloud $selectedCloud -RunId $RunId
-        if ($Resume -and (Test-Path (Join-Path $evidenceDirectory "$selectedPhase.json"))) {
+        Assert-MigrationManifest -ConfigPath $ConfigPath -EvidenceDirectory $evidenceDirectory
+        if ($selectedPhase -in @("data", "validate") -and
+            (Test-Path (Join-Path $evidenceDirectory "cutover.json"))) {
+            throw "Traffic was already cut over. Refusing to overwrite/compare active target data from the old source."
+        }
+        if ($Resume -and $selectedPhase -notin @("data", "validate") -and (Test-Path (Join-Path $evidenceDirectory "$selectedPhase.json"))) {
             Write-Host "[$selectedCloud] $selectedPhase skipped (checkpoint already exists)"
             continue
         }

@@ -71,7 +71,8 @@
       "provider": "namecheap",
       "cutoverHook": ""
     },
-    "deleteSourceResourceGroupsOnRetire": true
+    "deleteSourceResourceGroupsOnRetire": false,
+    "preserveSource": true
   },
   "google": {
     "enabled": false,

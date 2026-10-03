@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import shutil
 import subprocess
 import time
@@ -37,6 +38,7 @@ EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS = {
 }
 LIVE_DATABASE_NAMES = {"tripplanner-canary", "tripplanner-prod"}
 BACKUP_FORMAT_VERSION = 1
+_UNSET = object()
 
 
 @dataclass(frozen=True)
@@ -47,26 +49,29 @@ class CosmosConnection:
 
 
 def _iter_all_items(container: Any) -> Iterable[dict[str, Any]]:
-    return container.query_items(
-        query="SELECT * FROM c", enable_cross_partition_query=True
-    )
+    return container.query_items(query="SELECT * FROM c", enable_cross_partition_query=True)
 
 
 def _portable_item(
-    item: dict[str, Any], container_name: str = "", *, now: int | None = None
+    item: dict[str, Any],
+    container_name: str = "",
+    *,
+    now: int | None = None,
+    default_ttl: Any = _UNSET,
 ) -> dict[str, Any]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
-    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and "_ts" in item:
-        source_ttl = int(
-            item.get("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
-        )
+    ttl = (
+        EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS.get(container_name)
+        if default_ttl is _UNSET
+        else default_ttl
+    )
+    if ttl is not None and "_ts" in item:
+        source_ttl = int(item.get("ttl", ttl))
         if source_ttl == -1:
             portable["ttl"] = -1
         else:
             expires_at = int(item["_ts"]) + source_ttl
-            portable["ttl"] = max(
-                1, expires_at - (now if now is not None else int(time.time()))
-            )
+            portable["ttl"] = max(1, expires_at - (now if now is not None else int(time.time())))
     return portable
 
 
@@ -75,14 +80,17 @@ def _item_key(item: dict[str, Any]) -> tuple[str, str]:
 
 
 def _verification_item(
-    item: dict[str, Any], container_name: str
+    item: dict[str, Any], container_name: str, default_ttl: Any = _UNSET
 ) -> tuple[dict[str, Any], int | str | None]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
     expires_at = None
-    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS:
-        ttl = int(
-            portable.pop("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
-        )
+    configured_ttl = (
+        EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS.get(container_name)
+        if default_ttl is _UNSET
+        else default_ttl
+    )
+    if configured_ttl is not None:
+        ttl = int(portable.pop("ttl", configured_ttl))
         if ttl == -1:
             expires_at = "permanent"
         elif "_ts" in item:
@@ -91,10 +99,10 @@ def _verification_item(
 
 
 def _items_by_key(
-    container: Any, container_name: str
+    container: Any, container_name: str, default_ttl: Any = _UNSET
 ) -> dict[tuple[str, str], tuple[dict[str, Any], int | str | None]]:
     return {
-        _item_key(item): _verification_item(item, container_name)
+        _item_key(item): _verification_item(item, container_name, default_ttl)
         for item in _iter_all_items(container)
     }
 
@@ -123,17 +131,21 @@ def copy_container(
     *,
     dry_run: bool = False,
     workers: int = 1,
+    default_ttl: Any = _UNSET,
 ) -> int:
     items = _iter_all_items(src_container)
     if dry_run or workers == 1:
         copied = 0
         for item in items:
             if not dry_run:
-                dst_container.upsert_item(_portable_item(item, container_name))
+                dst_container.upsert_item(
+                    _portable_item(item, container_name, default_ttl=default_ttl)
+                )
             copied += 1
     else:
+
         def upsert(item: dict[str, Any]) -> None:
-            dst_container.upsert_item(_portable_item(item, container_name))
+            dst_container.upsert_item(_portable_item(item, container_name, default_ttl=default_ttl))
 
         with ThreadPoolExecutor(max_workers=workers) as executor:
             copied = sum(1 for result in executor.map(upsert, items) if result is None)
@@ -142,19 +154,20 @@ def copy_container(
     return copied
 
 
-def verify_container(src_container: Any, dst_container: Any, container_name: str) -> int:
-    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and hasattr(
-        dst_container, "read"
-    ):
-        default_ttl = dst_container.read().get("defaultTtl")
-        expected_ttl = EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name]
-        if default_ttl != expected_ttl:
-            raise RuntimeError(
-                f"Container {container_name} verification failed: "
-                f"defaultTtl={default_ttl}, expected={expected_ttl}"
-            )
-    source = _items_by_key(src_container, container_name)
-    target = _items_by_key(dst_container, container_name)
+def verify_container(
+    src_container: Any, dst_container: Any, container_name: str, *, default_ttl: Any = _UNSET
+) -> int:
+    expected_ttl = (
+        EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS.get(container_name)
+        if default_ttl is _UNSET
+        else default_ttl
+    )
+    if (default_ttl is not _UNSET or expected_ttl is not None) and hasattr(dst_container, "read"):
+        actual_ttl = dst_container.read().get("defaultTtl")
+        if actual_ttl != expected_ttl:
+            raise RuntimeError(f"Container {container_name}: target TTL differs from source")
+    source = _items_by_key(src_container, container_name, default_ttl)
+    target = _items_by_key(dst_container, container_name, default_ttl)
     missing = sorted(source.keys() - target.keys())
     extra = sorted(target.keys() - source.keys())
     mismatched = []
@@ -198,15 +211,13 @@ def copy_cosmos(
     verify_only: bool = False,
     workers: int = 1,
 ) -> int:
-    if source == target:
+    if _same_coordinates(source, target):
         raise ValueError("Source and target Cosmos coordinates must be different.")
 
     src_database = _client(source).get_database_client(source.database)
     dst_database = _client(target).get_database_client(target.database)
 
-    existing_source = {
-        container["id"] for container in src_database.list_containers()
-    }
+    existing_source = {container["id"] for container in src_database.list_containers()}
 
     total = 0
     for name in containers:
@@ -222,6 +233,101 @@ def copy_cosmos(
         if not dry_run:
             verify_container(src_container, dst_container, name)
 
+    return total
+
+
+def snapshot_database(database: Any, backup_dir: Path) -> dict[str, Any]:
+    """Archive every container's raw items and schema before target mutations."""
+    if backup_dir.exists() and any(backup_dir.iterdir()):
+        raise ValueError("Snapshot directory must be empty or absent")
+    backup_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    backup_dir.chmod(0o700)
+    manifest: dict[str, Any] = {
+        "format": "cosmos-raw-snapshot-v1",
+        "exported_at": datetime.now(UTC).isoformat(),
+        "containers": {},
+    }
+    for index, name in enumerate(sorted(_database_container_names(database))):
+        container = database.get_container_client(name)
+        path = backup_dir / f"container-{index:04d}.jsonl"
+        count = 0
+        with path.open("w", encoding="utf-8") as stream:
+            for item in _iter_all_items(container):
+                stream.write(json.dumps(item, ensure_ascii=False) + "\n")
+                count += 1
+        manifest["containers"][name] = {
+            "schema": container.read(),
+            "file": path.name,
+            "items": count,
+            "sha256": _sha256(path),
+        }
+    _write_report(backup_dir / "manifest.json", manifest)
+    return manifest
+
+
+def copy_all_containers(
+    source: CosmosConnection,
+    target: CosmosConnection,
+    *,
+    target_backup_dir: Path | None,
+    dry_run: bool = False,
+    verify_only: bool = False,
+    workers: int = 1,
+) -> int:
+    if _same_coordinates(source, target):
+        raise ValueError("Source and target Cosmos coordinates must be different")
+    if not (dry_run or verify_only) and target_backup_dir is None:
+        raise ValueError("Full copy requires a target snapshot directory before any writes")
+    src = _client(source).get_database_client(source.database)
+    dst = _client(target).get_database_client(target.database)
+    names = _database_container_names(src)
+    if not names:
+        raise RuntimeError("Source has no containers; refusing an empty migration")
+    missing = names - _database_container_names(dst)
+    if missing:
+        raise RuntimeError(f"Provision missing target containers before copying: {sorted(missing)}")
+    policies = {}
+    for name in sorted(names):
+        src_container, dst_container = (
+            src.get_container_client(name),
+            dst.get_container_client(name),
+        )
+        source_schema, target_schema = src_container.read(), dst_container.read()
+        if source_schema.get("partitionKey", {}).get("paths") != ["/user_id"]:
+            raise RuntimeError(
+                f"Unsupported partition scheme in {name}; migration needs a specific adapter"
+            )
+        for field in ("partitionKey", "uniqueKeyPolicy", "defaultTtl"):
+            if source_schema.get(field) != target_schema.get(field):
+                raise RuntimeError(f"Container {name}: target {field} differs from source")
+        policies[name] = source_schema.get("defaultTtl")
+        source_keys = {_item_key(item) for item in _iter_all_items(src_container)}
+        target_keys = {_item_key(item) for item in _iter_all_items(dst_container)}
+        if target_keys - source_keys:
+            raise RuntimeError(
+                f"Container {name} has target-only items; preserve/archive or choose a fresh "
+                "destination before exact migration. No items were deleted."
+            )
+    if not (dry_run or verify_only):
+        snapshot_database(dst, target_backup_dir)
+    total = 0
+    for name in sorted(names):
+        src_container, dst_container = (
+            src.get_container_client(name),
+            dst.get_container_client(name),
+        )
+        if not verify_only:
+            count = copy_container(
+                src_container,
+                dst_container,
+                name,
+                dry_run=dry_run,
+                workers=workers,
+                default_ttl=policies[name],
+            )
+        if not dry_run:
+            count = verify_container(src_container, dst_container, name, default_ttl=policies[name])
+        total += count
     return total
 
 
@@ -245,16 +351,12 @@ def _require_recovery_target(
 ) -> None:
     if _same_coordinates(source, target):
         raise ValueError("Source and target Cosmos coordinates must be different.")
-    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(
-        DEFAULT_CONTAINERS
-    ):
+    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(DEFAULT_CONTAINERS):
         raise ValueError(
             "Recovery drill requires exactly the eight default application containers."
         )
     if target.database.casefold() in LIVE_DATABASE_NAMES:
-        raise ValueError(
-            "Recovery drill target must not be a live canary or production database."
-        )
+        raise ValueError("Recovery drill target must not be a live canary or production database.")
     if not any(marker in target.database.casefold() for marker in ("recovery", "restore", "drill")):
         raise ValueError(
             "Recovery drill target database name must contain recovery, restore, or drill."
@@ -305,12 +407,8 @@ def export_backup(
     containers: list[str],
 ) -> dict[str, Any]:
     """Export a portable backup artifact without storing source credentials."""
-    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(
-        DEFAULT_CONTAINERS
-    ):
-        raise ValueError(
-            "Backup export requires exactly the eight default application containers."
-        )
+    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(DEFAULT_CONTAINERS):
+        raise ValueError("Backup export requires exactly the eight default application containers.")
     if backup_dir.exists() and any(backup_dir.iterdir()):
         raise ValueError("Backup directory must be empty or absent.")
     backup_dir.mkdir(parents=True, exist_ok=True)
@@ -327,9 +425,7 @@ def export_backup(
         with path.open("w", encoding="utf-8", newline="\n") as stream:
             for item in _iter_all_items(source_database.get_container_client(name)):
                 portable = _portable_item(item, name)
-                stream.write(
-                    json.dumps(portable, sort_keys=True, separators=(",", ":")) + "\n"
-                )
+                stream.write(json.dumps(portable, sort_keys=True, separators=(",", ":")) + "\n")
                 count += 1
         container_manifest[name] = {
             "file": path.name,
@@ -465,9 +561,7 @@ def run_backup_recovery_drill(
         "backup": {
             "exported_at": manifest["exported_at"],
             "source": manifest["source"],
-            "containers": {
-                name: entry["items"] for name, entry in manifest["containers"].items()
-            },
+            "containers": {name: entry["items"] for name, entry in manifest["containers"].items()},
             "total_items": manifest["total_items"],
             "manifest": str(backup_dir / "manifest.json"),
         },
@@ -475,7 +569,7 @@ def run_backup_recovery_drill(
     }
 
 
-def _az_output(*arguments: str) -> str:
+def _az_output(*arguments: str, azure_config_dir: str | None = None) -> str:
     azure_cli = shutil.which("az")
     if not azure_cli:
         raise RuntimeError("Azure CLI executable not found on PATH.")
@@ -484,6 +578,7 @@ def _az_output(*arguments: str) -> str:
         check=True,
         capture_output=True,
         text=True,
+        env={**os.environ, **({"AZURE_CONFIG_DIR": azure_config_dir} if azure_config_dir else {})},
     )
     return result.stdout.strip()
 
@@ -493,6 +588,8 @@ def _azure_connection(
     account: str,
     database: str,
     subscription: str | None = None,
+    azure_config_dir: str | None = None,
+    read_only: bool = False,
 ) -> CosmosConnection:
     subscription_args = ("--subscription", subscription) if subscription else ()
     endpoint = _az_output(
@@ -505,6 +602,7 @@ def _azure_connection(
         "--query",
         "documentEndpoint",
         *subscription_args,
+        azure_config_dir=azure_config_dir,
     )
     key = _az_output(
         "cosmosdb",
@@ -515,8 +613,11 @@ def _azure_connection(
         "-n",
         account,
         "--query",
-        "primaryMasterKey",
+        "primaryReadonlyMasterKey" if read_only else "primaryMasterKey",
+        "--type",
+        "read-only-keys" if read_only else "keys",
         *subscription_args,
+        azure_config_dir=azure_config_dir,
     )
     return CosmosConnection(endpoint=endpoint, key=key, database=database)
 
@@ -530,7 +631,18 @@ def _connection_from_args(args: argparse.Namespace, prefix: str) -> CosmosConnec
     subscription = getattr(args, f"{prefix}_subscription")
 
     if account and resource_group:
-        return _azure_connection(resource_group, account, database, subscription)
+        return _azure_connection(
+            resource_group,
+            account,
+            database,
+            subscription,
+            azure_config_dir=getattr(args, f"{prefix}_azure_config_dir", None),
+            read_only=(
+                prefix == "src"
+                or getattr(args, "verify_only", False)
+                or getattr(args, "dry_run", False)
+            ),
+        )
     if endpoint and key:
         return CosmosConnection(endpoint=endpoint, key=key, database=database)
     raise ValueError(
@@ -547,10 +659,13 @@ def parse_args() -> argparse.Namespace:
         parser.add_argument(f"--{prefix}-account")
         parser.add_argument(f"--{prefix}-resource-group")
         parser.add_argument(f"--{prefix}-subscription")
+        parser.add_argument(f"--{prefix}-azure-config-dir")
         parser.add_argument(f"--{prefix}-endpoint")
         parser.add_argument(f"--{prefix}-key")
         parser.add_argument(f"--{prefix}-db", required=prefix == "src")
     parser.add_argument("--containers", nargs="+", default=list(DEFAULT_CONTAINERS))
+    parser.add_argument("--all-containers", action="store_true")
+    parser.add_argument("--target-backup-dir", type=Path)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--workers", type=int, default=1)
@@ -568,6 +683,33 @@ def main() -> int:
     if workers < 1:
         raise ValueError("--workers must be at least 1.")
     source = _connection_from_args(args, "src")
+    if getattr(args, "all_containers", False):
+        if args.recovery_drill or args.containers != list(DEFAULT_CONTAINERS):
+            raise ValueError(
+                "Full-container mode cannot be combined with recovery or a container list"
+            )
+        if args.export_only:
+            if not args.backup_dir or args.dry_run or args.verify_only:
+                raise ValueError(
+                    "Full snapshot requires --backup-dir and cannot use dry-run/verify-only"
+                )
+            database = _client(source).get_database_client(source.database)
+            snapshot_database(database, args.backup_dir)
+            print(json.dumps({"snapshot": str(args.backup_dir), "complete": True}))
+            return 0
+        if not args.dst_db:
+            raise ValueError("Full-container copy requires --dst-db")
+        target = _connection_from_args(args, "dst")
+        total = copy_all_containers(
+            source,
+            target,
+            target_backup_dir=args.target_backup_dir,
+            dry_run=args.dry_run,
+            verify_only=args.verify_only,
+            workers=workers,
+        )
+        print(json.dumps({"items": total, "all_containers": True, "verified": not args.dry_run}))
+        return 0
     if args.export_only:
         if args.dry_run or args.verify_only or args.recovery_drill:
             raise ValueError(
@@ -600,9 +742,7 @@ def main() -> int:
         if args.report_path:
             _write_report(args.report_path, report)
         output = (
-            json.dumps(report, sort_keys=True)
-            if args.json_output
-            else json.dumps(report, indent=2)
+            json.dumps(report, sort_keys=True) if args.json_output else json.dumps(report, indent=2)
         )
         print(output)
         return 0

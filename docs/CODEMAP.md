@@ -879,3 +879,15 @@ Tests: `tests/test_itinerary_judge.py`, incremental evaluation and boundary suit
 No paid calls are required for those tests. Design references:
 [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
 and [evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices).
+
+
+### Azure migration safety and data-copy boundaries
+
+`infra/migration/common.ps1` owns source-retirement guards, manifest-bound resume
+checks and per-subscription CLI credential routing. Azure copy phases call
+`scripts/cosmos_copy.py --all-containers` for schema-checked full discovery,
+per-container expiry preservation, a target-before snapshot and exact content
+verification. This mode never deletes source or target items; target-only data
+blocks exact migration. Legacy backup/recovery has its separate fixed-container
+format. See `infra/migration/README.md` and issue #362 for the pending return
+migration and the required live inventory/other-data/cutover checks.

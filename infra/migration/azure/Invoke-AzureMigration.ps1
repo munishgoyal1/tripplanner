@@ -27,20 +27,23 @@ if ($cosmosDatabases -contains "tripplanner-local") {
 }
 $requiredProviders = @(
     "Microsoft.App", "Microsoft.CognitiveServices", "Microsoft.Communication",
-    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights"
+    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights",
+    "Microsoft.ManagedIdentity"
 )
 
 function Get-AzureJson {
-    param([Parameter(Mandatory)][string[]]$Arguments, [Parameter(Mandatory)][string]$Description)
-    $raw = Invoke-CheckedCommand -Executable "az" -Arguments ($Arguments + @("--output", "json")) -Description $Description -Capture
+    param([Parameter(Mandatory)][string[]]$Arguments, [Parameter(Mandatory)][string]$Description, [string]$AzureConfigDirectory = "")
+    $raw = Invoke-CheckedCommand -Executable "az" -Arguments ($Arguments + @("--output", "json")) -Description $Description -Capture -AzureConfigDirectory $AzureConfigDirectory
     if ([string]::IsNullOrWhiteSpace($raw)) { return @() }
     return $raw | ConvertFrom-Json
 }
 
 function Assert-AzureIdentity {
-    $accounts = @(Get-AzureJson -Description "list Azure subscriptions" -Arguments @("account", "list", "--all"))
     foreach ($side in @("source", "target")) {
         $expected = $azure.$side
+        $directory = [Environment]::GetEnvironmentVariable("TRIPPLANNER_MIGRATION_$($side.ToUpper())_AZURE_CONFIG_DIR")
+        $accounts = @(Get-AzureJson -Description "list $side Azure subscriptions" `
+            -Arguments @("account", "list", "--all") -AzureConfigDirectory $directory)
         Assert-ConfiguredValue "azure.$side.account" $expected.account
         Assert-ConfiguredValue "azure.$side.tenantId" $expected.tenantId
         Assert-ConfiguredValue "azure.$side.subscriptionId" $expected.subscriptionId
@@ -54,8 +57,8 @@ function Assert-AzureIdentity {
                 throw "Azure $side subscription resolves to '$($matchingAccounts[0].user.name)', expected '$($expected.account)'."
         }
     }
-    if ($source.subscriptionId -eq $target.subscriptionId -or $source.tenantId -eq $target.tenantId) {
-        throw "Source and target must be different Azure subscriptions and tenants for this migration workflow."
+    if ($source.subscriptionId -eq $target.subscriptionId) {
+        throw "Source and target must be different Azure subscriptions for this migration workflow."
     }
     if (@($source.account, $target.account) -icontains "mugoy@microsoft.com") {
         throw "The prohibited work identity must not appear in migration configuration."
@@ -102,10 +105,18 @@ function Invoke-CosmosCopy {
         "--dst-subscription", $target.subscriptionId,
         "--dst-resource-group", $target.cosmosResourceGroup,
         "--dst-account", $target.cosmosAccount, "--dst-db", $Database,
-        "--json"
+        "--all-containers", "--json"
     )
+    foreach ($mapping in @(@("src", "SOURCE"), @("dst", "TARGET"))) {
+        $directory = [Environment]::GetEnvironmentVariable("TRIPPLANNER_MIGRATION_$($mapping[1])_AZURE_CONFIG_DIR")
+        if ($directory) { $arguments += @("--$($mapping[0])-azure-config-dir", $directory) }
+    }
+    if (-not $VerifyOnly) {
+        $backupName = "target-before-$Database-$(Get-Date -Format 'yyyyMMddHHmmssfff')"
+        $arguments += @("--target-backup-dir", (Join-Path $EvidenceDirectory $backupName))
+    }
     if ($VerifyOnly) { $arguments += "--verify-only" }
-    Invoke-CheckedCommand -Executable (Join-Path $repoRoot ".venv/bin/python") `
+    Invoke-CheckedCommand -Executable (Get-MigrationPython $repoRoot) `
         -Arguments $arguments -Description "Cosmos $Database migration"
 }
 
@@ -148,6 +159,14 @@ function Stop-SourceServing {
     }
 }
 
+if ($Phase -eq 'retire') { Assert-SourceRetirementAllowed $azure }
+$env:TRIPPLANNER_MIGRATION_SOURCE_SUBSCRIPTION = $source.subscriptionId
+$env:TRIPPLANNER_MIGRATION_TARGET_SUBSCRIPTION = $target.subscriptionId
+$oldAzureConfigDirectory = $env:AZURE_CONFIG_DIR
+try {
+if ($env:TRIPPLANNER_MIGRATION_TARGET_AZURE_CONFIG_DIR) {
+    $env:AZURE_CONFIG_DIR = $env:TRIPPLANNER_MIGRATION_TARGET_AZURE_CONFIG_DIR
+}
 Assert-CommandAvailable "az"
 Assert-AzureIdentity
 
@@ -329,13 +348,17 @@ switch ($Phase) {
         if ($WhatIfPreference) { Write-Host "Would freeze source serving, take the final backup, copy data, change DNS, and bind domains."; break }
         Stop-SourceServing
         $backupDirectory = Join-Path $EvidenceDirectory "final-prod-backup"
-        Invoke-CheckedCommand (Join-Path $repoRoot ".venv/bin/python") @(
-            (Join-Path $repoRoot "scripts/cosmos_copy.py"), "--export-only",
+        $backupArgs = @(
+            (Join-Path $repoRoot "scripts/cosmos_copy.py"), "--export-only", "--all-containers",
             "--src-subscription", $source.subscriptionId,
             "--src-resource-group", $source.cosmosResourceGroup,
             "--src-account", $source.cosmosAccount, "--src-db", "tripplanner-prod",
             "--backup-dir", $backupDirectory, "--json"
-        ) "export final production backup"
+        )
+        if ($env:TRIPPLANNER_MIGRATION_SOURCE_AZURE_CONFIG_DIR) {
+            $backupArgs += @("--src-azure-config-dir", $env:TRIPPLANNER_MIGRATION_SOURCE_AZURE_CONFIG_DIR)
+        }
+        Invoke-CheckedCommand (Get-MigrationPython $repoRoot) $backupArgs "export final production backup"
         foreach ($database in @(Get-CosmosDatabases ([pscustomobject]@{
             subscriptionId = $source.subscriptionId
             cosmosResourceGroup = $source.cosmosResourceGroup
@@ -357,6 +380,7 @@ switch ($Phase) {
         Write-MigrationCheckpoint $EvidenceDirectory "cutover" ([ordered]@{ targetUrl = $prod.url; backup = $backupDirectory; smoke = "passed" })
     }
     "retire" {
+        Assert-SourceRetirementAllowed $azure
         Assert-MigrationCheckpoint $EvidenceDirectory "cutover"
         Assert-Approval $Approval "APPROVE_SOURCE_RETIREMENT" "Azure source retirement"
         Assert-SourceScopeComplete
@@ -378,4 +402,7 @@ switch ($Phase) {
             manualAction = "Cancel the empty source subscription in Azure billing to close the account boundary."
         })
     }
+}
+} finally {
+    $env:AZURE_CONFIG_DIR = $oldAzureConfigDirectory
 }
