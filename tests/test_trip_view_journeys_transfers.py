@@ -2474,3 +2474,43 @@ def test_an_own_car_trip_drives_its_local_legs_instead_of_taking_taxis(
     assert leg["mode"] == "Drive"
     assert "taxi" not in leg["detail"].lower()
     assert "Taxi" not in day["route"]["mode"]
+
+
+def test_a_car_day_trip_counts_its_drives_in_the_days_travel(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reported: the rows showed two drives, the day card said 0 min, 0 km."""
+    coords = {
+        "Daiwik Hotels": (9.2876, 79.3129),
+        "Dhanushkodi Beach": (9.1520, 79.4440),
+        "Rameshwaram": (9.2881, 79.3174),
+    }
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: coords.get(name))
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rameshwaram",
+        "selected_hotels": [{"name": "Daiwik Hotels"}],
+        "day_wise_itinerary": [{
+            "day": 6,
+            "stops": [
+                {"name": "Daiwik Hotels", "kind": "hotel"},
+                {"name": "Drive: Rameshwaram to Dhanushkodi", "kind": "transport",
+                 "time": "08:00"},
+                {"name": "Dhanushkodi Beach", "kind": "attraction", "time": "09:00",
+                 "duration_min": 120},
+                {"name": "Drive: Dhanushkodi to Rameshwaram", "kind": "transport",
+                 "time": "11:30"},
+                {"name": "Daiwik Hotels", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    day = trip_view.build_itinerary(trip)["days"][0]
+    legs = [
+        stop["travel_from_previous"] for stop in day["stops"] if stop.get("travel_from_previous")
+    ]
+
+    assert len(legs) == 2
+    assert day["route"]["distance_km"] == round(sum(leg["distance_km"] for leg in legs), 1)
+    assert day["route"]["duration_min"] == sum(leg["duration_min"] for leg in legs) > 0
+    assert day["route"]["mode"] == "Drive"

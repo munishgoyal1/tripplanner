@@ -1,5 +1,5 @@
 import {
-  BedDouble, BusFront, CalendarCheck2, CarFront, Check, ChevronDown, Clock3, Flame, Footprints, Landmark, Loader2, MapPin,
+  BedDouble, BusFront, CalendarCheck2, CarFront, Check, ChevronDown, Clock3, Footprints, Landmark, Loader2, MapPin,
   Plane, PlaneLanding, PlaneTakeoff, Route, Ship, Star, TrainFront, Trash2, UtensilsCrossed,
 } from "lucide-react";
 import { useState } from "react";
@@ -65,6 +65,22 @@ function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
     seen.add(key);
     return [text];
   });
+}
+
+const SCORED_KINDS = new Set(["attraction", "activity", "meal", "restaurant"]);
+
+/**
+ * The must-visit score on a 10-point scale with its band. The backend scores
+ * 0-100 from Google rating and review volume; 9+ is a must-visit, 7-9 is worth
+ * the visit, 5-7 is optional, and below that is a filler stop.
+ */
+export function mustVisitScore(stop: ItineraryStop): { value: number; band: string; tone: string } | null {
+  if (typeof stop.popularity_score !== "number" || !SCORED_KINDS.has(stop.kind)) return null;
+  const value = Math.round(stop.popularity_score) / 10;
+  if (value >= 9) return { value, band: "Must visit", tone: "bg-emerald-50 text-emerald-800 ring-emerald-200" };
+  if (value >= 7) return { value, band: "Good to visit", tone: "bg-sky-50 text-sky-800 ring-sky-200" };
+  if (value >= 5) return { value, band: "May visit", tone: "bg-amber-50 text-amber-800 ring-amber-200" };
+  return { value, band: "Optional", tone: "bg-sand text-muted ring-border" };
 }
 
 function terminalTimingLabel(stop: ItineraryStop): string | null {
@@ -165,8 +181,9 @@ export default function ItineraryStopRow({
       }${stop.duration_estimated ? " est." : ""}`
       : null;
   const departureText = stop.departure_time
-    ? `${stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave"} ${stop.departure_time}`
+    ? `${stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave by"} ${stop.departure_time}`
     : null;
+  const score = circuitReturn ? null : mustVisitScore(stop);
   const hasNotes = noteTexts.length > 0 || (!circuitReturn && insightTexts.length > 0);
   const bookable = !circuitReturn && !["airport", "station", "bus_station", "origin"].includes(stop.kind);
   const travel = stop.travel_from_previous;
@@ -180,8 +197,7 @@ export default function ItineraryStopRow({
         ? "text-emerald-700"
         : "text-muted";
   const hasTags = !circuitReturn && Boolean(
-    stop.cost_display || stop.opening_hours || typeof stop.rating === "number"
-    || (typeof stop.popularity_score === "number" && stop.kind === "attraction"),
+    stop.cost_display || stop.opening_hours || typeof stop.rating === "number",
   );
   const handleRowClick = () => {
     if (focusable) {
@@ -277,7 +293,7 @@ export default function ItineraryStopRow({
                 event.stopPropagation();
                 onFocus();
               }}
-              className={`min-w-0 flex-1 text-left text-[14px] font-semibold leading-snug tracking-[-0.005em] ${
+              className={`min-w-0 text-left text-[14px] font-semibold leading-snug tracking-[-0.005em] ${
                 focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
               }`}
               title={routeFocusable
@@ -288,6 +304,16 @@ export default function ItineraryStopRow({
             >
               {circuitReturn ? `Return to ${stop.name}` : stop.name}
             </button>
+            {score && (
+              <span
+                className={`ml-1 mt-px inline-flex flex-shrink-0 items-baseline rounded px-1 text-[11px] font-semibold tabular-nums ring-1 ${score.tone}`}
+                aria-label={`Must-visit score ${score.value.toFixed(1)} out of 10: ${score.band}`}
+                title={`${score.band} · must-visit score from Google rating and review volume`}
+              >
+                {score.value.toFixed(1)}
+                <span className="text-[9.5px] font-medium opacity-70">/10</span>
+              </span>
+            )}
           </div>
           <p className="it-stop-detail mt-0.5 flex flex-wrap items-center gap-x-1.5 pl-7 text-[12px] text-muted">
             <span>{timingLabel}</span>
@@ -308,19 +334,14 @@ export default function ItineraryStopRow({
                 </span>
               </>
             )}
-            {durationText && (
-              <>
-                <span aria-hidden>·</span>
-                <span>{durationText}</span>
-              </>
-            )}
-            {departureText && (
-              <>
-                <span aria-hidden>·</span>
-                <span className="tabular-nums">{departureText}</span>
-              </>
-            )}
           </p>
+          {(durationText || departureText) && (
+            <p className="it-stop-timing mt-0.5 flex flex-wrap items-center gap-x-1.5 pl-7 text-[12px] text-muted">
+              {durationText && <span>{durationText}</span>}
+              {durationText && departureText && <span aria-hidden>·</span>}
+              {departureText && <span className="tabular-nums">{departureText}</span>}
+            </p>
+          )}
         </div>
         <div className="it-stop-tags flex flex-wrap items-center gap-1 pl-7 pt-1.5">
           {(hasTags || hasNotes) && (
@@ -332,15 +353,6 @@ export default function ItineraryStopRow({
                   {typeof stop.review_count === "number" && stop.review_count > 0 && (
                     <span>· {reviewCountLabel(stop.review_count)} reviews</span>
                   )}
-                </span>
-              )}
-              {!circuitReturn && typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
-                <span
-                  className={`${TAG} text-brand`}
-                  title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
-                >
-                  <Flame size={11} aria-hidden />
-                  <span>Must-visit score {stop.popularity_score}/100</span>
                 </span>
               )}
               {!circuitReturn && stop.cost_display && <span className={TAG}>{formatCostDisplay(stop.cost_display, currency)}</span>}
