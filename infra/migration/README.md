@@ -169,3 +169,89 @@ a separate owner action if its billing link can incur charges.
 The generic cloud orchestrator intentionally does not implement Google migration.
 Use the guarded Google command above so fixed project lists cannot omit a billed
 project and source retirement cannot run without its dedicated verification gates.
+
+
+## Returning to an existing subscription without deleting the source
+
+Owner request tracked in issue #362: organizational Azure account back to the
+personal account, reusing compatible old resource groups. The checked-in
+`cloud-account-migration.json` is historical and still points in the original
+opposite direction. Do not run it for the return migration. Build a new ignored
+manifest from the authenticated inventories; neither old resource names nor the
+old image tag prove the target is ready. The Visual Studio benefit's dev/test
+restrictions apply independently of environment names.
+
+Source preservation now defaults on: `preserveSource: true` plus
+`deleteSourceResourceGroupsOnRetire: false`. Retirement rejects this combination
+before any source stop/delete action, and the generic `all` sequence never
+includes retirement. A separately authorized cutover can still stop serving and
+pause source jobs to freeze writes, without deleting resources. Fixed source
+charges may continue because the source is retained.
+
+### Independent Azure accounts
+
+Keep separate protected Azure CLI cache directories outside Git. Sign in to each
+account in its corresponding directory, then provide the paths to the migration:
+
+```powershell
+$env:TRIPPLANNER_MIGRATION_SOURCE_AZURE_CONFIG_DIR = '<source-cli-cache>'
+$env:TRIPPLANNER_MIGRATION_TARGET_AZURE_CONFIG_DIR = '<target-cli-cache>'
+# Before each login, set AZURE_CONFIG_DIR to that side's directory.
+# az login --tenant <that-side-tenant-id> --use-device-code
+```
+
+The phase runner verifies each configured email, tenant and subscription in its
+own cache. Subscription-addressed management calls route to the correct cache;
+target provisioning children inherit the target cache. Cosmos copy receives
+both paths explicitly and retrieves a read-only source key and a write-capable
+target key in process memory. No key values are printed or saved in evidence.
+Treat CLI caches as credentials and snapshots as private data.
+
+### Data preservation and resuming
+
+Migration phases use `cosmos_copy.py --all-containers`, discovering every source
+container rather than relying on the older recovery tool's fixed list. Every
+source container must already exist on target with compatible `/user_id`
+partitioning, unique-key policy and default TTL. Unknown partition schemes or
+missing containers stop before writes; reconcile them in IaC after inventory.
+Every container's actual TTL governs expiry-preserving item copies, including
+newer cache, recorder and cost-ledger containers.
+
+Before writing, all containers are checked for target-only items; those stop the
+migration rather than being silently deleted. Conflicting records with matching
+IDs/partitions are replaced from source only after a complete target snapshot.
+The timestamped target-before snapshots contain raw documents (including `_ts`),
+container schemas, counts and SHA-256 hashes. They use the
+`cosmos-raw-snapshot-v1` format and are **not** input to the legacy fixed-container
+recovery drill. Any restoration must account for recorded absolute expiry times.
+The source remains read-only during data copy. Exact verification can fail while
+source/target writes or TTL deletions continue; freeze serving for the final
+sync and never treat an online copy as a consistent point-in-time backup.
+
+Each run binds checkpoints to its manifest hash. Changing source/target/image or
+other config requires a fresh run ID; old unbound checkpoints are rejected.
+`data` and `validate` rerun when resumed before cutover. Once `cutover.json`
+exists, these phases reject attempts to copy the stale source back over the live
+target. Failed cutover recovery still needs operator review: do not blindly
+repeat a partially completed DNS/data transition.
+
+### Live return-migration checklist
+
+1. Inventory both accounts and compare existing target resources/configuration.
+   Record all data-bearing services, actual OpenAI models/versions/SKUs, limits,
+   serving images, secrets references, domains, identities and grants.
+2. Reconcile target resources with no deletes. Check free-tier account ownership,
+   model availability/quota and available credits before provisioning. The new
+   managed-identity app template requires an identity-compatible tested image.
+3. Back up/compare target data; use the full-container copy and verification.
+   Handle any Blob/File/Redis or other discovered data with its own adapter.
+   Historical Log Analytics records do not automatically transfer to a recreated
+   workspace; preserve source and explicitly export required history separately.
+4. Validate canary and target production before freezing source writers. Verify
+   DNS/TLS/OAuth handoff and rollback steps; then final sync and traffic cutover.
+5. Update deployment defaults/local cloud dependencies to verified target
+   coordinates, grant the requested separate Cosmos Reader access, and verify
+   target health. Source resource deletion is excluded from this migration.
+
+As of the repository preparation, live inventory, model/DNS checks, other-data
+adapters, target provisioning, data copy and traffic cutover are not yet run.

@@ -105,8 +105,6 @@ switch ($Operation) {
         }
         Write-Host "Target migration completed and validated. Traffic cutover, source retirement, and billing-account closure remain separate owner actions."
     }
-        } else {
-            Write-Host "Google migration skipped because it is disabled in the Azure manifest or -SkipGoogle was supplied."
 }
 
 Write-Host "$Operation completed. Azure evidence: $EvidenceRoot/$RunId"

@@ -1566,3 +1566,14 @@ requested. It does not initialize application storage, query/list unrelated data
 or write. Azure Data Reader grants enforce read-only permissions independently
 of the app's Contributor identity. See the deployment runbook for provisioning
 and the distinction between container-level RBAC and user/trip request limits.
+
+
+### Azure account migration preserves source resources
+
+When source preservation is enabled (the default), retirement fails before
+stopping or deleting source resources. Bulk orchestration excludes retirement.
+Final cutover may freeze source writers, but retains their resources. Full Cosmos
+copy checks every discovered source container, backs up existing target records,
+preserves per-container expiry and fails on target-only data rather than deleting
+it. Changing a run manifest invalidates checkpoints; completed traffic cutover
+blocks recopying the old source over the live target.
