@@ -606,3 +606,42 @@ def test_hosted_deployments_export_the_master_recorder_flag() -> None:
         assert script.index("Import-DeploymentEnvironment -Path $ConfigFile") < script.index(
             '"TRIPPLANNER_FLIGHT_RECORDER=$env:TRIPPLANNER_FLIGHT_RECORDER"'
         )
+
+
+def test_deployment_failure_cleanup_preserves_the_actionable_cause(tmp_path: Path) -> None:
+    harness = tmp_path / "deployment-failure-harness.ps1"
+    harness.write_text(
+        r"""
+param([string]$SourcePath)
+$source = Get-Content -Raw -LiteralPath $SourcePath
+$trap = [regex]::Match($source, '(?ms)^trap \{.*?^\}').Value
+if (-not $trap) { throw "Deployment trap was not found." }
+$ErrorActionPreference = "Stop"
+$totalTimer = [Diagnostics.Stopwatch]::StartNew()
+$stageTimer = [Diagnostics.Stopwatch]::StartNew()
+$stageName = "Prerequisite checks"
+function Complete-DeploymentTimer {
+    param([string]$Name, $Timer)
+    $Timer.Stop()
+    Write-Host "cleanup: $Name"
+}
+function Stop-RunLog { Write-Host "cleanup: transcript closed" }
+$failure = "No GHCR credential can publish: missing write:packages. Run gh auth refresh."
+$body = $trap + "`nthrow " + "'" + $failure + "'"
+& ([scriptblock]::Create($body))
+""".strip(),
+        encoding="utf-8",
+    )
+    for name in ("deploy-canary.ps1", "deploy-prod.ps1"):
+        source = Path(__file__).parents[1] / "infra" / name
+        result = subprocess.run(
+            ["pwsh", "-NoProfile", "-File", str(harness), "-SourcePath", str(source)],
+            capture_output=True, check=False, text=True,
+        )
+        assert result.returncode != 0
+        assert "missing write:packages" in result.stderr
+        assert "Run gh auth refresh" in result.stderr
+        assert "ScriptHalted" not in result.stderr
+        assert "cleanup: Prerequisite checks (failed)" in result.stdout
+        assert "deployment total (failed)" in result.stdout
+        assert "cleanup: transcript closed" in result.stdout

@@ -44,7 +44,12 @@ scope. A rejected candidate is named with its reason (expired, wrong owner,
 missing scope). Reading the image manifest is not accepted as proof: the package
 is public, so that read succeeds with no credential. `deploy-canary.ps1` runs
 the same check first, before Bicep validation, so a missing credential fails in
-seconds. Provider and OAuth settings remain in the uncommitted `.env`;
+seconds. Canary and production failure handlers retain the original exception after
+printing timings and closing the transcript, so terminal output includes the rejected
+credential and refresh instruction rather than a generic `ScriptHalted`.
+The scripts never expand GitHub scopes automatically; finish the browser authorization
+for `gh auth refresh` manually, then retry the deployment. Provider and OAuth settings
+remain in the uncommitted `.env`;
 hosted environment-owned Azure OpenAI keys and OAuth callback bases are resolved
 by the deployment scripts.
 
