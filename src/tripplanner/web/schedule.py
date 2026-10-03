@@ -65,7 +65,7 @@ def _route_stats_for_day(
 
 
 def _route_stats_for_distance(
-    distance: float, *, from_name: str = "", to_name: str = ""
+    distance: float, *, from_name: str = "", to_name: str = "", road_mode: str = ""
 ) -> dict[str, Any]:
     # A faster mode past a band edge must not make a longer hop quicker than a
     # shorter one: 1.6 km by taxi once took 4 minutes against 20 on foot for
@@ -77,6 +77,9 @@ def _route_stats_for_distance(
             duration_min = max(duration_min, int(round((distance / speed) * 60)))
             break
         duration_min = max(duration_min, int(round((limit / speed) * 60)))
+    if mode == "Taxi" and road_mode == "own_car":
+        # The traveller said they are driving; a taxi on every hop contradicted them.
+        mode = "Drive"
     distance_1 = round(distance, 1)
     result = {
         "distance_km": distance_1,
@@ -88,6 +91,8 @@ def _route_stats_for_distance(
     if from_name and to_name:
         if mode == "Walk":
             result["detail"] = f"Walk from {from_name} to {to_name}."
+        elif mode == "Drive":
+            result["detail"] = f"Drive your car from {from_name} to {to_name}."
         elif mode == "Metro":
             result["detail"] = (
                 f"Take the Metro from near {from_name} toward {to_name}; "
@@ -361,10 +366,12 @@ def _enrich_drive_transfer_timing(
             if waypoint.get("kind") in {"meal", "restaurant"}
             and str(waypoint.get("name") or "").strip()
         ]
-        guidance = [
-            "Keep the same taxi or self-drive vehicle through the route stops "
-            f"and continue to {following['name']}."
-        ]
+        vehicle = (
+            "Keep driving your own car"
+            if preferences.get("preferred_road_transport") == "own_car"
+            else "Keep the same taxi or self-drive vehicle"
+        )
+        guidance = [f"{vehicle} through the route stops and continue to {following['name']}."]
         if scenic_names:
             guidance.append(
                 "Use " + ", ".join(scenic_names) + " as short scenic breaks on the way."

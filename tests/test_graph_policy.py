@@ -1510,3 +1510,62 @@ def test_confirmed_creation_runs_preferences_and_duration_before_one_creation():
         assert decision.forced_tool == expected
         messages.append(_tool_call(expected, expected))
     assert not permits_trip_creation(messages, trip)
+
+
+_RAMESHWARAM = {
+    "destination": "Rameshwaram",
+    "departure_date": "2026-10-12",
+    "return_date": "2026-10-12",
+    "day_wise_itinerary": [
+        {"day": 1, "date": "2026-10-12", "title": "Temples", "stops": [
+            {"name": "Daiwik Hotels", "kind": "hotel"},
+            {"name": "Ramanathaswamy Temple", "kind": "attraction", "time": "09:00",
+             "note": "Take a taxi from the hotel"},
+            {"name": "Daiwik Hotels", "kind": "hotel"},
+        ]},
+    ],
+}
+
+
+def test_a_new_trip_wide_fact_forces_a_whole_trip_update() -> None:
+    """Reported: "we will be driving in my own personal car" named no trip word,
+    so the turn ended on an acknowledgement and every day still said taxi."""
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="We will be driving in my own personal car")],
+        active_trip=_RAMESHWARAM,
+        proposal_only=False,
+        has_planning_intent=False,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert "trip-wide" in decision.requirement
+    assert "full day_wise_itinerary" in decision.requirement
+
+
+def test_a_plain_question_about_a_saved_trip_forces_nothing() -> None:
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="What is the weather like there in October?")],
+        active_trip=_RAMESHWARAM,
+        proposal_only=False,
+        has_planning_intent=False,
+    )
+
+    assert decision.forced_tool != "update_trip_plan"
+
+
+def test_stale_taxi_rows_after_an_own_car_fact_keep_the_turn_open() -> None:
+    trip = {**_RAMESHWARAM, "trip_constraints": ["Local travel: our own car"]}
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="We will be driving in my own personal car"),
+            _tool_call("update_trip_plan", "save"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="save"),
+        ],
+        active_trip=trip,
+        proposal_only=False,
+        has_planning_intent=False,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert "still plans taxis" in decision.requirement
+    assert "Ramanathaswamy Temple" in decision.requirement

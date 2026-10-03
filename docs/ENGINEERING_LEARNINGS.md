@@ -2491,3 +2491,27 @@ between the validator and renderer; unknown geography is not zero travel.
 - An evaluation input must be scoped to its subject: each corpus record carried the
   whole 13 MB place cache, so the judge could never run and the incremental audit
   spent about 95% of its time hashing it. Measure the payload before tuning the loop.
+
+## 2026-10-03 - A fact the plan states must outrank a fact the cache might know
+
+- The trip repair decided which side of the London-to-Paris train a stop was on from
+  cached coordinates. A London sight looked up under the day's "Paris" heading had
+  none, every distance check went silent at once, and the optimiser re-timed
+  Buckingham Palace and the London hotel to the first free slot after the train.
+  The plan already said where the traveller was: its journeys. Derive locality from
+  the plan's own structure first and let lookups only refine it.
+- Timetables are local clocks; durations are not. Adding a ten-hour duration to a
+  09:00 Bangalore departure put the traveller in London at 19:00 instead of 15:00,
+  the chronology gate rejected every realistic afternoon stop, and the model learned
+  to start the trip at 18:00. A missing duration was worse: a 90-minute domestic
+  default made Bangalore to London a 1.5 hour flight. Trust the stated arrival, and
+  show nothing rather than a duration derived from two clocks in different zones.
+- A gate keyed on vocabulary misses facts phrased without it. "We will be driving
+  in my own personal car" named no trip word, so the turn counted as no planning
+  intent, nothing forced a save, and every day kept "take a taxi". Classify the
+  message by what it changes about the trip, and check the saved plan for every
+  row the new fact contradicts rather than trusting the edit to be complete.
+- Two views of one place must share one identity rule. The map pinned "South Bank"
+  from "Southbank Centre" while the itinerary's stricter check dropped its
+  coordinates, so the leg simply vanished and the arrival-day return row, which
+  required coordinates, vanished with it.

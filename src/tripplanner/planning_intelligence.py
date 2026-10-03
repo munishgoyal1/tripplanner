@@ -269,13 +269,17 @@ def recommend_trip_shape(
 
 
 def _planned_day_minutes(day: dict[str, Any]) -> tuple[int, bool]:
+    from tripplanner.tools.trip_guard import _is_city_journey
+
     total = 0
     has_transfer = False
     for stop in day.get("stops") or []:
         if not isinstance(stop, dict):
             continue
         kind = str(stop.get("kind") or "other").strip().lower()
-        if kind in {"flight", "transport"}:
+        # A local "Taxi: Hotel to Fort" row is not a travel day; counting it as
+        # one excused every sightseeing day that mentioned a cab from this check.
+        if kind in {"flight", "transport"} and _is_city_journey(stop):
             has_transfer = True
         if kind == "hotel":
             continue
@@ -286,6 +290,75 @@ def _planned_day_minutes(day: dict[str, Any]) -> tuple[int, bool]:
             travel_minutes = _bounded_number(travel.get("duration_min"), 0, 480)
             total += round(travel_minutes or 0)
     return total, has_transfer
+
+
+#: When a full sightseeing day may start, and how long after the day's natural
+#: start its last visit may end before the day reads as cut short.
+_DAY_START_CEILING_MIN = 11 * 60
+_FULL_DAY_START_MIN = 9 * 60 + 30
+_FULL_DAY_OVERHEAD_MIN = 30
+
+
+def _clock(value: Any) -> int | None:
+    match = re.fullmatch(r"\s*(\d{1,2}):(\d{2})\s*", str(value or ""))
+    if not match or int(match.group(1)) > 23 or int(match.group(2)) > 59:
+        return None
+    return int(match.group(1)) * 60 + int(match.group(2))
+
+
+def _visit_span(day: dict[str, Any]) -> tuple[int, int] | None:
+    """First visit start and last visit end, from the day's own clock times."""
+    starts: list[int] = []
+    ends: list[int] = []
+    for stop in day.get("stops") or []:
+        if not isinstance(stop, dict):
+            continue
+        kind = str(stop.get("kind") or "").strip().lower()
+        if kind in {"hotel", "flight", "transport"}:
+            continue
+        start = _clock(stop.get("time"))
+        if start is None:
+            continue
+        duration = _bounded_number(stop.get("duration_min"), 0, 720)
+        starts.append(start)
+        default = 60 if kind == "meal" else 90
+        ends.append(start + round(duration if duration is not None else default))
+    if not starts:
+        return None
+    return min(starts), max(ends)
+
+
+def _short_day_reason(
+    day: dict[str, Any], day_number: int, profile: PlanningProfile,
+    preferences: dict[str, Any] | None,
+) -> str:
+    """Why a full day's visits start late or finish early, or "" when they do not.
+
+    Minutes alone let a day of two long visits from 12:30 to 16:00 pass as
+    "enough", and the traveller saw a day that ends mid-afternoon.
+    """
+    span = _visit_span(day)
+    if span is None:
+        return ""
+    planning = (preferences or {}).get("planning_preferences")
+    planning = planning if isinstance(planning, dict) else {}
+    preferred_start = _clock(planning.get("preferred_day_start"))
+    preferred_end = _clock(planning.get("preferred_day_end"))
+    start_ceiling = preferred_start + 90 if preferred_start is not None else _DAY_START_CEILING_MIN
+    end_floor = (
+        preferred_end - 150
+        if preferred_end is not None
+        else _FULL_DAY_START_MIN + profile.target_active_minutes + _FULL_DAY_OVERHEAD_MIN
+    )
+    first, last = span
+    if first <= start_ceiling and last >= end_floor:
+        return ""
+    return (
+        f"Day {day_number}'s visits run only {first // 60:02d}:{first % 60:02d}"
+        f"–{last // 60:02d}:{last % 60:02d}; a full day at this pace should start by "
+        f"{start_ceiling // 60:02d}:{start_ceiling % 60:02d} and run to about "
+        f"{end_floor // 60:02d}:{end_floor % 60:02d}"
+    )
 
 
 def assess_itinerary_density(
@@ -310,8 +383,23 @@ def assess_itinerary_density(
             if _PARTIAL_DAY_RE.search(description)
             else threshold
         )
+        day_number = int(day.get("day") or index + 1)
+        short_day = (
+            ""
+            if _PARTIAL_DAY_RE.search(description)
+            else _short_day_reason(day, day_number, profile, preferences)
+        )
+        if planned_minutes >= day_threshold and short_day:
+            sparse.append(
+                DayDensity(
+                    day=day_number,
+                    planned_minutes=planned_minutes,
+                    threshold_minutes=day_threshold,
+                    reason=short_day,
+                )
+            )
+            continue
         if planned_minutes < day_threshold:
-            day_number = int(day.get("day") or index + 1)
             sparse.append(
                 DayDensity(
                     day=day_number,

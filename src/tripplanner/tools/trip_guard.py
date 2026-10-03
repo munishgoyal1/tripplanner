@@ -200,6 +200,108 @@ def _journey_endpoints(stop: Any) -> tuple[str, str] | None:
     return (source, target) if source and target else None
 
 
+def _is_city_journey(stop: Any) -> bool:
+    """True for a flight, train, bus or drive that changes where the traveller is.
+
+    "Taxi: Hotel to Fort Aguada" names two places in travel order, but it is a
+    local ride inside one city, so it must not move the traveller's locality.
+    """
+    if _stop_kind(stop) == "flight":
+        return True
+    if _stop_kind(stop) != "transport":
+        return False
+    from tripplanner.web.transport import _resolved_transfer_mode
+
+    return _resolved_transfer_mode(_stop_name(stop), "transport") is not None
+
+
+def same_city(left: str, right: str) -> bool:
+    """True when two normalized localities name the same place, or one is unknown.
+
+    "london" and "london st pancras" are one city; "london" and "paris gare du
+    nord" are not.
+    """
+    if not left or not right:
+        return True
+    return (
+        left == right
+        or re.search(rf"\b{re.escape(left)}\b", right) is not None
+        or re.search(rf"\b{re.escape(right)}\b", left) is not None
+    )
+
+
+def city_track(plan: dict[str, Any]) -> dict[int, list[str]]:
+    """Where the traveller is at every insertion point of every day.
+
+    ``track[day][i]`` is the normalized city in effect just before stop ``i``;
+    the last entry is where the day ends. A stop listed after "Train: London to
+    Paris" is in Paris, whatever the day's heading says, and the next day starts
+    where this one ended. An empty string means the plan does not say.
+
+    This is read from the plan's own journeys, not from coordinates, so it holds
+    when a place lookup misses: a London sight looked up under a Paris day's
+    heading has no coordinates, and every distance check went silent exactly
+    when a repair was about to move it to the wrong side of the Channel.
+    """
+    destination = str(plan.get("destination") or "").strip()
+    from tripplanner.web.map_pins import _day_place_context
+
+    current = ""
+    out: dict[int, list[str]] = {}
+    for day, entry, stops in days_of(plan):
+        explicit = _normalize_city(str(entry.get("city") or ""), first_part=True)
+        heading = _day_place_context(entry, destination)
+        if heading.strip().casefold() == destination.casefold():
+            heading = ""
+        heading = _normalize_city(heading, first_part=True)
+        journeys = {
+            index: endpoints
+            for index, stop in enumerate(stops)
+            if _is_city_journey(stop) and (endpoints := _journey_endpoints(stop))
+        }
+        if journeys:
+            first = journeys[min(journeys)]
+            here = current or first[0] or explicit
+        else:
+            here = explicit or current or heading
+        track = []
+        for index in range(len(stops)):
+            track.append(here)
+            if index in journeys:
+                here = journeys[index][1]
+        track.append(here)
+        out[day] = track
+        current = here
+    return out
+
+
+def stop_city(plan: dict[str, Any], day: int, name: str) -> str:
+    """The city a named stop on ``day`` sits in, or "" when the plan does not say."""
+    track = city_track(plan).get(day)
+    if not track:
+        return ""
+    for entry_day, _entry, stops in days_of(plan):
+        if entry_day != day:
+            continue
+        for index, stop in enumerate(stops):
+            if _stop_name(stop) == name:
+                return track[index]
+    return ""
+
+
+def is_multi_city(plan: dict[str, Any]) -> bool:
+    """True when the plan's journeys take the traveller to more than one city."""
+    origin = _normalize_city(str(plan.get("origin") or ""), first_part=True)
+    cities: list[str] = []
+    for track in city_track(plan).values():
+        for city in track:
+            if not city or (origin and same_city(city, origin)):
+                continue
+            if not any(same_city(city, seen) for seen in cities):
+                cities.append(city)
+    return len(cities) > 1
+
+
 def _departure_buffer(stop: Any) -> int:
     if _stop_kind(stop) == "flight":
         return PRE_DEPARTURE_BUFFER_MIN
@@ -248,6 +350,22 @@ def _duration_of(stop: Any) -> int:
     if isinstance(raw, (int, float)) and raw > 0:
         return int(raw)
     return _default_duration(kind)
+
+
+def occupied_until(stop: Any, start: int) -> int:
+    """Minute (on ``start``'s clock) at which a stop releases the traveller.
+
+    A journey's timetabled local arrival wins over its duration. Bangalore 09:00
+    to London is ten hours in the air but lands at 15:00 London time; adding
+    the duration put the traveller at 19:00, rejected every realistic afternoon
+    stop, and pushed the first sight of the trip to the evening.
+    """
+    if _stop_kind(stop) in _TRANSPORT_KINDS:
+        arrives = _arrival_of(stop)
+        if arrives is not None:
+            clock = start % 1440
+            return start - clock + arrives + (1440 if arrives < clock else 0)
+    return start + _duration_of(stop)
 
 
 def _is_home_endpoint(stop: Any, origin: str) -> bool:
@@ -736,7 +854,12 @@ def _feasibility_violations(
             duration = _duration_of(current)
             if index == 0 and _stop_kind(current) == "hotel" and not current.get("duration_min"):
                 duration = 0
-            ends = max(current_at, ready or current_at) + duration
+            begins = max(current_at, ready or current_at)
+            ends = (
+                occupied_until(current, begins)
+                if _stop_kind(current) in _TRANSPORT_KINDS
+                else begins + duration
+            )
             if buffer_min := _departure_buffer(following):
                 # Two hours is an airport, not a car. Asking for check-in time
                 # before a drive turns a real rule into background noise.
@@ -1023,10 +1146,14 @@ def _windows(day: int, stops: list[Any], env: Envelope) -> list[_Window]:
             # its hours the same way a museum visit does.
             if _stop_name(stop) in {env.arrival_name, env.departure_name}:
                 continue
+        # The timetable's local arrival is the truth; a duration across a
+        # time-zone change put the traveller off the train half an hour after
+        # it had already pulled in.
+        ends = occupied_until(stop, at)
         blocks.append(
             (
                 _abs(day, at) - TURNAROUND_MIN,
-                _abs(day, at) + _duration_of(stop) + TURNAROUND_MIN,
+                _abs(day, 0) + ends + TURNAROUND_MIN,
                 index,
                 stop,
             )
@@ -1055,12 +1182,17 @@ def choose_placement(
     *,
     duration_min: int | None = None,
     preferred_day: int | None = None,
+    city: str = "",
 ) -> tuple[Placement | None, list[Rejection]]:
     """Pick the best legal slot for a new stop, or explain why none exists.
 
     Unlike the load heuristic this replaces, a day that cannot legally hold the
     stop is not merely expensive — it is not a candidate at all. That is what
     keeps a new place off the far side of the flight home.
+
+    ``city`` is where an existing stop belongs. A slot on the far side of a
+    journey to another city is not a candidate either: a London sight cannot be
+    visited after the train to Paris, however much free time Paris has.
     """
     destination = str(plan.get("destination") or "")
     env = envelope(plan)
@@ -1083,6 +1215,7 @@ def choose_placement(
 
     best: tuple[float, Placement] | None = None
     rejections: list[Rejection] = []
+    tracks = city_track(plan) if city else {}
 
     for day, _entry, stops in days_of(plan):
         if preferred_day is not None and day != preferred_day:
@@ -1104,6 +1237,15 @@ def choose_placement(
             continue
         for window in _windows(day, stops, env):
             label = f"{_fmt_hhmm(window.start % 1440)}–{_fmt_hhmm(window.end % 1440)}"
+            track = tracks.get(day) or []
+            there = track[min(window.index, len(track) - 1)] if track else ""
+            if not same_city(city, there):
+                rejections.append(
+                    Rejection(
+                        day, label, "I2", f"you are in {there.title()} then, not {city.title()}"
+                    )
+                )
+                continue
             inbound = TURNAROUND_MIN
             outbound = TURNAROUND_MIN
             before_at = _coords(window.before, destination) if window.before else None

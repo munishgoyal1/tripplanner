@@ -1926,7 +1926,7 @@ def test_arrival_day_local_transport_alone_does_not_add_hotel_return(
     ]
 
 
-def test_arrival_day_does_not_invent_return_without_route_coordinates(
+def test_arrival_day_return_without_route_coordinates_invents_no_leg(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: None)
@@ -1957,7 +1957,10 @@ def test_arrival_day_does_not_invent_return_without_route_coordinates(
 
     stops = trip_view.build_itinerary(trip)["days"][0]["stops"]
 
-    assert stops[-1]["name"] == "City Palace"
+    # The evening still ends at the stay; nothing about the way back is made up.
+    assert [stop["name"] for stop in stops[-2:]] == ["City Palace", "Trident Udaipur"]
+    assert stops[-1]["note"] == "Return to your stay"
+    assert "travel_from_previous" not in stops[-1]
 
 
 def test_arrival_day_return_includes_untimed_local_activity_duration(
@@ -2364,3 +2367,110 @@ def test_structured_itinerary_preserves_explicit_hotel_transition() -> None:
         "Old Goa",
         "South Goa Stay",
     ]
+
+
+def test_a_long_haul_flight_without_a_duration_is_not_shown_as_ninety_minutes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "London Airport": (51.4700, -0.4543),
+    }
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: coords.get(name))
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [{"name": "Flight: Bangalore to London", "kind": "flight", "time": "08:00"}],
+        }],
+    }
+
+    flight = next(
+        stop for stop in trip_view.build_itinerary(trip)["days"][0]["stops"]
+        if stop["kind"] == "flight"
+    )
+
+    assert flight["duration_min"] >= 9 * 60
+    assert flight["duration_estimated"] is True
+
+
+def test_a_flight_with_only_local_clocks_shows_no_invented_duration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: None)
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [{"name": "Flight: Bangalore to London", "kind": "flight",
+                       "time": "20:00", "arrival_time": "02:00"}],
+        }],
+    }
+
+    flight = next(
+        stop for stop in trip_view.build_itinerary(trip)["days"][0]["stops"]
+        if stop["kind"] == "flight"
+    )
+
+    assert flight["duration_min"] is None
+
+
+def test_a_leg_is_measured_wherever_the_map_would_pin_both_ends(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {"Tower Bridge": (51.5055, -0.0754), "South Bank": (51.5068, -0.1166)}
+    providers = {"South Bank": "Southbank Centre"}
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: coords.get(name))
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kw: {"name": providers.get(name, name)},
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "London",
+        "day_wise_itinerary": [{
+            "day": 3,
+            "stops": [
+                {"name": "Tower Bridge", "kind": "attraction", "time": "10:00"},
+                {"name": "South Bank", "kind": "attraction", "time": "12:00"},
+            ],
+        }],
+    }
+
+    stops = trip_view.build_itinerary(trip)["days"][0]["stops"]
+    south_bank = next(stop for stop in stops if stop["name"] == "South Bank")
+
+    assert south_bank["travel_from_previous"]["distance_km"] > 2
+
+
+def test_an_own_car_trip_drives_its_local_legs_instead_of_taking_taxis(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Ramanathaswamy Temple": (9.2881, 79.3174),
+        "Dhanushkodi Beach": (9.1520, 79.4440),
+    }
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: coords.get(name))
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rameshwaram",
+        "trip_constraints": ["Local travel: our own car"],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Ramanathaswamy Temple", "kind": "attraction", "time": "09:00"},
+                {"name": "Dhanushkodi Beach", "kind": "attraction", "time": "12:00"},
+            ],
+        }],
+    }
+
+    day = trip_view.build_itinerary(trip)["days"][0]
+    leg = next(
+        stop["travel_from_previous"] for stop in day["stops"]
+        if stop["name"] == "Dhanushkodi Beach"
+    )
+
+    assert leg["mode"] == "Drive"
+    assert "taxi" not in leg["detail"].lower()
+    assert "Taxi" not in day["route"]["mode"]

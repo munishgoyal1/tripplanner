@@ -891,10 +891,13 @@ separate departure or return endpoint because the traveler has no planned outing
 **Trigger:** Arrive by inter-city transport, check in to the destination hotel,
 then visit one or more local places that day.
 
-**Expected:** When the return route can be grounded, the local plan ends with a
-separate return to the destination hotel, including its incoming travel and
-estimated return time. A bare arrival/check-in does not add a return, and neither
-an ungrounded route nor inter-city travel after the hotel invents one. The
+**Expected:** The local plan ends with a separate return to the destination
+hotel, as every ordinary day does. When the route can be grounded the row carries
+its incoming travel and estimated return time; when it cannot (a stay still TBD
+has no coordinates) the row is shown without a travel leg, timed as an estimate
+from the end of the last outing, rather than dropped.
+A bare arrival/check-in does not add a return, and inter-city travel after the
+hotel does not invent one. The
 destination check-in time is estimated from any grounded arrival terminal -
 airport, railway station, or bus stand - plus its exit buffer and the timed
 transfer to the hotel, so a mid-day check-in is not left blank.
@@ -902,7 +905,7 @@ transfer to the hotel, so a mid-day check-in is not left blank.
 **Executable proof:**
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_arrival_day_local_outing_returns_to_destination_hotel`
-- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_arrival_day_does_not_invent_return_without_route_coordinates`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_arrival_day_return_without_route_coordinates_invents_no_leg`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
 - [`tests/test_trip_view_verification_freshness.py`](../tests/test_trip_view_verification_freshness.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_train_arrival_estimates_destination_hotel_check_in`
@@ -1010,6 +1013,103 @@ Times that run backwards are never re-sorted; the chronology check rejects them 
 the agent with the exact conflict.
 
 **Executable proof:** [`tests/test_day_order.py`](../tests/test_day_order.py)
+
+### EB-ITIN-009 - A repair never moves a stop to the wrong side of a journey
+
+**Trigger:** A save-time repair (closed day, opening hours, travel feasibility) or the
+Rearrange action needs to re-time or move a planner-owned stop on a multi-city trip,
+for example a London sight scheduled too close to the morning train to Paris.
+
+**Expected:** Each stop belongs to the city the plan's own journeys put it in: before
+"Train: London to Paris" is London, after it is Paris, and the next day starts where
+this one ended. A stop may only be placed where the traveller is in that city, so a
+London sight is never re-timed after the train or moved onto a Paris day, and a hotel
+row that names the city being left moves before the departure. This holds when the
+stop has no cached coordinates. When the plan does not say where a stop is, a
+multi-city trip keeps it on its own day. A journey frees the traveller at its
+timetabled local arrival, not at departure plus duration.
+
+**Executable proof:**
+
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_a_london_stop_is_never_rescheduled_after_the_train_to_paris`
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_placement_rejects_the_far_side_of_a_journey_for_a_known_city`
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_a_train_frees_the_day_at_its_timetabled_arrival`
+- [`tests/test_day_order.py`](../tests/test_day_order.py) - `test_a_hotel_naming_the_city_being_left_moves_before_the_train`
+
+### EB-ITIN-010 - Flights carry their real landing time and land on the right day
+
+**Trigger:** Save or view an itinerary with a flight, including a long-haul flight
+across time zones or one that lands after midnight.
+
+**Expected:** A flight row without a local `arrival_time` or `duration_min` is a
+completion gap the agent must fill from the offer or timetable. Chronology and
+travel-feasibility checks release the traveller at the local arrival time, so
+Bangalore 09:00 to London 15:00 allows a 16:30 visit. Sightseeing listed after a
+journey that lands after midnight is rejected with an instruction to move it to the
+next day. The view estimates a missing duration from the two airports' distance,
+never shows the 90-minute default for a flight whose airports are known, and shows
+no duration rather than a wrong one when only two local clocks are known.
+
+**Executable proof:**
+
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py) - `test_a_flight_without_its_landing_time_is_a_coherence_gap`
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py) - `test_sightseeing_after_an_overnight_arrival_must_move_to_the_next_day`
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py) - `test_a_flight_frees_the_traveller_at_its_local_arrival_not_its_duration`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_long_haul_flight_without_a_duration_is_not_shown_as_ninety_minutes`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_flight_with_only_local_clocks_shows_no_invented_duration`
+
+### EB-PLAN-006 - A new trip-wide fact is applied to every day
+
+**Trigger:** After an itinerary is saved, the traveller states a fact about the whole
+trip ("we will be driving in my own car", travelling with kids, vegetarian, a slower
+pace) or asks for an edit ("change", "move", "add", "replace").
+
+**Expected:** A stated fact forces an itinerary update in the same turn, with the saved
+itinerary in hand and an instruction to rewrite every affected stop, note, summary,
+transfer, hotel and cost and to record the fact in `trip_constraints`. An edit request
+may research first, and both run the same completion checks as any planning save. Once
+the trip says it travels by the traveller's own car, every remaining taxi, cab or
+rickshaw in a stop name, note, insight, title or summary is a completion gap naming the
+exact rows, local legs between stops show Drive instead of Taxi, and road guidance says
+to keep driving their car. A plain question forces nothing.
+
+**Executable proof:**
+
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_a_new_trip_wide_fact_forces_a_whole_trip_update`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_a_plain_question_about_a_saved_trip_forces_nothing`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_stale_taxi_rows_after_an_own_car_fact_keep_the_turn_open`
+- [`tests/test_trip_facts.py`](../tests/test_trip_facts.py)
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_an_own_car_trip_drives_its_local_legs_instead_of_taking_taxis`
+
+### EB-PLAN-007 - A full day is a full day
+
+**Trigger:** Save a full sightseeing day (no inter-city journey, not labelled leisure,
+arrival or departure) whose visits start late or end mid-afternoon.
+
+**Expected:** The day is reported as sparse when its visits start after 11:00 or end
+before 09:30 plus the profile's active minutes plus 30 (16:00 at a balanced pace), or
+around the traveller's saved day start and end. A local "Taxi: Hotel to X" row does not
+make a day a travel day. The agent adds meaningful nearby stops or labels the rest.
+
+**Executable proof:**
+
+- [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py) - `test_a_full_day_that_ends_mid_afternoon_is_sparse`
+- [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py) - `test_a_local_taxi_row_does_not_excuse_a_day_from_the_density_check`
+
+### EB-ITIN-011 - Measure every leg the map can pin
+
+**Trigger:** View a day whose stop resolves to a differently spelled provider place
+("South Bank" answered as "Southbank Centre") or a flight whose airport has an official
+name ("Bangalore Airport" as Kempegowda International).
+
+**Expected:** The itinerary accepts a lookup by the same identity rule the map pins by,
+and every terminal the map pins, so the travel leg into and out of the stop is shown
+wherever the map shows both ends. Opening hours and other place facts keep the strict
+name check.
+
+**Executable proof:**
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_leg_is_measured_wherever_the_map_would_pin_both_ends`
 
 ### EB-PLAN-005 - Answer every explicit ask and keep each day's story honest
 

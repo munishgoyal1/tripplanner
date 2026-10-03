@@ -147,6 +147,28 @@ _OWN_ARRIVAL_RE = re.compile(
     r"(?:meet|start) (?:you|the trip) there|destination[ -]only)\b",
     re.IGNORECASE,
 )
+#: A follow-up that changes the whole trip rather than answering a question: how
+#: the traveller gets around, who is coming, diet, mobility or pace, or an
+#: explicit edit. "We will be driving in my own car" names no trip word, so the
+#: planning-intent check let the turn end on an acknowledgement while every day
+#: still said "take a taxi".
+_TRIP_FACT_RE = re.compile(
+    r"\b(?:(?:our|my|own|personal)\s+(?:own\s+)?(?:personal\s+)?(?:car|vehicle|suv)"
+    r"|self[- ]?driv(?:e|ing)|(?:we|i)(?:'ll|\s+will|'re|\s+are|'m|\s+am)?\s+(?:be\s+)?driving"
+    r"|rent(?:al|ing)?\s+(?:a\s+)?car|no\s+(?:taxis?|cabs?)|public\s+transport"
+    r"|by\s+(?:train|bus|car|road)|vegetarian|vegan|jain|wheelchair|elderly|toddler"
+    r"|infant|(?:with|have|bringing)\s+(?:our\s+|my\s+)?(?:kids?|children|parents)"
+    r"|(?:more\s+)?relaxed\s+pace|slower\s+pace|(?:less|more)\s+packed)\b",
+    re.IGNORECASE,
+)
+_TRIP_EDIT_RE = re.compile(
+    r"^(?:(?:please|ok|okay|actually|also|and|now|instead|then)[, ]+)*"
+    r"(?:(?:can|could|would|will)\s+you\s+(?:please\s+)?|(?:i|we)\s+(?:want|would like|need)"
+    r"\s+(?:you\s+)?to\s+|let'?s\s+)?"
+    r"(?:change|replace|swap|remove|drop|skip|add|include|exclude|move|shift|reschedule|"
+    r"extend|shorten|switch|update|modify|make)\b",
+    re.IGNORECASE,
+)
 _LODGING_GAP_RE = re.compile(
     r"\b(?:no concrete hotel|hotel tbd|hotel placeholders?|no bookable property|"
     r"no concrete lodging anchor)\b",
@@ -157,6 +179,40 @@ _LODGING_GAP_RE = re.compile(
 #: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
 #: not survive a turn, so anything deciding across turns must read this too.
 RAN_TOOLS_KEY = "ran_tools"
+
+
+def _latest_user_text(messages: Sequence[BaseMessage]) -> str:
+    latest = next(
+        (message for message in reversed(messages) if isinstance(message, HumanMessage)),
+        None,
+    )
+    return str(latest.content or "").strip() if latest is not None else ""
+
+
+def latest_user_states_trip_fact(messages: Sequence[BaseMessage]) -> bool:
+    """True when the latest user message gives a fact that holds for the whole trip."""
+    return bool(_TRIP_FACT_RE.search(_latest_user_text(messages)))
+
+
+def latest_user_changes_trip(messages: Sequence[BaseMessage]) -> bool:
+    """True when the latest user message gives a trip-wide fact or asks for an edit."""
+    text = _latest_user_text(messages)
+    return bool(_TRIP_FACT_RE.search(text) or _TRIP_EDIT_RE.search(text))
+
+
+def trip_wide_change_requirement(active_trip: dict[str, Any]) -> str:
+    """What a change to a saved trip owes before the reply."""
+    saved_facts = "; ".join(str(item) for item in active_trip.get("trip_constraints") or [])
+    return (
+        "The user just gave new information or asked for a change to this saved trip. "
+        "Apply it trip-wide before replying: re-read every day of the saved itinerary below "
+        "and find every stop, transfer, note, insight, day title, day summary, hotel and cost "
+        "it affects, not just the first one. Rewrite all of them together and resubmit the "
+        "full day_wise_itinerary. Record a trip-only fact in trip_constraints (for example "
+        "'Local travel: own car, no taxis') so later checks and views follow it"
+        + (f"; already recorded: {saved_facts}" if saved_facts else "")
+        + ". Do not only acknowledge it in chat."
+    )
 
 
 def is_flight_followup(messages: Sequence[BaseMessage], active_trip: dict[str, Any]) -> bool:
@@ -747,6 +803,12 @@ def resolve_completion_policy(
     interactive_questions: bool = False,
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
+    trip_wide_change = bool(
+        active_trip.get("day_wise_itinerary") and latest_user_changes_trip(messages)
+    )
+    # A change to a saved trip is planning, whatever words it uses, so the same
+    # completion checks run after its save as after any other edit.
+    has_planning_intent = has_planning_intent or trip_wide_change
     confirmation = trip_change_confirmation(messages, active_trip)
     if confirmation and not proposal_only:
         return CompletionPolicyDecision(
@@ -961,6 +1023,25 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    # Only a stated fact is forced straight into a save. An edit such as "add
+    # flights from Bangalore" may need research first; it still gets the same
+    # completion checks once it saves, through has_planning_intent above.
+    if (
+        trip_wide_change
+        and latest_user_states_trip_fact(messages)
+        and not updated_this_turn
+        and not created_this_turn
+        and not proposal_only
+        and not flight_followup
+        and not new_trip_flow
+        and not creation_tool
+        and not hotel_fallback_requirement
+        and not origin_requirement
+        and not update_requirement
+        and not hotel_search_requirement
+        and not latest_user_requests_different_trip(messages, active_trip)
+    ):
+        update_requirement = trip_wide_change_requirement(active_trip)
     non_lodging_core_gaps = tuple(
         gap for gap in core_gaps_for_planning_turn if not _LODGING_GAP_RE.search(gap)
     )

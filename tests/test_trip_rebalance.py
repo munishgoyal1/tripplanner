@@ -250,3 +250,111 @@ def test_a_heading_still_true_after_the_move_is_left_alone() -> None:
     )
     titles = {day: entry.get("title") for day, entry, _ in trip_guard.days_of(result.plan)}
     assert titles[1] == "Day 1 · Eiffel Tower"
+
+
+def _london_to_paris_trip() -> dict[str, object]:
+    """Day 2 leaves London by train; Buckingham Palace sits too close to it.
+
+    None of the London places have cached coordinates, which is what happens in
+    production when a London sight is looked up under a "London to Paris" day's
+    Paris heading: every distance check goes silent at once.
+    """
+    return {
+        "origin": "Bangalore",
+        "destination": "London, Paris",
+        "departure_date": "2027-06-01",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "date": "2027-06-01",
+                "title": "Day 1 · Arrive London",
+                "stops": [
+                    {"name": "Flight: Bangalore to London", "kind": "flight",
+                     "time": "09:00", "arrival_time": "15:00", "duration_min": 600},
+                    {"name": "London Hotel", "kind": "hotel"},
+                    {"name": "London Hotel", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "date": "2027-06-02",
+                "title": "Day 2 · London to Paris",
+                "stops": [
+                    {"name": "London Hotel", "kind": "hotel", "note": "check out"},
+                    _stop("Buckingham Palace", "09:00", duration_min=120),
+                    {"name": "Train: London to Paris", "kind": "transport",
+                     "time": "10:30", "arrival_time": "13:50", "duration_min": 200},
+                    {"name": "Paris Hotel", "kind": "hotel"},
+                    _stop("Eiffel Tower", "16:00"),
+                    {"name": "Paris Hotel", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 3,
+                "date": "2027-06-03",
+                "title": "Day 3 · Paris",
+                "stops": [
+                    {"name": "Paris Hotel", "kind": "hotel"},
+                    _stop("Musee d'Orsay", "10:00"),
+                    {"name": "Paris Hotel", "kind": "hotel"},
+                ],
+            },
+        ],
+    }
+
+
+def test_the_city_track_follows_the_journeys_not_the_heading() -> None:
+    track = trip_guard.city_track(_london_to_paris_trip())
+
+    assert track[1] == ["bangalore", "london", "london", "london"]
+    assert track[2][:3] == ["london", "london", "london"]
+    assert track[2][3:] == ["paris"] * 4
+    assert set(track[3]) == {"paris"}
+
+
+def test_a_london_stop_is_never_rescheduled_after_the_train_to_paris() -> None:
+    plan = _london_to_paris_trip()
+
+    result = trip_rebalance.rebalance(plan)
+
+    for day, _entry, stops in trip_guard.days_of(result.plan):
+        names = [trip_common._stop_name(stop) for stop in stops]
+        if "Buckingham Palace" not in names:
+            continue
+        assert day != 3
+        if day == 2:
+            assert names.index("Buckingham Palace") < names.index("Train: London to Paris")
+    for move in result.moves:
+        assert not (move.name == "Buckingham Palace" and move.to_day == 3)
+
+
+def test_placement_rejects_the_far_side_of_a_journey_for_a_known_city() -> None:
+    plan = _london_to_paris_trip()
+
+    placement, rejections = trip_guard.choose_placement(
+        plan, "Tower Bridge", "attraction", duration_min=60, preferred_day=2, city="london"
+    )
+
+    if placement is not None:
+        stops = plan["day_wise_itinerary"][1]["stops"]
+        assert placement.index <= 2
+        assert stops
+    assert any(rejection.code == "I2" and "Paris" in rejection.message for rejection in rejections)
+
+
+def test_a_stop_whose_city_is_unknown_stays_on_its_day_in_a_multi_city_trip() -> None:
+    plan = _london_to_paris_trip()
+    stop = _stop("Unlocated Gallery", "13:00")
+
+    assert trip_rebalance._place(plan, stop, 3, 1) is None
+    assert trip_rebalance._place(plan, stop, 3, 1, "paris") is None
+
+
+def test_a_train_frees_the_day_at_its_timetabled_arrival() -> None:
+    plan = _london_to_paris_trip()
+    stops = plan["day_wise_itinerary"][1]["stops"]
+    stops[2]["duration_min"] = 300  # longer than the timetable, as across a time zone
+    windows = trip_guard._windows(2, stops, trip_guard.envelope(plan))
+
+    after_train = [window for window in windows if window.before is stops[2]]
+    assert after_train and after_train[0].start == trip_guard._abs(2, 13 * 60 + 50 + 10)
