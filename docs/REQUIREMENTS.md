@@ -528,6 +528,9 @@ re-describing the whole product.
   handling includes configurable baggage/exit time, and destination-stay arrival
   is estimated only from airport handling plus known transfer timing.
 - Rows show quiet travel distance/time from the previous mapped stop.
+  Day travel subtotals identify unresolved local transfers, including hotel endpoints.
+  With no measurable travel, the card shows `Travel unresolved`; partial metrics
+  explicitly cover known legs only.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
   Identical departure and return hotels share one stay identity and one set of

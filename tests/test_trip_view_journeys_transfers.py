@@ -2514,3 +2514,62 @@ def test_a_car_day_trip_counts_its_drives_in_the_days_travel(
     assert day["route"]["distance_km"] == round(sum(leg["distance_km"] for leg in legs), 1)
     assert day["route"]["duration_min"] == sum(leg["duration_min"] for leg in legs) > 0
     assert day["route"]["mode"] == "Drive"
+
+
+@pytest.mark.parametrize("resolved", [False, True])
+def test_unresolved_day_travel_retains_only_known_legs(
+    monkeypatch: pytest.MonkeyPatch, resolved: bool,
+) -> None:
+    coords = {
+        "Luxembourg Gardens": (48.8466, 2.3363),
+        "Notre-Dame area": (48.8530, 2.3499),
+    } if resolved else {}
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: coords.get(name))
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(
+        trip_view.places_cache, "get_details",
+        lambda name, city, **kw: {
+            "name": "Jardin du Luxembourg" if name == "Luxembourg Gardens" else name,
+            "rating": 4.7, "review_count": 129385,
+        },
+    )
+    trip = {
+        "destination": "Europe", "selected_hotels": [], "selected_activities": [],
+        "day_wise_itinerary": [{"day": 6, "city": "Paris", "stops": [
+            {"name": "Hotel TBD - Paris", "kind": "hotel"},
+            {"name": "Luxembourg Gardens", "kind": "attraction", "time": "09:30"},
+            {"name": "Notre-Dame area", "kind": "attraction", "time": "11:45"},
+            {"name": "Seine Cruise", "kind": "attraction", "time": "14:00"},
+            {"name": "Hotel TBD - Paris", "kind": "hotel"},
+        ]}],
+    }
+    day = trip_view.build_itinerary(trip)["days"][0]
+    garden = next(stop for stop in day["stops"] if stop["name"] == "Luxembourg Gardens")
+    assert garden["rating"] == 4.7
+    assert garden["popularity_score"] is not None
+    assert day["route"]["unresolved_legs"] == (3 if resolved else 4)
+    assert (day["route"]["distance_km"] > 0) is resolved
+    assert (day["route"]["duration_min"] > 0) is resolved
+    assert all(
+        stop["name"] != "Seine Cruise" or not stop.get("travel_from_previous")
+        for stop in day["stops"]
+    )
+
+
+@pytest.mark.parametrize("provider,place_id", [
+    ("Jardin du Luxembourg", "different-id"),
+    ("Eiffel Tower", "saved-id"),
+])
+def test_alias_rating_rejects_conflicting_place_identity(
+    monkeypatch: pytest.MonkeyPatch, provider: str, place_id: str,
+) -> None:
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", lambda *a, **k: {
+        "name": provider, "place_id": place_id, "rating": 4.7, "review_count": 129385,
+    })
+    trip = {"destination": "Paris", "day_wise_itinerary": [{"day": 1, "stops": [
+        {"name": "Luxembourg Gardens", "kind": "attraction", "place_id": "saved-id"},
+    ]}]}
+    stop = trip_view.build_itinerary(trip)["days"][0]["stops"][0]
+    assert stop["rating"] is None
+    assert stop["popularity_score"] is None

@@ -430,6 +430,7 @@ export interface MapPin {
 }
 
 export interface RouteMetrics {
+  unresolved_legs?: number;
   distance_km: number;
   duration_min: number;
   mode: string;

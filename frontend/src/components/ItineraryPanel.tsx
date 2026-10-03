@@ -336,7 +336,15 @@ function DayCard({
             <span className="inline-flex items-center gap-1 tabular-nums">
               <MapPin size={12} aria-hidden />
               <strong className="font-medium text-ink">Day&apos;s travel:</strong>
-              {day.route.duration_display} · {formatDistance(day.route.distance_km, region)} · {day.route.mode}
+              {day.route.unresolved_legs && !day.route.duration_min && !day.route.distance_km
+                ? "Travel unresolved"
+                : `${day.route.duration_display} · ${formatDistance(day.route.distance_km, region)} · ${day.route.mode}`}
+              {!!day.route.unresolved_legs && (
+                <span className="text-amber-700">
+                  · {day.route.duration_min || day.route.distance_km ? "known legs only · " : ""}
+                  {day.route.unresolved_legs} {day.route.unresolved_legs === 1 ? "transfer" : "transfers"} unresolved
+                </span>
+              )}
             </span>
           )}
           <span className="inline-flex flex-wrap items-center gap-x-1.5">

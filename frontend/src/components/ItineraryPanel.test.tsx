@@ -215,6 +215,30 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("65% rain")).toBeInTheDocument();
   });
 
+  it.each([false, true])("labels unresolved travel without hiding known legs (%s)", async (measured) => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{ ...itinerary.days[0], route: {
+        ...itinerary.days[0].route,
+        distance_km: measured ? 4.2 : 0,
+        duration_min: measured ? 35 : 0,
+        duration_display: measured ? "35 min" : "0 min",
+        unresolved_legs: 3,
+      } }],
+    });
+    render(<ItineraryPanel />);
+    const label = await screen.findByText("Day's travel:");
+    expect(label.parentElement).toHaveTextContent("3 transfers unresolved");
+    if (measured) {
+      expect(label.parentElement).toHaveTextContent("35 min");
+      expect(label.parentElement).toHaveTextContent("known legs only");
+    } else {
+      expect(label.parentElement).toHaveTextContent("Travel unresolved");
+      expect(label.parentElement).not.toHaveTextContent("0 min");
+      expect(label.parentElement).not.toHaveTextContent("0 km");
+    }
+  });
+
   it("updates itinerary costs when the display currency changes to CNY", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,

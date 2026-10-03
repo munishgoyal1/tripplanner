@@ -111,7 +111,7 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/circuit_breaker.py` | Pure per-endpoint breaker state machine (closed/open/half-open) |
 | `src/tripplanner/concurrency.py` | Shared bounded fan-out for independent remote work; a failed branch degrades to `None` |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view-model facade and display semantics |
-| `src/tripplanner/web/itinerary_view.py` | Structured itinerary assembly; geocoding still resolves through `trip_view._place_coords` |
+| `src/tripplanner/web/itinerary_view.py` | Structured itinerary assembly; geocoding still resolves through `trip_view._place_coords`; optional `route.unresolved_legs` counts unmeasured adjacent local transfers separately from the known numeric subtotal, which web labels as partial or unresolved |
 | `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, gallery item shaping, and the revision-claimed guide/gallery warms -- the one read-triggered path still allowed to spend, and so at most once per trip revision per process |
 | `src/tripplanner/web/destination_overview.py` | Destination-level photos, attractions, reviews, and news overview |
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
