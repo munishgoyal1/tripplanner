@@ -304,8 +304,14 @@ def export_stop_html(
                 reviews = f" · {int(review_count)} reviews"
             details.append(f"Rating {rating:g}{reviews}")
         popularity = stop.get("popularity_score")
-        if isinstance(popularity, (int, float)) and kind == "attraction":
-            details.append(f"Must-visit score {int(popularity)}/100")
+        if isinstance(popularity, (int, float)) and kind in {"attraction", "activity", "meal", "restaurant"}:
+            # The same ten-point scale and bands the itinerary shows.
+            score = round(float(popularity)) / 10
+            band = (
+                "must visit" if score >= 9 else "good to visit" if score >= 7
+                else "may visit" if score >= 5 else "optional"
+            )
+            details.append(f"Must-visit {score:.1f}/10 ({band})")
         if details:
             place_meta_html = f"<div class='place-meta'>{_e(' · '.join(details))}</div>"
         flagship_key = name.strip().casefold()

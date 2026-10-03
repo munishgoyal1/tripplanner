@@ -1111,6 +1111,38 @@ name check.
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_leg_is_measured_wherever_the_map_would_pin_both_ends`
 
+### EB-ITIN-012 - The day's travel adds up the legs the day shows
+
+**Trigger:** View a day whose travel is a road trip written as `Drive: A to B` rows,
+for example a car day trip from the hotel to Dhanushkodi and back.
+
+**Expected:** `Day's travel` totals every leg the rows show, the drive legs included,
+with their mode, instead of only the local hops between drive rows. A drive whose legs
+cannot be measured adds its saved `distance_km` and `duration_min`. A day with no
+measurable travel still shows the local route as before.
+
+**Executable proof:**
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_car_day_trip_counts_its_drives_in_the_days_travel`
+
+### EB-ITIN-013 - Read a place row in three lines
+
+**Trigger:** View an itinerary place row (attraction, activity or meal) that has Google
+rating evidence and a planned visit.
+
+**Expected:** The first line is the place name with a compact must-visit badge, the
+0–100 score shown as `X.Y/10` and coloured by band: 9+ must visit, 7–9 good to visit,
+5–7 may visit, below 5 optional. Hotels, journeys and terminals carry no badge. The
+second line is the timing role and stop type (`Arrive · attraction`). The third is the
+timing line: visit duration, then `Leave by HH:MM`. The exported Trip Book prints the
+same score as `Must-visit X.Y/10 (band)`.
+
+**Executable proof:**
+
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows the compact brief and agenda metadata`
+- [`frontend/src/components/ItineraryStopRow.score.test.ts`](../frontend/src/components/ItineraryStopRow.score.test.ts)
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_exported_stop_shows_the_same_ten_point_must_visit_score`
+
 ### EB-PLAN-005 - Answer every explicit ask and keep each day's story honest
 
 **Trigger:** A first planning turn saves an itinerary for a request that says "include the

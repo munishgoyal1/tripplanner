@@ -669,3 +669,24 @@ def test_detailed_export_does_not_gain_trip_book_contents(
     assert "id='contents'" not in html
     assert "Layered Trip Book" not in html
     assert "Standard" in html
+
+
+def test_exported_stop_shows_the_same_ten_point_must_visit_score(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(itinerary_export.places_cache, "get_details", lambda *_a, **_k: {})
+    html = itinerary_export.export_stop_html(
+        {"name": "Seine cruise", "kind": "attraction", "rating": 4.7,
+         "review_count": 12500, "popularity_score": 91},
+        marker="1",
+        is_first=False,
+        is_last=False,
+        circuit_return=False,
+        include_photos=False,
+        include_budgets=False,
+        destination="Paris",
+        seen_photos=set(),
+    )
+
+    assert "Must-visit 9.1/10 (must visit)" in html
+    assert "/100" not in html

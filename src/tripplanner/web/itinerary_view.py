@@ -1176,6 +1176,56 @@ def _estimate_hotel_arrival_times(stops: list[dict[str, Any]]) -> None:
             stop["time_estimated"] = True
 
 
+def _day_travel_route(stops: list[dict[str, Any]], local_route: dict[str, Any]) -> dict[str, Any]:
+    """The day's travel as the rows show it: every leg the traveller makes.
+
+    The local route alone stops at each Drive row, so a car day trip from the
+    hotel to Dhanushkodi and back showed two 20 km drives on its rows and
+    "0 min · 0.0 km" on its card. A road transfer whose legs could not be
+    measured still counts its own saved distance and duration.
+    """
+    distance = 0.0
+    duration = 0
+    modes: list[str] = []
+    counted = False
+    for index, stop in enumerate(stops):
+        leg = stop.get("travel_from_previous")
+        if isinstance(leg, dict):
+            distance += float(leg.get("distance_km") or 0)
+            duration += int(leg.get("duration_min") or 0)
+            if leg.get("mode"):
+                modes.append(str(leg["mode"]))
+            counted = True
+            continue
+        mode = _resolved_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or ""))
+        following = stops[index + 1] if index + 1 < len(stops) else {}
+        if mode != "Drive" or (following.get("travel_from_previous") or {}).get("mode") == "Drive":
+            continue
+        saved_km = stop.get("distance_km")
+        saved_min = stop.get("duration_min")
+        saved = False
+        if isinstance(saved_km, (int, float)) and saved_km > 0:
+            distance += float(saved_km)
+            saved = True
+        if isinstance(saved_min, (int, float)) and saved_min > 0:
+            duration += int(saved_min)
+            saved = True
+        if saved:
+            counted = True
+            modes.append("Drive")
+    if not counted:
+        return local_route
+    distance = round(distance, 1)
+    return {
+        **local_route,
+        "distance_km": distance,
+        "duration_min": duration,
+        "mode": " + ".join(dict.fromkeys(modes)) or str(local_route.get("mode") or ""),
+        "distance_display": f"{distance:.1f} km",
+        "duration_display": _route_duration_display(duration),
+    }
+
+
 def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Structured day-by-day itinerary view-model (frontend-agnostic).
 
@@ -1298,7 +1348,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "summary": str(entry.get("summary") or entry.get("plan") or "").strip(),
                 "color": _day_color(day_num),
                 "stops": stops,
-                "route": route,
+                "route": _day_travel_route(stops, route),
                 "schedule": schedule,
                 "weather": weather_by_date.get(str(entry.get("date") or "").strip()),
                 "reachability": _reachability_hint(local_stops, route),

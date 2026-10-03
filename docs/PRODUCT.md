@@ -422,7 +422,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   kept, and identity numbers stay out of the printable file.
   The backend owns one day timing contract consumed by both Itinerary and Map:
   the schedule spans hotel departure through return (or the applicable transfer/
-  transit endpoints), while `Day's travel` is the route-only subtotal. If
+  transit endpoints), while `Day's travel` totals every travel leg the day's rows
+show, local hops and road-trip drive legs alike (a road transfer whose legs cannot
+be measured adds its own saved distance and time); it never reads 0 while the rows
+show travel. If
   endpoint times are incomplete, estimated departure and return are derived from
   timed visits and known route legs, shown on the hotel rows, and labeled as
   estimates. Place rows expose arrival, visit duration, departure, estimated
@@ -430,7 +433,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   up. Transit uses the consistent Walk, Metro, and Taxi vocabulary; every
   estimated leg names its endpoints and gives a short, non-fabricated transfer
   pointer. Place evidence includes Google rating and review count plus an
-  estimated must-visit score derived from those signals. It must never be
+  estimated must-visit score derived from those signals, shown as a compact
+`X.Y/10` badge beside the place name (9+ must visit, 7–9 good to visit, 5–7 may
+visit, below 5 optional; the band is in its label). A place row reads as three
+lines: the name and score; then `Arrive`/`Return`/`Depart` · stop type; then the
+timing line, visit duration · `Leave by HH:MM`. It must never be
   described as the percentage of traveler itineraries containing the place
   because that data is unavailable. Compact agenda
   rows are dense and left-anchored: time, marker, place, booking state, and

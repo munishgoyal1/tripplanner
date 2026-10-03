@@ -362,7 +362,9 @@ re-describing the whole product.
   fallback uses Walk only through 1.5 km and Taxi for longer legs. Metro is shown
   only when route evidence establishes service; distance alone never implies that
   a city has a metro. Place rows show Google rating/review evidence
-  and may show a clearly labeled estimated must-visit score, never a fabricated
+  and may show a clearly labeled estimated must-visit score (a 10-point badge
+  beside the name for attractions, activities and meals, banded 9+/7–9/5–7/below 5,
+  and the same scale in the exported Trip Book), never a fabricated
   itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering
   are treated as one schedule contract.

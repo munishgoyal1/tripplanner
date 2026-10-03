@@ -198,9 +198,16 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("Walk from Louvre Museum to Seine cruise.")).toBeInTheDocument();
     expect(screen.getByText("Earliest arrival 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
     expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
-    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
+    const score = screen.getByLabelText("Must-visit score 9.1 out of 10: Must visit");
+    expect(score).toHaveTextContent("9.1/10");
+    // The score sits on the name line, not among the tags.
+    expect(score.closest(".it-stop-name")).toHaveTextContent("Seine cruise");
     expect(screen.getAllByText("Arrive")).toHaveLength(2);
-    expect(screen.getByText("2 hrs visit")).toBeInTheDocument();
+    // Row two says what the stop is; row three says how long and when to leave.
+    const louvreDetail = screen.getByText("Louvre Museum").closest(".it-stop-main");
+    expect(louvreDetail?.querySelector(".it-stop-detail")).toHaveTextContent("Arrive·attraction");
+    expect(louvreDetail?.querySelector(".it-stop-detail")).not.toHaveTextContent("visit");
+    expect(screen.getByText("2 hrs visit").closest(".it-stop-timing")).toBeInTheDocument();
     expect(screen.getByText("1 hr visit")).toBeInTheDocument();
     expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
@@ -333,7 +340,7 @@ describe("ItineraryPanel", () => {
     expect(row).toHaveClass("py-2.5");
     fireEvent.click(screen.getByRole("button", { name: "compact" }));
     expect(row).toHaveClass("py-1.5");
-    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
+    expect(screen.getByLabelText("Must-visit score 9.1 out of 10: Must visit")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "compact" })).toHaveAttribute("aria-pressed", "true");
   });
 
