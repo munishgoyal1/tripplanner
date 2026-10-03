@@ -132,7 +132,8 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; direct toolbar navigation, saved search target selection and existing ExportModal delivery |
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
-| `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
+| `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement; hosted managed identity gets IaC-owned database/container proxies without schema mutation |
+| `src/tripplanner/cosmos_debug.py` | Separate Azure CLI authenticated reader for an exact user/trip; optional transcript, point reads only, no application settings import |
 | `src/tripplanner/secondary_cache.py`, `cache_merge.py` | Optional cache-only Cosmos client and shared timestamp-aware merge policy; fixed Places/global-tool partitions, fail-open reads, asynchronous tool writes, and ETag retries |
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
@@ -390,6 +391,15 @@ contracts, not component implementations.
 
 Local JSON and Cosmos implementations remain selectable through configuration.
 Hosted environments use Cosmos; direct local CLI use may retain JSON fallback.
+`infra/main.bicep` injects `COSMOS_USE_MANAGED_IDENTITY=1` and the dedicated
+user-assigned identity's `COSMOS_MANAGED_IDENTITY_CLIENT_ID`. Its database-scoped
+Data Contributor assignment precedes app creation. `ManagedIdentityCredential`
+is explicit; managed identity takes precedence over stale key/connection-string
+values and never falls back. The scheduled demo job uses its system identity.
+Only legacy key connections and the emulator initialize schema at runtime;
+managed identity obtains existing proxies, with all TTL/indexing changes owned
+by `infra/modules/cosmos-data.bicep`. See the deployment runbook for migration
+and the independent container-scoped Data Reader debugging workflow.
 The complete trip exists once at `trips/{trip_id}`. `users/active_trip` contains
 only `{trip_id, revision}`; readers still accept legacy full active documents.
 Every canonical mutation increments `revision`. Cosmos mutations replay semantic
@@ -436,7 +446,8 @@ than failing. Tool results are deliberately excluded: a frozen flight price or
 weather window preserves something that is meaningless once stale, and no rule
 reads them.
 
-`storage_cosmos` gives the two cache containers a **30-day TTL**, the operational
+`infra/modules/cosmos-data.bicep` (and local `storage_cosmos` initialization)
+gives the two cache containers a **30-day TTL**, the operational
 `provider_usage` ledger a **90-day TTL**, and containers holding the user's own
 data none. The TTL is a storage backstop, not
 the freshness rule: Cosmos resets it on every write, so an entry still in use

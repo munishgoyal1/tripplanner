@@ -324,7 +324,6 @@ var baseSecrets = [
   { name: 'duffel-api-key', value: duffelApiKey }
   { name: 'google-places-api-key', value: googlePlacesApiKey }
   { name: 'tavily-api-key', value: tavilyApiKey }
-  { name: 'cosmos-key', value: cosmos.listKeys().primaryMasterKey }
 ]
 
 var baseEnv = [
@@ -359,7 +358,8 @@ var baseEnv = [
   { name: 'CACHE_REDIS_CONNECT_TIMEOUT_SEC', value: cacheRedisConnectTimeoutSec }
   { name: 'CACHE_REDIS_SOCKET_TIMEOUT_SEC', value: cacheRedisSocketTimeoutSec }
   { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
-  { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
+  { name: 'COSMOS_USE_MANAGED_IDENTITY', value: '1' }
+  { name: 'COSMOS_MANAGED_IDENTITY_CLIENT_ID', value: cosmosAppIdentity.properties.clientId }
   { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
   // Structured JSON logs to stdout -> Container Apps Log Analytics -> KQL.
   { name: 'LOG_JSON', value: '1' }
@@ -581,9 +581,31 @@ var customDomains = concat(
   }]
 )
 
+resource cosmosAppIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-cosmos-${suffix}'
+  location: location
+}
+
+module cosmosAppRole 'cosmos-app-role.bicep' = {
+  name: '${namePrefix}-cosmos-app-role'
+  scope: resourceGroup(cosmosResourceGroupName)
+  params: {
+    cosmosAccountName: cosmosAccountName
+    databaseName: cosmosDatabaseName
+    principalId: cosmosAppIdentity.properties.principalId
+  }
+}
+
 resource app 'Microsoft.App/containerApps@2024-03-01' = {
   name: appName
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${cosmosAppIdentity.id}': {}
+    }
+  }
+  dependsOn: [cosmosAppRole]
   properties: {
     managedEnvironmentId: env.id
     configuration: {

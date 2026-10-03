@@ -1518,3 +1518,19 @@ and verification remain separate from machine-tool detection.
 
 Executable proof: `tests/test_machine_setup.py`; actual Windows host validation
 is required in addition to the mocked PowerShell checks run on macOS.
+
+
+### Cosmos authentication and operator inspection
+
+Hosted app deployments use the environment database's managed identity grant.
+Identity-mode reads/writes never fall back to a stored account key and do not
+create databases/containers or change TTL/index policies. IaC owns hosted schema;
+local emulator initialization remains supported.
+
+`python -m tripplanner.cosmos_debug` requires explicit endpoint, database, tenant,
+application user ID and trip ID. It uses the signed-in Azure CLI identity and
+only point-reads that user's trip, plus its transcript when `--include-chat` is
+requested. It does not initialize application storage, query/list unrelated data,
+or write. Azure Data Reader grants enforce read-only permissions independently
+of the app's Contributor identity. See the deployment runbook for provisioning
+and the distinction between container-level RBAC and user/trip request limits.

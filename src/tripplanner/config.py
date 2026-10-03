@@ -280,6 +280,7 @@ class Settings(BaseModel):
     cosmos_use_managed_identity: bool = (
         os.getenv("COSMOS_USE_MANAGED_IDENTITY", "").strip() == "1"
     )
+    cosmos_managed_identity_client_id: str = os.getenv("COSMOS_MANAGED_IDENTITY_CLIENT_ID", "")
     cosmos_database: str = os.getenv("COSMOS_DATABASE", "tripplanner")
     cosmos_emulator: bool = os.getenv("COSMOS_EMULATOR", "").strip() == "1"
     cosmos_dev_backend: str = Field(

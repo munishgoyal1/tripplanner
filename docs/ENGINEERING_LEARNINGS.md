@@ -2515,3 +2515,14 @@ between the validator and renderer; unknown geography is not zero travel.
   from "Southbank Centre" while the itinerary's stricter check dropped its
   coordinates, so the leg simply vanished and the arrival-day return row, which
   required coordinates, vanished with it.
+
+
+### Cosmos identity migration separates data access from schema ownership
+
+A checked-in identity flag does not prove hosted identity use: verify image
+contents, deployed environment variables, credential precedence and role scope
+together. Managed-identity Cosmos clients should obtain existing database and
+container proxies; create-if-missing and TTL/index changes belong to IaC. A
+read-only debugging path needs its own Reader identity and direct point reads,
+not imports of application initialization. Issue #359 records the implementation;
+canary/production authentication still requires live rollout validation.
