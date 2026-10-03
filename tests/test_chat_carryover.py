@@ -461,3 +461,30 @@ def test_persist_turn_switch_to_existing_appends(monkeypatch, tmp_path):
 
 def test_module_imports_clean():
     importlib.reload(chat_carryover)
+
+
+def test_a_destination_switch_is_logged_with_its_carryover_time(monkeypatch):
+    """A switch used to be one long anonymous chat turn in the logs."""
+    from tripplanner import api
+    from tripplanner.tools import trip_planner
+
+    events = []
+    monkeypatch.setattr(api, "app_event", lambda kind, **fields: events.append((kind, fields)))
+    monkeypatch.setattr(trip_planner, "active_trip_id", lambda: "europe_2027-06-01")
+    monkeypatch.setattr(trip_planner, "saved_trip_destination", lambda _tid: "Rameshwaram")
+    monkeypatch.setattr(trip_planner, "load_active_trip_dict", lambda: {"destination": "Europe"})
+    monkeypatch.setattr(chat_store, "transcript", lambda _tid: [])
+    monkeypatch.setattr(chat_store, "originating_request", lambda *_args: "")
+    monkeypatch.setattr(chat_store, "persist_turn", lambda *_args, **_kwargs: "europe_2027-06-01")
+    monkeypatch.setattr(chat_carryover, "distill", lambda *_args: "Carrying over: 2 adults.")
+
+    api._save_chat("rameshwaram_2026-10-12", [], [], turn_seconds=95)
+
+    switches = [fields for kind, fields in events if kind == "trip_switch"]
+    assert len(switches) == 1
+    switch = switches[0]
+    assert switch["new_chat"] is True
+    assert switch["carryover_ms"] >= 0
+    assert switch["turn_seconds"] == 95
+    assert "rameshwaram" not in str(switch).lower()
+    assert "europe" not in str(switch).lower()

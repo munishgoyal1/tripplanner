@@ -25,7 +25,9 @@ from tripplanner.tools.trip_guard import (
     Envelope,
     _duration_of,
     choose_placement,
+    city_track,
     envelope,
+    is_multi_city,
     validate_plan,
 )
 
@@ -251,12 +253,18 @@ def _move_to_another_day(plan: dict[str, Any], day_index: int, stop_index: int) 
         return None
     name = _stop_name(stop)
     duration = stop.get("duration_min")
+    city = city_track(plan).get(int(day.get("day") or day_index + 1), [""] * (stop_index + 1))[
+        stop_index
+    ]
+    if not city and is_multi_city(plan):
+        return None
     detached = stops.pop(stop_index)
     placement, _ = choose_placement(
         plan,
         name,
         _stop_kind(stop) or "attraction",
         duration_min=int(duration) if isinstance(duration, (int, float)) else None,
+        city=city,
     )
     if placement is None or placement.day == day_index + 1:
         stops.insert(stop_index, detached)

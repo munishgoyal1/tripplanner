@@ -529,10 +529,12 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     assert pins["Udaipur Airport"]["provider_name"] == "Maharana Pratap Airport"
     assert pins["Bangalore Airport"]["occurrences"] == [
         {"day": 1, "stop": 1, "time": "06:00"},
-        {"day": 2, "stop": 4, "time": "11:30"},
+        # Both airports are located, so the ~1,600 km leg is timed from its
+        # distance instead of the 90-minute default.
+        {"day": 2, "stop": 4, "time": "12:45"},
     ]
     assert pins["Udaipur Airport"]["occurrences"] == [
-        {"day": 1, "stop": 3, "time": "09:30"},
+        {"day": 1, "stop": 3, "time": "10:20"},
     ]
     assert pins["Trident Udaipur"]["occurrences"] == [
         {"day": 1, "stop": 4, "time": "10:30"},

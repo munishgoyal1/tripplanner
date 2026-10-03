@@ -306,26 +306,21 @@ def _reschedulable(
 
 
 def _place(
-    plan: dict[str, Any], stop: dict[str, Any], from_day: int, to_day: int
+    plan: dict[str, Any], stop: dict[str, Any], from_day: int, to_day: int, city: str = ""
 ) -> tuple[dict[str, Any], Move] | None:
-    """Put an already-lifted stop onto ``to_day``, or report that it cannot go."""
-    if from_day != to_day:
-        from tripplanner.web.transport import _resolved_transfer_mode, _transport_route_endpoints
+    """Put an already-lifted stop onto ``to_day``, or report that it cannot go.
 
+    ``city`` is where the stop was before it was lifted. It may only land where
+    the traveller is in that city; when the plan does not say where the stop
+    was, a multi-city trip keeps it on its own day rather than guess.
+    """
+    if from_day != to_day:
         entries = {day: entry for day, entry, _ in trip_guard.days_of(plan)}
         source_city = str(entries.get(from_day, {}).get("city") or "").casefold()
         target_city = str(entries.get(to_day, {}).get("city") or "").casefold()
-        road_cities = {
-            city.casefold()
-            for _, _, stops in trip_guard.days_of(plan)
-            for row in stops
-            if _resolved_transfer_mode(_stop_name(row), _stop_kind(row)) == "Drive"
-            for city in (_transport_route_endpoints(_stop_name(row)) or ())
-        }
-        road_cities.discard(str(plan.get("origin") or "").casefold())
-        if (source_city and target_city and source_city != target_city) or (
-            len(road_cities) > 1 and (not source_city or not target_city)
-        ):
+        if source_city and target_city and source_city != target_city:
+            return None
+        if not city and trip_guard.is_multi_city(plan):
             return None
     name = _stop_name(stop)
     placement, _ = trip_guard.choose_placement(
@@ -334,6 +329,7 @@ def _place(
         _stop_kind(stop),
         duration_min=trip_guard._duration_of(stop),
         preferred_day=to_day,
+        city=city,
     )
     if placement is None:
         return None
@@ -346,10 +342,11 @@ def _place(
 def _relocated(
     current: dict[str, Any], from_day: int, stop: dict[str, Any], to_day: int
 ) -> tuple[dict[str, Any], Move] | None:
+    city = trip_guard.stop_city(current, from_day, _stop_name(stop))
     detached = _detach(current, from_day, _stop_name(stop))
     if detached is None:
         return None
-    return _place(detached, stop, from_day, to_day)
+    return _place(detached, stop, from_day, to_day, city)
 
 
 def _exchanged(
@@ -365,6 +362,8 @@ def _exchanged(
     """
     left_day, left_stop = left
     right_day, right_stop = right
+    left_city = trip_guard.stop_city(current, left_day, _stop_name(left_stop))
+    right_city = trip_guard.stop_city(current, right_day, _stop_name(right_stop))
     stripped = _detach(current, left_day, _stop_name(left_stop))
     if stripped is None:
         return None
@@ -372,11 +371,11 @@ def _exchanged(
     if stripped is None:
         return None
 
-    first = _place(stripped, left_stop, left_day, right_day)
+    first = _place(stripped, left_stop, left_day, right_day, left_city)
     if first is None:
         return None
     plan, left_move = first
-    second = _place(plan, right_stop, right_day, left_day)
+    second = _place(plan, right_stop, right_day, left_day, right_city)
     if second is None:
         return None
     plan, right_move = second

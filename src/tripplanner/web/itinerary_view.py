@@ -16,6 +16,7 @@ from typing import Any
 from urllib.parse import quote
 
 from tripplanner import place_facts
+from tripplanner.tools.trip_facts import local_road_mode
 from tripplanner.web import places_cache
 from tripplanner.web.budget import _PRICE_KEYS, _to_number, currency_symbol, fmt_money
 from tripplanner.web.day_journey import implied_terminal_hop_mode
@@ -24,6 +25,7 @@ from tripplanner.web.map_pins import (
     _day_color,
     _day_place_context,
     _local_route_stop_indexes,
+    _provider_name_matches,
     _route_circuit_id,
     _route_stats_for_day_coords,
     _trip_day_count,
@@ -182,7 +184,24 @@ def _normalize_stop(
     return None
 
 
-def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
+def _flight_estimate(
+    origin: tuple[float, float] | None, destination: tuple[float, float] | None
+) -> int | None:
+    """Estimated block minutes for a flight between two located airports.
+
+    Cruise distance plus taxi and climb. The fixed domestic default this
+    replaces showed Bangalore to London as a 1 hr 30 min flight.
+    """
+    if not origin or not destination:
+        return None
+    distance = _haversine_km(origin, destination)
+    return int(round((distance / 800 * 60 + 40) / 5) * 5)
+
+
+def _transport_terminal_stops(
+    stop: dict[str, Any],
+    place_coords_map: dict[str, tuple[float, float]] | None = None,
+) -> list[dict[str, Any]]:
     terminal_refs = _transport_terminal_refs(stop["name"], stop["kind"])
     mode = _intercity_transfer_mode(stop["name"], stop["kind"])
     if len(terminal_refs) < 2 or mode not in {"Flight", "Train", "Bus"}:
@@ -192,12 +211,28 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
     departure = str(stop.get("time") or "")
     arrival = str(stop.get("arrival_time") or "")
     duration = stop.get("duration_min")
-    if mode == "Flight" and (not isinstance(duration, (int, float)) or duration <= 0):
-        duration = settings.flight_duration_default_min
-        stop["duration_min"] = duration
-        stop["duration_estimated"] = True
-
     departure_minutes = _clock_minutes(departure)
+    coords = place_coords_map or {}
+    estimate = (
+        _flight_estimate(
+            coords.get(terminal_refs[0][1].strip().lower()),
+            coords.get(terminal_refs[-1][1].strip().lower()),
+        )
+        if mode == "Flight"
+        else None
+    )
+    if mode == "Flight" and (not isinstance(duration, (int, float)) or duration <= 0):
+        if estimate:
+            duration = estimate
+        elif arrival:
+            # Two local clocks in different time zones do not give a duration;
+            # showing none beats showing a wrong one.
+            duration = None
+        else:
+            duration = settings.flight_duration_default_min
+        stop["duration_min"] = duration
+        stop["duration_estimated"] = duration is not None
+
     arrival_estimated = False
     if (
         not arrival
@@ -754,6 +789,7 @@ def _itinerary_place_coords(
     markets, and non-selected places still contribute to route metrics.
     """
     refs = {name.lower(): (name, destination, {}) for name in [*hotels, *activities]}
+    terminal_names: set[str] = set()
     for entry in itin:
         if not isinstance(entry, dict):
             continue
@@ -765,6 +801,7 @@ def _itinerary_place_coords(
             if terminals:
                 for _, terminal in terminals:
                     refs[terminal.lower()] = (terminal, terminal, {})
+                    terminal_names.add(terminal.lower())
             elif name and kind not in {"flight", "transport"}:
                 context = str(stop.get("city") or _day_place_context(entry, destination))
                 refs[name.lower()] = (name, context, stop)
@@ -780,7 +817,17 @@ def _itinerary_place_coords(
             place_coords_map[key] = (float(stop["lat"]), float(stop["lng"]))
         else:
             info = places_cache.get_details(name, context) or {}
-            if not place_facts.names_match(name, str(info.get("name") or "")):
+            provider_name = str(info.get("name") or "")
+            # The same identity rule the map pins by, so a leg is measured
+            # wherever the map shows both ends: "South Bank" answered as
+            # "Southbank Centre" has a pin, and the Tower Bridge leg to it was
+            # silently missing. "Bangalore Airport" is Kempegowda International.
+            if (
+                provider_name
+                and key not in terminal_names
+                and not place_facts.names_match(name, provider_name)
+                and not _provider_name_matches(name, provider_name)
+            ):
                 continue
             coords = _place_coords(name, context)
             if coords:
@@ -796,6 +843,7 @@ def _render_day_stops(
     destination: str,
     symbol: str,
     selected_prices: dict[str, float],
+    place_coords_map: dict[str, tuple[float, float]] | None = None,
 ) -> tuple[list[dict[str, Any]], int]:
     """Normalize and enrich one agent-authored day into rendered stops.
 
@@ -844,7 +892,7 @@ def _render_day_stops(
         s["rating"] = summary.get("rating") if is_place else None
         s["review_count"] = summary.get("review_count") if is_place else None
         s["popularity_score"] = _popularity_score(summary) if is_place else None
-        rendered_stops = _transport_terminal_stops(s)
+        rendered_stops = _transport_terminal_stops(s, place_coords_map)
         bus_arrival = (
             rendered_stops.pop()
             if route_mode == "Bus"
@@ -1008,7 +1056,14 @@ def _append_return_to_stay(
     stops: list[dict[str, Any]],
     place_coords_map: dict[str, tuple[float, float]],
 ) -> None:
-    """Close a transfer day by returning to the new stay after local outings."""
+    """Close a transfer day by returning to the new stay after local outings.
+
+    The return row is a fact about the plan, not about the map: a stay still
+    marked TBD has no coordinates, and requiring them dropped the evening
+    return from every arrival day whose hotel was not chosen yet. Coordinates
+    only decide whether the leg back can be measured.
+    """
+    del place_coords_map
     hotel_indexes = [index for index, stop in enumerate(stops) if stop["kind"] == "hotel"]
     if not hotel_indexes:
         return
@@ -1030,17 +1085,7 @@ def _append_return_to_stay(
         for stop in stops[last_hotel_index + 1 :]
         if stop["kind"] not in {"hotel", "airport", "flight", "transport"}
     ]
-    hotel_coords = place_coords_map.get(
-        str(stops[last_hotel_index].get("name") or "").strip().lower()
-    )
-    return_from_coords = (
-        place_coords_map.get(
-            str(local_outings_after_hotel[-1].get("name") or "").strip().lower()
-        )
-        if local_outings_after_hotel
-        else None
-    )
-    if not hotel_coords or not return_from_coords:
+    if not local_outings_after_hotel:
         return
     hotel_return = dict(stops[last_hotel_index])
     for key in (
@@ -1053,6 +1098,7 @@ def _append_return_to_stay(
         "timing_conflict_min",
         "timing_conflict_display",
         "concern",
+        "travel_from_previous",
     ):
         hotel_return.pop(key, None)
     hotel_return["note"] = "Return to your stay"
@@ -1062,6 +1108,7 @@ def _append_return_to_stay(
 def _measure_local_route(
     stops: list[dict[str, Any]],
     place_coords_map: dict[str, tuple[float, float]],
+    road_mode: str = "",
 ) -> tuple[list[dict[str, Any]], list[list[tuple[float, float]]]]:
     """Annotate leg-by-leg travel between local stops and collect their coords."""
     local_indexes = _local_route_stop_indexes(stops)
@@ -1088,6 +1135,7 @@ def _measure_local_route(
                 _haversine_km(previous_coords, coords),
                 from_name=previous_name,
                 to_name=str(stop.get("name") or ""),
+                road_mode=road_mode,
             )
         groups[-1].append(coords)
         previous_coords = coords
@@ -1153,9 +1201,12 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     weather_by_date = {
         day["date"]: day for day in (weather or {}).get("days", [])
     }
-    transport_preferences = (
+    transport_preferences = dict(
         (trip.get("preferences_snapshot") or {}).get("transport_preferences") or {}
     )
+    road_mode = local_road_mode(trip)
+    if road_mode:
+        transport_preferences["preferred_road_transport"] = road_mode
 
     days: list[dict[str, Any]] = []
     total_stops = 0
@@ -1172,7 +1223,8 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             place_coords_map.pop(name.strip().lower(), None)
         place_coords_map.update(_itinerary_place_coords([entry], hotels, activities, destination))
         stops, day_booked = _render_day_stops(
-            entry, day_num, hotels, activities, destination, symbol, selected_prices
+            entry, day_num, hotels, activities, destination, symbol, selected_prices,
+            place_coords_map,
         )
         total_booked += day_booked
 
@@ -1207,7 +1259,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         if rendered_hotels:
             current_hotel = str(rendered_hotels[-1].get("name") or current_hotel)
 
-        local_stops, route_groups = _measure_local_route(stops, place_coords_map)
+        local_stops, route_groups = _measure_local_route(stops, place_coords_map, road_mode)
         total_stops += sum(
             stop["kind"] not in {"airport", "station", "bus_station", "origin"}
             for stop in stops
@@ -1225,6 +1277,12 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                          distance_display=f"{distance:.1f} km",
                          duration_display=_route_duration_display(duration),
                          mode=" + ".join(dict.fromkeys(item["mode"] for item in routes)))
+        if road_mode == "own_car" and route.get("mode"):
+            route["mode"] = " + ".join(
+                dict.fromkeys(
+                    "Drive" if part == "Taxi" else part for part in str(route["mode"]).split(" + ")
+                )
+            )
         _enrich_drive_transfer_timing(stops, place_coords_map, transport_preferences)
         _enrich_stop_timing(stops)
         _estimate_hotel_arrival_times(stops)

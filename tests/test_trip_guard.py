@@ -53,7 +53,7 @@ def stop(name: str, time: str, kind: str = "attraction", minutes: int = 90) -> d
 ROUND_TRIP = plan(
     [
         [
-            stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+            dict(stop("Flight Bengaluru → Indore", "09:00", "flight", 120), arrival_time="11:00"),
             stop("Hotel Sayaji", "13:00", "hotel", 45),
             stop("Rajwada Palace", "15:00"),
         ],
@@ -63,7 +63,7 @@ ROUND_TRIP = plan(
         ],
         [
             stop("Mandu Fort", "09:00", "attraction", 180),
-            stop("Flight Indore → Bengaluru", "18:00", "flight", 120),
+            dict(stop("Flight Indore → Bengaluru", "18:00", "flight", 120), arrival_time="20:00"),
         ],
     ]
 )
@@ -1183,7 +1183,7 @@ def test_the_effort_model_cannot_refuse_anything() -> None:
 EXCURSION = plan(
     [
         [
-            stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+            dict(stop("Flight Bengaluru → Indore", "09:00", "flight", 120), arrival_time="11:00"),
             stop("Hotel Sayaji", "13:00", "hotel", 45),
         ],
         [
@@ -1194,7 +1194,7 @@ EXCURSION = plan(
         ],
         [
             stop("Rajwada Palace", "10:00"),
-            stop("Flight Indore → Bengaluru", "18:00", "flight", 120),
+            dict(stop("Flight Indore → Bengaluru", "18:00", "flight", 120), arrival_time="20:00"),
         ],
     ]
 )
@@ -1289,3 +1289,51 @@ def test_the_calendar_invariant_ignores_a_day_with_no_date_of_its_own() -> None:
     codes = {v.code for v in trip_guard.validate_plan(no_date)}
 
     assert "I14" not in codes
+
+
+def test_a_flight_without_its_landing_time_is_a_coherence_gap() -> None:
+    trip = plan(
+        [
+            [
+                {"name": "Flight: Bangalore to London", "kind": "flight", "time": "09:00"},
+                stop("Tower Bridge", "18:00"),
+            ]
+        ]
+    )
+
+    gaps = trip_validation.itinerary_coherence_gaps(trip)
+
+    assert any("arrival_time or duration_min" in gap for gap in gaps)
+    assert any("arrival_time" in error for error in trip_validation.persistence_sanity_errors(trip))
+
+
+def test_sightseeing_after_an_overnight_arrival_must_move_to_the_next_day() -> None:
+    trip = plan(
+        [
+            [
+                {"name": "Flight: Bangalore to London", "kind": "flight", "time": "20:00",
+                 "arrival_time": "01:30", "duration_min": 600},
+                {"name": "London Hotel", "kind": "hotel"},
+                stop("Tower Bridge", "18:00"),
+            ]
+        ]
+    )
+
+    errors = trip_validation._itinerary_time_errors(trip["day_wise_itinerary"])
+
+    assert any("Tower Bridge" in error and "Day 2" in error for error in errors)
+
+
+def test_a_flight_frees_the_traveller_at_its_local_arrival_not_its_duration() -> None:
+    trip = plan(
+        [
+            [
+                {"name": "Flight: Bangalore to London", "kind": "flight", "time": "09:00",
+                 "arrival_time": "15:00", "duration_min": 600},
+                stop("Tower Bridge", "16:30", "attraction", 60),
+            ]
+        ]
+    )
+
+    assert trip_validation._itinerary_time_errors(trip["day_wise_itinerary"]) == []
+    assert not [v for v in trip_guard.validate_plan(trip) if v.code == "I4"]

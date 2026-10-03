@@ -232,3 +232,43 @@ def test_advisor_enabled_plan_flags_sparse_days_without_affecting_legacy() -> No
     assert not any(
         "Sparse itinerary" in gap for gap in core_planning_completion_gaps(legacy_plan)
     )
+
+
+def test_a_full_day_that_ends_mid_afternoon_is_sparse() -> None:
+    itinerary = [
+        {
+            "day": 2,
+            "title": "Westminster",
+            "stops": [
+                {"name": "Hotel", "kind": "hotel"},
+                {"name": "Westminster Abbey", "kind": "attraction",
+                 "time": "11:15", "duration_min": 120},
+                {"name": "British Museum", "kind": "attraction",
+                 "time": "13:30", "duration_min": 120},
+                {"name": "Hotel", "kind": "hotel"},
+            ],
+        }
+    ]
+
+    result = assess_itinerary_density(itinerary, _balanced_preferences())
+
+    assert [day.day for day in result.sparse_days] == [2]
+    assert "11:15–15:30" in result.sparse_days[0].reason
+
+
+def test_a_local_taxi_row_does_not_excuse_a_day_from_the_density_check() -> None:
+    itinerary = [
+        {
+            "day": 1,
+            "title": "Rameshwaram temples",
+            "stops": [
+                {"name": "Taxi: Hotel to Ramanathaswamy Temple", "kind": "transport"},
+                {"name": "Ramanathaswamy Temple", "kind": "attraction",
+                 "time": "09:00", "duration_min": 60},
+            ],
+        }
+    ]
+
+    result = assess_itinerary_density(itinerary, _balanced_preferences())
+
+    assert [day.day for day in result.sparse_days] == [1]

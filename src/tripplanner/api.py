@@ -27,6 +27,7 @@ in-flight chat turns for context.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 import re
@@ -386,14 +387,17 @@ def _save_chat(
         and tid_after is not None
         and tid_after != tid_before
     )
+    carryover_ms: float | None = None
     if is_switch and not chat_store.transcript(tid_after):
         # Brand-new destination chat: distil portable context from the prior
         # conversation so the fresh chat isn't cold. Best-effort (LLM).
+        carryover_started = time.monotonic()
         prev_dest = trip_planner.saved_trip_destination(tid_before or "")
         active = trip_planner.load_active_trip_dict() or {}
         new_dest = str(active.get("destination") or "")
         carryover = chat_carryover.distill(base_history, prev_dest, new_dest)
         origin_prompt = chat_store.originating_request(base_history, new_dest)
+        carryover_ms = round((time.monotonic() - carryover_started) * 1000, 2)
 
     from tripplanner.flight_recorder import record
 
@@ -415,7 +419,54 @@ def _save_chat(
 
     record("chat.persisted", trip_id=saved_trip_id, request_id=request_id,
            completed=completed, duration_seconds=turn_seconds)
+    if is_switch:
+        _record_trip_switch(
+            previous_trip_id=tid_before or "",
+            trip_id=tid_after or "",
+            new_chat=carryover_ms is not None,
+            carryover_ms=carryover_ms,
+            carryover_chars=len(carryover),
+            turn_seconds=turn_seconds,
+            completed=completed,
+        )
     return saved_trip_id
+
+
+def _record_trip_switch(
+    *,
+    previous_trip_id: str,
+    trip_id: str,
+    new_chat: bool,
+    carryover_ms: float | None,
+    carryover_chars: int,
+    turn_seconds: int | None,
+    completed: bool,
+) -> None:
+    """Log a mid-chat move to another trip, with what it cost the traveller.
+
+    A switch was only visible as one long ``chat_operation``: nothing said a
+    trip had changed, and the carryover note's own model call, which the
+    traveller waits on while the reply says "saving", was not timed at all.
+    The destinations are not logged; the trip ids are hashed like every other
+    trip correlation key.
+    """
+    def key(value: str) -> str:
+        return hashlib.sha256(value.encode()).hexdigest()[:16]
+
+    app_event(
+        "trip_switch",
+        trip_key=key(trip_id),
+        previous_trip_key=key(previous_trip_id),
+        new_chat=new_chat,
+        completed=completed,
+        **({"carryover_ms": carryover_ms} if carryover_ms is not None else {}),
+        carryover_chars=carryover_chars,
+        **({"turn_seconds": turn_seconds} if turn_seconds is not None else {}),
+    )
+    if carryover_ms is not None:
+        from tripplanner.ops_metrics import record_operation
+
+        record_operation("trip_switch", "carryover", "ok", carryover_ms)
 
 
 # Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop

@@ -28,6 +28,7 @@ from tripplanner.tools.trip_common import (
     unnamed_lodging,
     unnamed_meal,
 )
+from tripplanner.tools.trip_facts import fact_conflicts
 from tripplanner.tools.trip_guard import (
     KNOWN_FACT_CODES,
     leg_touches_home,
@@ -44,10 +45,43 @@ _COHERENCE_CODES = frozenset({"I1", "I2", "I5", "I9", "I14"})
 def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:
     """Ways the saved itinerary disagrees with itself, in the user's terms."""
     return [
-        violation.message
-        for violation in validate_plan(plan)
-        if violation.code in _COHERENCE_CODES
+        *(
+            violation.message
+            for violation in validate_plan(plan)
+            if violation.code in _COHERENCE_CODES
+        ),
+        *flight_time_gaps(plan),
     ]
+
+
+def flight_time_gaps(plan: dict[str, Any]) -> list[str]:
+    """Flight rows that cannot say when the traveller lands.
+
+    Without a local arrival time and a real duration, the view fell back to a
+    90-minute domestic default, so Bangalore to London read as a 1.5 hour
+    flight landing at 01:30, and every later stop that day was timed from it.
+    """
+    gaps: list[str] = []
+    for index, day in enumerate(plan.get("day_wise_itinerary") or []):
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            if _stop_kind(stop) != "flight" or not isinstance(stop, dict):
+                continue
+            if not str(stop.get("time") or "").strip():
+                continue
+            missing = [
+                field
+                for field in ("arrival_time", "duration_min")
+                if not stop.get(field)
+            ]
+            if missing:
+                gaps.append(
+                    f"Day {day.get('day') or index + 1}: {_stop_name(stop)} has no "
+                    f"{' or '.join(missing)}. Save the scheduled local arrival time and "
+                    "the real flight duration from the selected offer or timetable."
+                )
+    return gaps
 
 
 _MEAL_OPEN_RE = re.compile(
@@ -750,6 +784,7 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_ground_leg_distance_warnings(plan),
         *implausible_drive_warnings(plan),
         *summary_drift_warnings(plan),
+        *fact_conflicts(plan),
         *_requested_budget_without_cost_evidence(plan),
         *_itinerary_density_warnings(plan),
     ]
@@ -795,6 +830,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_ground_leg_distance_warnings(plan),
         *implausible_drive_warnings(plan),
         *summary_drift_warnings(plan),
+        *fact_conflicts(plan),
         *_itinerary_density_warnings(plan),
     ]
 
@@ -827,9 +863,22 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
             continue
         day = entry.get("day") if isinstance(entry.get("day"), int) else day_index + 1
         stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
+        landed_next_day = ""
         for stop in stops:
             if not isinstance(stop, dict):
                 continue
+            if landed_next_day and _stop_kind(stop) in {"attraction", "meal", "restaurant"}:
+                errors.append(
+                    f"Day {day}: {_stop_name(stop) or 'a stop'} is listed after "
+                    f"{landed_next_day}, which arrives after midnight. Sightseeing after an "
+                    f"overnight arrival belongs on Day {day + 1}; move it there and start "
+                    "that day from the arrival."
+                )
+            if _stop_kind(stop) in {"flight", "transport"}:
+                departs = _parse_hhmm(str(stop.get("time") or ""))
+                arrives = _parse_hhmm(str(stop.get("arrival_time") or ""))
+                if departs is not None and arrives is not None and arrives < departs:
+                    landed_next_day = _stop_name(stop) or "an overnight journey"
             value = str(stop.get("time") or "").strip()
             if not value:
                 continue
@@ -858,7 +907,7 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
                 )
                 current_start = minimum_start
             previous_start = current_start
-            previous_end = current_start + validate_guard._duration_of(stop)
+            previous_end = validate_guard.occupied_until(stop, current_start)
             previous_name = name
             previous_day = day
             previous_kind = _stop_kind(stop)
@@ -884,6 +933,8 @@ def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
         ),
         *_journey_persistence_errors(plan),
         *_ground_leg_distance_warnings(plan),
+        *flight_time_gaps(plan),
+        *fact_conflicts(plan),
     ]
     return list(dict.fromkeys(errors))
 

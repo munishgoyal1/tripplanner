@@ -90,3 +90,31 @@ def test_backward_times_are_reported_not_reordered() -> None:
     day_order.normalize(plan)
     after = [stop["name"] for stop in plan["day_wise_itinerary"][2]["stops"]]
     assert after.index("Coffee") == len(after) - 1 and set(after) == set(before)
+
+
+def test_a_hotel_naming_the_city_being_left_moves_before_the_train() -> None:
+    plan = {
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Hotel TBD, London", "kind": "hotel"}]},
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Train: London St Pancras to Paris Gare du Nord",
+                     "kind": "transport", "time": "08:00", "arrival_time": "11:00"},
+                    {"name": "London Hotel (TBD)", "kind": "hotel", "time": "11:30"},
+                    {"name": "Paris Hotel (TBD)", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction", "time": "13:00"},
+                ],
+            },
+        ]
+    }
+
+    assert day_order.move_stays_before_departure(plan)
+
+    stops = plan["day_wise_itinerary"][1]["stops"]
+    assert [stop["name"] for stop in stops][:2] == [
+        "London Hotel (TBD)",
+        "Train: London St Pancras to Paris Gare du Nord",
+    ]
+    assert "time" not in stops[0]
+    assert stops[2]["name"] == "Paris Hotel (TBD)"

@@ -25,6 +25,10 @@ from typing import Any
 _MOVE_KINDS = frozenset({"transport", "flight", "train", "drive", "transfer", "ferry"})
 _MOVE_NAME = re.compile(r"(?:drive|train|flight|transfer|shinkansen|ferry|bus)\b", re.IGNORECASE)
 _LEAVING_NOTE = re.compile(r"check[\s-]?out|\bstart\b|\bdepart", re.IGNORECASE)
+_TERMINAL_WORDS = frozenset({
+    "airport", "station", "railway", "international", "terminal", "central", "gare",
+    "nord", "eurostar", "train", "flight", "hotel",
+})
 _RETURN_NOTE = re.compile(r"\breturn|\bback\b|\brest\b|\bovernight|\bunwind", re.IGNORECASE)
 
 
@@ -50,6 +54,30 @@ def is_move(stop: Any) -> bool:
     return _kind(stop) in _MOVE_KINDS or bool(_MOVE_NAME.match(_name(stop)))
 
 
+def _left_city(stop: Any) -> tuple[str, str] | None:
+    """``(left, reached)`` cities for a journey between two cities, else None."""
+    from tripplanner.tools import trip_guard
+
+    if not trip_guard._is_city_journey(stop):
+        return None
+    endpoints = trip_guard._journey_endpoints(stop)
+    if not endpoints:
+        return None
+    left, reached = endpoints
+    if not left or not reached or trip_guard.same_city(left, reached):
+        return None
+    return left, reached
+
+
+def _names_city(name: str, city: str) -> bool:
+    from tripplanner.tools import trip_guard
+
+    words = set(trip_guard._normalize_city(name).split())
+    return any(
+        len(part) > 3 and part not in _TERMINAL_WORDS and part in words for part in city.split()
+    )
+
+
 def _misplaced_stays(stops: list[Any], prior_stay: str = "") -> list[int]:
     """Indexes of stays listed after the first departure although they are being left.
 
@@ -62,6 +90,7 @@ def _misplaced_stays(stops: list[Any], prior_stay: str = "") -> list[int]:
         return []
     started_at = {_name(stop).casefold() for stop in stops[:first] if _kind(stop) == "hotel"}
     leaving = started_at | ({prior_stay.casefold()} if prior_stay else set())
+    left_city = _left_city(stops[first])
     misplaced: list[int] = []
     for index in range(first + 1, len(stops)):
         stop = stops[index]
@@ -72,6 +101,12 @@ def _misplaced_stays(stops: list[Any], prior_stay: str = "") -> list[int]:
             misplaced.append(index)
             continue
         name = _name(stop).casefold()
+        if left_city and _names_city(name, left_city[0]) and not _names_city(name, left_city[1]):
+            # "London Hotel (TBD)" after the train to Paris is the stay being
+            # left, even when it is not spelled the way last night's was.
+            if not any(is_move(other) for other in stops[first + 1 : index]):
+                misplaced.append(index)
+                continue
         if name not in leaving or _RETURN_NOTE.search(note) or index == len(stops) - 1:
             continue
         returned = any(is_move(other) for other in stops[first + 1 : index])

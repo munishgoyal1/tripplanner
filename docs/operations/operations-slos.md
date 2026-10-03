@@ -265,6 +265,24 @@ ContainerAppConsoleLogs_CL
 and storage spans may be nested, so their summed durations are attribution evidence,
 not request wall time. Use `chat_operation` or request duration for end-to-end latency.
 
+A move to another trip mid-chat (for example Rameshwaram to a new Europe trip) emits
+one `trip_switch` event after the turn is saved: hashed `trip_key` and
+`previous_trip_key`, `new_chat`, `completed`, `turn_seconds`, and, for a brand-new
+destination chat, `carryover_ms` and `carryover_chars` for the carryover note's own
+model call, which runs inside finalization while the reply shows "saving".
+Destinations are never logged.
+
+```kql
+ContainerAppConsoleLogs_CL
+| where TimeGenerated >= ago(7d)
+| where ContainerAppName_s startswith "prod-app-"
+| extend event = parse_json(Log_s)
+| where tostring(event.event_kind) == "trip_switch"
+| project TimeGenerated, trip_key = tostring(event.trip_key),
+    turn_seconds = toint(event.turn_seconds), carryover_ms = todouble(event.carryover_ms)
+| order by TimeGenerated desc
+```
+
 ## Release response
 
 After production promotion, run the hosted smoke suite, complete one normal

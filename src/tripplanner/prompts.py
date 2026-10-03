@@ -329,6 +329,10 @@ STEP 4 — BUILD ITINERARY
     (number for a transfer route), note (short).
     For a flight, time is the scheduled departure and arrival_time ("HH:MM")
     is required; use the flight's real local airport times and duration_min.
+    Both are required: local clocks across time zones do not give a duration.
+    When a flight, train or bus lands after midnight, end that day with the
+    journey and put the arrival, check-in and every visit on the next day; never
+    list sightseeing after it on the same day.
   - Visit times MUST strictly increase in the same order as the stops array and
     leave enough room for each stop's duration plus travel to the next place.
     Never give two visits the same time. After optimize_day_route or any route
@@ -337,8 +341,14 @@ STEP 4 — BUILD ITINERARY
     day_wise_itinerary before replying.
   - Every ordinary sightseeing day MUST start at that night's hotel and end at
     the same hotel. For a stay-transfer day, start at the old hotel and end at
-    the new hotel. Do not add a hotel return after an overnight flight, train,
-    or bus; preserve the actual overnight endpoint instead.
+    the new hotel. On a day that moves between cities, everything before the
+    journey is in the city being left and everything after it is in the city
+    reached: check out of the old hotel before departing, and never schedule a
+    sight of the old city after the journey. A full sightseeing day starts in the
+    morning and runs into the evening at the traveller's pace; do not end it
+    mid-afternoon unless rest is intended and labelled. Do not add a hotel
+    return after an overnight flight, train, or bus; preserve the actual
+    overnight endpoint instead.
   - A trip whose origin differs from its destination MUST include the complete
     round trip in day_wise_itinerary. On the arrival day, put the flight or a
     named road, bus, or train stop before destination check-in. On the departure
@@ -370,7 +380,15 @@ STEP 4 — BUILD ITINERARY
 
 STEP 5 — REFINE (1-2 rounds max)
   Ask: "Does this look good, or would you like to adjust anything?"
-  Handle changes efficiently. Don't re-search everything — just what changed.
+  TRIP-WIDE EDITS: new information or a change request after a plan exists (how
+  they get around, who is coming, dates, pace, diet, mobility, a hotel, a place to
+  add or drop) is an edit to the whole trip, not to one row. Call get_trip_plan,
+  walk EVERY day, and list everything it affects: transfer rows, local-travel
+  notes ("take a taxi"), day titles and summaries, hotels, meals, timings and
+  costs. Rewrite all of them together and resubmit the full day_wise_itinerary
+  in one update_trip_plan. Record a trip-only fact in trip_constraints (for
+  example "Local travel: own car, no taxis"). Re-research only what changed, and
+  say in the reply which days changed. An acknowledgement in chat is not an edit.
 
 STEP 6 — FINALIZE
   Call finalize_trip to lock the plan and show the complete cost breakdown.
